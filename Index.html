@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City of Dasmariñas - PWD Application</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">  <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- External Fonts -->
+    <link rel="stylesheet" href="assets/styles/homepage/index-styles.css"> <!-- Custom CSS -->
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container"> <!-- Left Side -->
+            <a class="navbar-brand" href="#">
+                <img src="/assets/images/homepage/dasma-logo-only.png" alt="City of Dasmariñas Logo" class="navbar-logo">
+                City of Dasmariñas — PWD Services Portal 
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarContent"> <!-- Right Side -->
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0"> <!-- Headers -->
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">News</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">FAQ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Resources</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                    <li class="nav-item ms-2 d-flex align-items-center">
+                        <button class="btn btn-login">Login</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section / Jumbotron -->
+    <section class="hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1>City of Dasmariñas <span class="text-accent">PWD Application Portal</span></h1>
+                    <p class="lead">A dedicated platform for Persons with Disabilities to access services and support provided by the City of Dasmariñas.</p>
+                    <div class="d-grid gap-2 d-md-flex mt-4">
+                        <button class="btn btn-primary btn-lg me-md-2"><i class="fas fa-file-alt me-2"></i>Apply Now</button>
+                        <button class="btn btn-outline-light btn-lg"><i class="fas fa-question-circle me-2"></i>Learn More</button>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="/assets/images/homepage/dasma-logo-only.png" alt="PWD Services" class="img-fluid hero-image"> <!-- Placeholder Image -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services">
+        <div class="container">
+            <h2 class="text-center mb-5">PWD Services</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="service-card">
+                        <i class="fas fa-wheelchair service-icon"></i>
+                        <h4>Accessibility Programs</h4>
+                        <p>Programs to improve accessibility in public spaces and transportation.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="service-card">
+                        <i class="fas fa-hand-holding-usd service-icon"></i>
+                        <h4>Financial Assistance</h4>
+                        <p>Financial support programs for Persons with Disabilities.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="service-card">
+                        <i class="fas fa-heartbeat service-icon"></i>
+                        <h4>Healthcare Services</h4>
+                        <p>Specialized healthcare and rehabilitation services.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Application Process -->
+    <section class="process">
+        <div class="container">
+            <h2 class="text-center mb-5">Application Process</h2>
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <h4>Register</h4>
+                        <p>Create an account on our portal</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <h4>Apply</h4>
+                        <p>Fill out the application form</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <h4>Submit</h4>
+                        <p>Submit required documents</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="process-step">
+                        <div class="step-number">4</div>
+                        <h4>Track</h4>
+                        <p>Monitor your application status</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5>City of Dasmariñas</h5>
+                    <p>Committed to serving all citizens, including Persons with Disabilities, with excellence and compassion.</p>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5>Contact Information</h5>
+                    <p><i class="fas fa-phone me-2"></i> (046) 501 2321</p>
+                    <p><i class="fas fa-envelope me-2"></i> info@dasmarinas.gov.ph</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i>Dasmariñas Bagong Bayan, Dasmariñas, Cavite 4115</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">PWD Services</a></li>
+                        <li><a href="#">Application Status</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Download Forms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <p class="text-center mb-0">© 2025 City of Dasmariñas. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
