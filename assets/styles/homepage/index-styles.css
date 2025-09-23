@@ -171,6 +171,22 @@ body {
     margin: 0 auto 1rem;
 }
 
+/* Latest News */
+.latest {
+    padding-top: 3rem ! important;
+    padding-bottom: 3rem ! important;
+}
+
+.latest a span:hover{
+    color: var(--dasma-green);
+}
+
+.latest a p:hover{
+    color: var(--dasma-dark-green);
+}
+
+
+
 /* Footer */
 .footer {
     background: linear-gradient(135deg, var(--dasma-green) 0%, var(--dasma-dark-green) 100%);
@@ -202,7 +218,7 @@ body {
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .navbar-brand {
-        font-size: 1.1rem;
+        font-size: 0.9rem;
     }
     
     .navbar-logo {
