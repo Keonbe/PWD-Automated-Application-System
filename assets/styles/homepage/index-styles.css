@@ -91,6 +91,7 @@ body {
 .hero-image {
     border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    margin: 16px;
 }
 
 .btn-primary {
@@ -233,6 +234,12 @@ body {
     
     .hero h1 {
         font-size: 2rem;
+    }
+    .hero-image {
+        max-width: 95%;
+        height: auto;
+        display: inline-flex;
+        align-self: center;
     }
     
     .service-card, .process-step {
