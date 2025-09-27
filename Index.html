@@ -122,7 +122,7 @@
     <!-- End Learn More Modal (Hero Section, Hidden unless clicked)-->
 
     <!-- Services Section -->
-    <section class="services">
+    <section class="services" id="services">
         <div class="container">
             <h2 class="text-center mb-5">PWD Services</h2>
             <div class="row">
@@ -511,7 +511,7 @@
                 <div class="col-md-4">
                     <h5>Quick Links</h5>
                     <ul class="list-unstyled">
-                        <li><a href="#">PWD Services</a></li>
+                        <li><a href="#services">PWD Services</a></li>
                         <li><a href="#">Application Status</a></li>
                         <li><a href="/faq.html">FAQ</a></li>
                         <li><a href="#">Download Forms</a></li>
@@ -525,5 +525,19 @@
     <!-- End Footer -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script> //Loads the Services section if URL has ?scroll=services(footer link) 
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search); //Index URL parameter
+            const scrollTo = urlParams.get('scroll');
+            if (scrollTo === 'services') {
+                const servicesSection = document.getElementById('services');
+                if (servicesSection) {
+                    setTimeout(() => { //Transition/Delay
+                        servicesSection.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }
+            }
+        });  //Refer:https://stackoverflow.com/questions/63886025/add-parameter-from-url-to-an-element-and-scroll-to-element
+    </script>
 </body>
 </html>
