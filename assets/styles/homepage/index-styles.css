@@ -111,6 +111,11 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Learn More Modal (parent hero section) */
+.modal-body .text-accent {
+    color: var(--dasma-dark-green);
+}
+
 /* Services Section */
 .services {
     padding: 4rem 0;
@@ -238,8 +243,9 @@ body {
     .hero-image {
         max-width: 95%;
         height: auto;
-        display: inline-flex;
-        align-self: center;
+        display: block; 
+        margin: auto;
+        margin-top: 5%;
     }
     
     .service-card, .process-step {

@@ -58,7 +58,9 @@
                     <p class="lead">A dedicated platform for Persons with Disabilities to access services and support provided by the City of Dasmariñas.</p>
                     <div class="d-grid gap-2 d-md-flex mt-4">
                         <button class="btn btn-primary btn-lg me-md-2"  onclick="location.href='consent.html'"><i class="fas fa-file-alt me-2"></i>Apply Now</button>
-                        <button class="btn btn-outline-light btn-lg"><i class="fas fa-question-circle me-2"></i>Learn More</button>
+                        <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#learnMoreModal">
+                            <i class="fas fa-question-circle me-2"></i>Learn More <!-- Modal Button Trigger-->
+                        </button>
                     </div>
                 </div>
                 <div class="col-lg-6 text-center">
@@ -68,6 +70,56 @@
         </div>
     </section>
     <!-- End Hero  -->
+
+    <!-- Learn More Modal (Hero Section, Hidden unless clicked)-->
+    <div class="modal fade" id="learnMoreModal" tabindex="-1" aria-labelledby="learnMoreModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="learnMoreModalLabel">About the PWD Application Portal</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-accent fw-bold">What is this Portal?</h6>
+                            <p>This is the official online platform for Persons with Disabilities (PWDs) in Dasmariñas City to access government services, apply for benefits, and get support.</p>
+                            
+                            <h6 class="text-accent mt-4 fw-bold">Available Services</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">PWD ID Application & Renewal</li>
+                                <li class="list-group-item">Document Verification</li>
+                                <li class="list-group-item">Support Programs</li>
+                                <li class="list-group-item">Benefits Registration</li>
+                                <li class="list-group-item">Service Requests</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-accent fw-bold">Who Can Use This?</h6>
+                            <p>Residents of Dasmariñas City with permanent disabilities who are registered with the City Social Welfare and Development Office.</p>
+                            
+                            <h6 class="text-accent mt-4 fw-bold" >Requirements</h6>
+                            <ul>
+                                <li>Valid government ID</li>
+                                <li>Medical certificate</li>
+                                <li>Proof of residency</li>
+                                <li>Recent photo</li>
+                            </ul>
+                            
+                            <div class="alert alert-info mt-3">
+                                <small><i class="fas fa-info-circle me-2"></i>For assistance, visit the PWD Affairs Office at City Hall or call (046) 123-4567.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="location.href='consent.html'">Start Application</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Learn More Modal (Hero Section, Hidden unless clicked)-->
 
     <!-- Services Section -->
     <section class="services">
