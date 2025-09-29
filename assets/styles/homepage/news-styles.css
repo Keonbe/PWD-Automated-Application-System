@@ -174,6 +174,13 @@ body {
     outline-offset: 2px;
 }
 
+.pagination .page-link.active { /* ref: https://stackoverflow.com/questions/32355009/changing-pagination-colour-bootstrap */
+    background: var(--dasma-green);
+    color: var(--dasma-light);
+    border-color: var(--dasma-green);
+    cursor: default;
+}
+
 
 /* News card styling */
 .news-card {

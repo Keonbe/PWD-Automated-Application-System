@@ -7,7 +7,7 @@
     <link rel="icon" type="image/x-icon" href="/assets/images/homepage/dasma-logo-only.png"> <!--Faviconnnnn-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">  <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- External Fonts -->
-    <link rel="stylesheet" href="/assets/styles/homepage/news.css"> <!-- Custom CSS -->
+    <link rel="stylesheet" href="/assets/styles/homepage/news-styles.css"> <!-- Custom CSS -->
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -16,7 +16,7 @@
         <div class="container"> <!-- Left Side -->
             <a class="navbar-brand" href="Index.html">
                 <img src="/assets/images/homepage/dasma-logo-only.png" alt="City of Dasmariñas Logo" class="navbar-logo">
-                City of Dasmariñas — PWD Services Portal 
+                City of Dasmariñas — PWD Portal 
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
@@ -50,128 +50,31 @@
     <!-- End Nav Bar -->
     
     <!-- Main Content Start -->
+    <main>
+        <!-- News Content -->
+        <section id="main-content" class="container my-5" tabindex="-1">
 
-    <!-- News Content -->
-    <section id="main-content" class="container my-5" tabindex="-1">
-
-        <!-- Page Header -->
-        <section class="mb-4">
-            <div class="">
-                <h1 class="h3 mb-0">Latest News</h1>
-                <div class="heading-accent" aria-hidden="true"></div>
-            </div>
-            <div class="subtext">
-                <i class="fas fa-newspaper" aria-hidden="true"></i>
-                <span>Check out the latest news, events, and announcements from the City of Dasmariñas.</span>
-            </div>
-        </section>
-
-        <!-- TOP PAGINATION -->
-        <nav aria-label="Page navigation example" class="mb-3 pager-top">
-        <ul class="pagination justify-content-center">
-            <li class="page-item">
-            <label class="page-link disabled" for="#" aria-hidden="true">&laquo;</label> <!-- Disabled Page Link -->
-            </li>
-
-            <li class="page-item">
-            <label class="page-link" for="pg1">1</label>
-            </li>
-            <li class="page-item">
-            <label class="page-link" for="pg2">2</label>
-            </li>
-            <li class="page-item">
-            <label class="page-link" for="pg3">3</label>
-            </li>
-
-            <li class="page-item">
-            <label class="page-link disabled" for="#" aria-hidden="true">&raquo;</label>
-            </li>
-        </ul>
-        </nav>
-
-        <!-- News Cards Container -->
-        <div class="row">
-        <!-- News Card 1 -->
-        <div class="col-12 col-lg-6 mb-4">
-            <article class="news-card h-100">
-            <a href="news-page-1.html" class="text-decoration-none text-reset" aria-label="Read more about New PWD Services Available">
-                <img class="card-image" src="https://placehold.co/600x400" alt="Illustration of accessible services">
-                <div class="card-body">
-                    <h2 class="post-title">New PWD Services Available</h2>
-                    <div class="post-sub">
-                        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
-                        <time datetime="2025-09-05">September 01, 2025</time>
-                    </div>
-                    <p class="post-excerpt">The City of Dasmariñas has launched new services for Persons with Disabilities. These include online application processing and mobile assistance units that visit communities.</p>
-                    <a class="btn btn-success mt-3" href="news-page-2.html" role="button">Read More</a>
+            <!-- Page Header -->
+            <section class="mb-4">
+                <div class="">
+                    <h1 class="h3 mb-0">Latest News</h1>
+                    <div class="heading-accent" aria-hidden="true"></div>
                 </div>
-            </a>
-            </article>
-        </div>
-
-        <!-- News Card 2 -->
-        <div class="col-12 col-lg-6 mb-4">
-            <article class="news-card h-100">
-            <a href="news-page-2.html" class="text-decoration-none text-reset" aria-label="Read more about Community Outreach Program">
-                <img class="card-image" src="https://placehold.co/600x400" alt="Community gathering illustration">
-                <div class="card-body">
-                    <h2 class="post-title">Community Outreach Program</h2>
-                    <div class="post-sub">
-                        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
-                        <time datetime="2025-09-04">September 02, 2025</time>
-                    </div>
-                    <p class="post-excerpt">Join our upcoming community outreach program designed to support PWD individuals and their families. Registration is now open for the October sessions.</p>
-                    <a class="btn btn-success mt-3" href="news-page-2.html" role="button">Read More</a>
+                <div class="subtext">
+                    <i class="fas fa-newspaper" aria-hidden="true"></i>
+                    <span>Check out the latest news, events, and announcements from the City of Dasmariñas.</span>
                 </div>
-            </a>
-            </article>
-        </div>
+            </section>
 
-        <!-- News Card 3 -->
-        <div class="col-12 col-lg-6 mb-4">
-            <article class="news-card h-100">
-            <a href="news-page-3.html" class="text-decoration-none text-reset" aria-label="Read more about PWD ID Application Process Simplified">
-                <img class="card-image" src="https://placehold.co/600x400" alt="Document processing illustration">
-                <div class="card-body">
-                    <h2 class="post-title">PWD ID Application Process Simplified</h2>
-                    <div class="post-sub">
-                        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
-                        <time datetime="2025-09-03">September 03, 2025</time>
-                    </div>
-                    <p class="post-excerpt">We've simplified the PWD ID application process. Applicants can now submit documents online for faster processing and reduced wait times.</p>
-                    <a class="btn btn-success mt-3" href="news-page-3.html" role="button">Read More</a>
-                </div>
-            </a>
-            </article>
-        </div>
-
-        <!-- News Card 4 -->
-        <div class="col-12 col-lg-6 mb-4">
-            <article class="news-card h-100">
-            <a href="news-page-4.html" class="text-decoration-none text-reset" aria-label="Read more about Accessibility Improvements">
-                <img class="card-image" src="https://placehold.co/600x400" alt="Accessibility ramp illustration">
-                <div class="card-body">
-                    <h2 class="post-title">Accessibility Improvements in Public Spaces</h2>
-                    <div class="post-sub">
-                        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
-                        <time datetime="2025-09-02">September 04, 2025</time>
-                    </div>
-                    <p class="post-excerpt">Major accessibility improvements have been completed in public parks throughout Dasmariñas, including ramps, tactile paving, and accessible restrooms.</p>
-                    <a class="btn btn-success mt-3" href="news-page-4.html" role="button">Read More</a>
-                </div>
-            </a>
-            </article>
-        </div>
-        </div>
-
-        <!-- BOTTOM PAGINATION-->
-        <nav aria-label="Page navigation example" class="mt-4 pager-bottom">
+            <!-- TOP PAGINATION -->
+            <nav aria-label="Page navigation example" class="mb-3 pager-top">
             <ul class="pagination justify-content-center">
                 <li class="page-item">
-                <label class="page-link disabled" for="#" aria-hidden="true">&laquo;</label>
+                <label class="page-link disabled" for="#" aria-hidden="true">&laquo;</label> <!-- Disabled Page Link -->
                 </li>
+
                 <li class="page-item">
-                <label class="page-link" for="pg1">1</label>
+                <label class="page-link active" for="pg1">1</label> <!-- Active Page Link; Change also Bottom Pagination -->
                 </li>
                 <li class="page-item">
                 <label class="page-link" for="pg2">2</label>
@@ -179,14 +82,111 @@
                 <li class="page-item">
                 <label class="page-link" for="pg3">3</label>
                 </li>
+
                 <li class="page-item">
                 <label class="page-link disabled" for="#" aria-hidden="true">&raquo;</label>
                 </li>
             </ul>
-        </nav>
-    </section>
-    <!-- End News Content -->
-    
+            </nav>
+
+            <!-- News Cards Container -->
+            <div class="row">
+            <!-- News Card 1 -->
+            <div class="col-12 col-lg-6 mb-4">
+                <article class="news-card h-100">
+                <a href="news-page-1.html" class="text-decoration-none text-reset" aria-label="Read more about New PWD Services Available">
+                    <img class="card-image" src="https://placehold.co/600x400" alt="Illustration of accessible services">
+                    <div class="card-body">
+                        <h2 class="post-title">New PWD Services Available</h2>
+                        <div class="post-sub">
+                            <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+                            <time datetime="2025-09-05">September 01, 2025</time>
+                        </div>
+                        <p class="post-excerpt">The City of Dasmariñas has launched new services for Persons with Disabilities. These include online application processing and mobile assistance units that visit communities.</p>
+                        <a class="btn btn-success mt-3" href="news-page-2.html" role="button">Read More</a>
+                    </div>
+                </a>
+                </article>
+            </div>
+
+            <!-- News Card 2 -->
+            <div class="col-12 col-lg-6 mb-4">
+                <article class="news-card h-100">
+                <a href="news-page-2.html" class="text-decoration-none text-reset" aria-label="Read more about Community Outreach Program">
+                    <img class="card-image" src="https://placehold.co/600x400" alt="Community gathering illustration">
+                    <div class="card-body">
+                        <h2 class="post-title">Community Outreach Program</h2>
+                        <div class="post-sub">
+                            <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+                            <time datetime="2025-09-04">September 02, 2025</time>
+                        </div>
+                        <p class="post-excerpt">Join our upcoming community outreach program designed to support PWD individuals and their families. Registration is now open for the October sessions.</p>
+                        <a class="btn btn-success mt-3" href="news-page-2.html" role="button">Read More</a>
+                    </div>
+                </a>
+                </article>
+            </div>
+
+            <!-- News Card 3 -->
+            <div class="col-12 col-lg-6 mb-4">
+                <article class="news-card h-100">
+                <a href="news-page-3.html" class="text-decoration-none text-reset" aria-label="Read more about PWD ID Application Process Simplified">
+                    <img class="card-image" src="https://placehold.co/600x400" alt="Document processing illustration">
+                    <div class="card-body">
+                        <h2 class="post-title">PWD ID Application Process Simplified</h2>
+                        <div class="post-sub">
+                            <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+                            <time datetime="2025-09-03">September 03, 2025</time>
+                        </div>
+                        <p class="post-excerpt">We've simplified the PWD ID application process. Applicants can now submit documents online for faster processing and reduced wait times.</p>
+                        <a class="btn btn-success mt-3" href="news-page-3.html" role="button">Read More</a>
+                    </div>
+                </a>
+                </article>
+            </div>
+
+            <!-- News Card 4 -->
+            <div class="col-12 col-lg-6 mb-4">
+                <article class="news-card h-100">
+                <a href="news-page-4.html" class="text-decoration-none text-reset" aria-label="Read more about Accessibility Improvements">
+                    <img class="card-image" src="https://placehold.co/600x400" alt="Accessibility ramp illustration">
+                    <div class="card-body">
+                        <h2 class="post-title">Accessibility Improvements in Public Spaces</h2>
+                        <div class="post-sub">
+                            <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+                            <time datetime="2025-09-02">September 04, 2025</time>
+                        </div>
+                        <p class="post-excerpt">Major accessibility improvements have been completed in public parks throughout Dasmariñas, including ramps, tactile paving, and accessible restrooms.</p>
+                        <a class="btn btn-success mt-3" href="news-page-4.html" role="button">Read More</a>
+                    </div>
+                </a>
+                </article>
+            </div>
+            </div>
+
+            <!-- BOTTOM PAGINATION-->
+            <nav aria-label="Page navigation example" class="mt-4 pager-bottom">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item">
+                    <label class="page-link disabled" for="#" aria-hidden="true">&laquo;</label>
+                    </li>
+                    <li class="page-item">
+                    <label class="page-link active" for="pg1">1</label> <!-- Active Page Link; Change also Top Pagination -->
+                    </li>
+                    <li class="page-item">
+                    <label class="page-link" for="pg2">2</label>
+                    </li>
+                    <li class="page-item">
+                    <label class="page-link" for="pg3">3</label>
+                    </li>
+                    <li class="page-item">
+                    <label class="page-link disabled" for="#" aria-hidden="true">&raquo;</label>
+                    </li>
+                </ul>
+            </nav>
+        </section>
+        <!-- End News Content -->
+    </main>
     <!-- Main Content End -->
     
     <!-- Footer -->
@@ -209,7 +209,7 @@
                         <li><a href="/Index.html?scroll=services">PWD Services</a></li>
                         <li><a href="#">Application Status</a></li>
                         <li><a href="/faq.html">FAQ</a></li>
-                        <li><a href="#">Download Forms</a></li>
+                        <li><a href="/resources.html">Download Forms</a></li>
                     </ul>
                 </div>
             </div>

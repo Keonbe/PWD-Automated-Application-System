@@ -140,6 +140,11 @@ body{
 
 }
 
+#faq-intro {
+    font-size: 1.2rem;
+    color: var(--dasma-dark);
+}
+
 .faq-tab-box .nav-link {
     color: var(--dasma-dark-green) !important; 
     background: #f8f9fa;
