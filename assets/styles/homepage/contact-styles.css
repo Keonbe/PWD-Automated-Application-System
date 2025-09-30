@@ -70,127 +70,6 @@ body {
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* Hero Section */
-.hero {
-    background: linear-gradient(rgba(58, 158, 61, 0.9), rgba(58, 158, 61, 0.8)), url('https://placeholder.com/1200x400');
-    background-size: cover;
-    background-position: center;
-    color: white;
-    padding: 4rem 0;
-}
-
-.hero h1 {
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-}
-
-.text-accent {
-    color: var(--dasma-gold);
-}
-
-.hero-image {
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    margin: 16px;
-}
-
-.btn-primary {
-    background-color: var(--dasma-gold);
-    border-color: var(--dasma-gold);
-    color: #333;
-    font-weight: 600;
-}
-
-.btn-primary:hover {
-    background-color: var(--dasma-dark-gold);
-    border-color: var(--dasma-dark-gold);
-    color: #333;
-}
-
-.btn-outline-light:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Learn More Modal (parent hero section) */
-.modal-body .text-accent {
-    color: var(--dasma-dark-green);
-}
-
-/* Services Section */
-.services {
-    padding: 4rem 0;
-    background-color: white;
-}
-
-.services h2 {
-    color: var(--dasma-green);
-    font-weight: 700;
-}
-
-.service-card {
-    text-align: center;
-    padding: 2rem 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    height: 100%;
-}
-
-.service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.service-icon {
-    font-size: 3rem;
-    color: var(--dasma-green);
-    margin-bottom: 1rem;
-}
-
-/* Process Section */
-.process {
-    padding: 4rem 0;
-    background-color: var(--dasma-light);
-}
-
-.process h2 {
-    color: var(--dasma-green);
-    font-weight: 700;
-}
-
-.process-step {
-    text-align: center;
-    position: relative;
-}
-
-.step-number {
-    width: 50px;
-    height: 50px;
-    background-color: var(--dasma-gold);
-    color: #333;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0 auto 1rem;
-}
-
-/* Latest News */
-.latest {
-    padding-top: 3rem ! important;
-    padding-bottom: 3rem ! important;
-}
-
-.latest a span:hover{
-    color: var(--dasma-green);
-}
-
-.latest a p:hover{
-    color: var(--dasma-dark-green);
-}
-
 
 
 /* Footer */
@@ -240,15 +119,89 @@ body {
     .hero h1 {
         font-size: 2rem;
     }
-    .hero-image {
-        max-width: 95%;
-        height: auto;
-        display: block; 
-        margin: auto;
-        margin-top: 5%;
-    }
     
     .service-card, .process-step {
         margin-bottom: 1.5rem;
     }
+}
+
+
+/* Template: Above
+    Dedicated: Below */
+
+
+
+.page-header {
+    background: var(--dasma-light);
+    border-bottom: 2px solid var(--dasma-green);
+    padding: 2rem 0;
+}
+
+.page-header h1 {
+    color: var(--dasma-dark);
+    font-weight: 700;
+}
+
+.breadcrumb {
+    margin-bottom: 0;
+    background: transparent;
+}
+
+.breadcrumb .breadcrumb-item a {
+    color: var(--dasma-green);
+    text-decoration: none;
+}
+
+.breadcrumb .breadcrumb-item.active {
+    color: var(--dasma-dark);
+    font-weight: 600;
+}
+
+/* Contact Cards */
+.contact-card {
+    background: var(--dasma-light);
+    border: 1px solid #e0e0e0;
+    border-left: 5px solid var(--dasma-green);
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.contact-card i {
+    color: var(--dasma-green);
+}
+
+/* Form Styles */
+.contact-form .form-label {
+    font-weight: 600;
+    color: var(--dasma-dark);
+}
+
+.contact-form .form-control {
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.contact-form .form-control:focus {
+    border-color: var(--dasma-green);
+    box-shadow: 0 0 0 0.2rem rgba(58, 158, 61, 0.25);
+}
+
+.btn-contact {
+    background-color: var(--dasma-green);
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.btn-contact:hover {
+    background-color: var(--dasma-dark-green);
+    transform: translateY(-2px);
 }

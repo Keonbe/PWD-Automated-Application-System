@@ -7,49 +7,59 @@
     <link rel="icon" type="image/x-icon" href="/assets/images/homepage/dasma-logo-only.png"> <!--Faviconnnnn-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">  <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- External Fonts -->
-    <link rel="stylesheet" href="/templates/styles.css" />
+    <link rel="stylesheet" href="/templates/styles.css" /> <!-- Change this based on the file's directory or webpage-->
 </head>
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
 
-        <div class="container"> <!-- Left Side -->
-            <a class="navbar-brand" href="Index.html">
-                <img src="/assets/images/homepage/dasma-logo-only.png" alt="City of Dasmariñas Logo" class="navbar-logo">
-                City of Dasmariñas — PWD Services Portal 
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <div class="container"> <!-- Left Side -->
+                <a class="navbar-brand" href="Index.html">
+                    <img src="/assets/images/homepage/dasma-logo-only.png" alt="City of Dasmariñas Logo" class="navbar-logo">
+                    City of Dasmariñas — PWD Portal 
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <div class="collapse navbar-collapse" id="navbarContent"> <!-- Right Side -->
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0"> <!-- Headers -->
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">News</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">FAQ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Resources</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
-                    </li>
-                    <li class="nav-item ms-2 d-flex align-items-center">
-                        <button class="btn btn-login">Login</button>
-                    </li>
-                </ul>
+                <!-- Change 'active' class based on the current page; On this page Index.html has the 'active' class -->
+                <div class="collapse navbar-collapse" id="navbarContent"> <!-- Right Side -->
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0"> <!-- Headers -->
+                        <li class="nav-item">
+                            <a class="nav-link active" href="Index.html">Home</a> 
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/news.html">News</a> <!-- /news.html ('/' main/home directory. If moved, change file dir appropriately)-->
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/faq.html">FAQ</a> <!-- /faq.html ('/' main/home directory. If moved, change file dir appropriately)-->
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/resources.html">Resources</a> <!-- /resources.html ('/' main/home directory. If moved, change file dir appropriately)-->
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/contact.html">Contact</a> <!-- /contact.html ('/' main/home directory. If moved, change file dir appropriately)-->
+                        </li>
+                        <li class="nav-item ms-2 d-flex align-items-center">
+                            <button class="btn btn-login">Login</button>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
     <!-- End Nav Bar -->
 
+
     <!-- Content goes here -->
+    <!-- Use HTML Semantics:
+    <article> / <aside> / <details> / <figcaption> / <figure> / <footer> / <header> / <main> / <mark> / <nav> / <section> / <summary> /<time> -->
+    <main>
+    
+    </main>
+
 
     <!-- Footer -->
     <footer class="footer">
@@ -68,10 +78,10 @@
                 <div class="col-md-4">
                     <h5>Quick Links</h5>
                     <ul class="list-unstyled">
-                        <li><a href="#">PWD Services</a></li>
-                        <li><a href="#">Application Status</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Download Forms</a></li>
+                        <li><a href="/Index.html?scroll=services">PWD Services</a></li> <!-- Scrollspy to Index.html(homepage) to the id#services section-->
+                        <li><a href="#">Application Status</a></li> <!-- /status.html (login first*) ('/' main/home directory. If moved, change file dir appropriately)-->
+                        <li><a href="/faq.html">FAQ</a></li> <!-- /faq.html ('/' main/home directory. If moved, change file dir appropriately)-->
+                        <li><a href="/resources.html">Download Forms</a></li> <!-- /down-forms.html ('/' main/home directory. If moved, change file dir appropriately)-->
                     </ul>
                 </div>
             </div>

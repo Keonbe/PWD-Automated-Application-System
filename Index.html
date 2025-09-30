@@ -16,7 +16,7 @@
         <div class="container"> <!-- Left Side -->
             <a class="navbar-brand" href="Index.html">
                 <img src="/assets/images/homepage/dasma-logo-only.png" alt="City of Dasmariñas Logo" class="navbar-logo">
-                City of Dasmariñas — PWD Services Portal 
+                City of Dasmariñas — PWD Portal 
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
@@ -29,16 +29,16 @@
                         <a class="nav-link active" href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">News</a>
+                        <a class="nav-link" href="/news.html">News</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">FAQ</a>
+                        <a class="nav-link" href="/faq.html">FAQ</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Resources</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
+                        <a class="nav-link" href="/contact.html">Contact</a>
                     </li>
                     <li class="nav-item ms-2 d-flex align-items-center">
                         <button class="btn btn-login">Login</button>
@@ -58,19 +58,71 @@
                     <p class="lead">A dedicated platform for Persons with Disabilities to access services and support provided by the City of Dasmariñas.</p>
                     <div class="d-grid gap-2 d-md-flex mt-4">
                         <button class="btn btn-primary btn-lg me-md-2"  onclick="location.href='consent.html'"><i class="fas fa-file-alt me-2"></i>Apply Now</button>
-                        <button class="btn btn-outline-light btn-lg"><i class="fas fa-question-circle me-2"></i>Learn More</button>
+                        <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#learnMoreModal">
+                            <i class="fas fa-question-circle me-2"></i>Learn More <!-- Modal Button Trigger-->
+                        </button>
                     </div>
                 </div>
                 <div class="col-lg-6 text-center">
-                    <img src="https://placehold.co/600x400" alt="PWD Services" class="img-fluid hero-image"> <!-- Placeholder Image -->
+                    <img src="/assets/images/homepage/dasmarinas-holder.jpg" alt="PWD Services" class="img-fluid hero-image"> <!-- Placeholder Image -->
                 </div>
             </div>
         </div>
     </section>
     <!-- End Hero  -->
 
+    <!-- Learn More Modal (Hero Section, Hidden unless clicked)-->
+    <div class="modal fade" id="learnMoreModal" tabindex="-1" aria-labelledby="learnMoreModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="learnMoreModalLabel">About the PWD Application Portal</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-accent fw-bold">What is this Portal?</h6>
+                            <p>This is the official online platform for Persons with Disabilities (PWDs) in Dasmariñas City to access government services, apply for benefits, and get support.</p>
+                            
+                            <h6 class="text-accent mt-4 fw-bold">Available Services</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">PWD ID Application & Renewal</li>
+                                <li class="list-group-item">Document Verification</li>
+                                <li class="list-group-item">Support Programs</li>
+                                <li class="list-group-item">Benefits Registration</li>
+                                <li class="list-group-item">Service Requests</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-accent fw-bold">Who Can Use This?</h6>
+                            <p>Residents of Dasmariñas City with permanent disabilities who are registered with the City Social Welfare and Development Office.</p>
+                            
+                            <h6 class="text-accent mt-4 fw-bold" >Requirements</h6>
+                            <ul>
+                                <li>Valid government ID</li>
+                                <li>Medical certificate</li>
+                                <li>Proof of residency</li>
+                                <li>Recent photo</li>
+                            </ul>
+                            
+                            <div class="alert alert-info mt-3">
+                                <small><i class="fas fa-info-circle me-2"></i>For assistance, visit the PWD Affairs Office at City Hall or call (046) 123-4567.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="location.href='consent.html'">Start Application</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Learn More Modal (Hero Section, Hidden unless clicked)-->
+
     <!-- Services Section -->
-    <section class="services">
+    <section class="services" id="services">
         <div class="container">
             <h2 class="text-center mb-5">PWD Services</h2>
             <div class="row">
@@ -177,7 +229,7 @@
                     <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
                     <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5z"/>
                     </svg>
-                    <small>September 05, 2025</small>
+                    <small>September 26, 2025</small>
                 </div>
                 <div class="excerpt-wrap">
                     <p class="post-excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.</p>
@@ -200,7 +252,7 @@
                     <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
                     <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5z"/>
                     </svg>
-                    <small>September 05, 2025</small>
+                    <small>September 26, 2025</small>
                 </div>
                 <div class="excerpt-wrap">
                     <p class="post-excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.</p>
@@ -223,7 +275,7 @@
                     <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
                     <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5z"/>
                     </svg>
-                    <small>September 04, 2025</small>
+                    <small>September 26, 2025</small>
                 </div>
                 <div class="excerpt-wrap">
                     <p class="post-excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales ligula in libero.</p>
@@ -246,7 +298,7 @@
                     <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
                     <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5z"/>
                     </svg>
-                    <small>September 03, 2025</small>
+                    <small>September 26, 2025</small>
                 </div>
                 <div class="excerpt-wrap">
                     <p class="post-excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.</p>
@@ -259,6 +311,188 @@
         </div>
     </section>
     <!-- End Latest -->
+    
+    <!-- FAQ/QNA & Resources -->
+    <section class="container mb-5">
+        <div class="row g-4">
+
+        <!-- FAQs (left column) -->
+        <section class="col-12 col-lg-7">
+            <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 card-title">Frequently Asked Questions</h2>
+                <p class="text-muted mb-3">Answers to common questions for prospective applicants.</p>
+
+                <!-- Accordion -->
+                <div class="accordion" id="faqAccordion" role="tablist">
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="faqHeadingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqOne" aria-expanded="false" aria-controls="faqOne">
+                        Who can apply for a PWD ID?
+                    </button>
+                    </h3>
+                    <div id="faqOne" class="accordion-collapse collapse" aria-labelledby="faqHeadingOne" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Any Filipino citizen with a permanent disability (physical, sensory, intellectual, or psychosocial) may apply. Eligibility references Republic Act 7277 (Magna Carta for Disabled Persons) and its amendments.
+                    </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="faqHeadingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqTwo" aria-expanded="false" aria-controls="faqTwo">
+                        What documents do I need to prepare?
+                    </button>
+                    </h3>
+                    <div id="faqTwo" class="accordion-collapse collapse" aria-labelledby="faqHeadingTwo" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Applicants usually need:
+                        <ul class="mb-0 mt-2">
+                        <li>A recent medical certificate or assessment from a licensed physician</li>
+                        <li>A valid government-issued ID (or birth certificate for minors)</li>
+                        <li>Two recent 1x1 or 2x2 ID photos</li>
+                        </ul>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="faqHeadingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqThree" aria-expanded="false" aria-controls="faqThree">
+                        How long does the application process take?
+                    </button>
+                    </h3>
+                    <div id="faqThree" class="accordion-collapse collapse" aria-labelledby="faqHeadingThree" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Online applications are typically processed within <strong>7–14 working days</strong>, depending on document completeness and verification speed. Local variations may apply.
+                    </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="faqHeadingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqFour" aria-expanded="false" aria-controls="faqFour">
+                        Is there a fee for getting a PWD ID?
+                    </button>
+                    </h3>
+                    <div id="faqFour" class="accordion-collapse collapse" aria-labelledby="faqHeadingFour" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        No — the PWD ID is issued free of charge. Replacement for lost IDs may incur a small processing fee, which varies by LGU (local government unit).
+                    </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="faqHeadingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqFive" aria-expanded="false" aria-controls="faqFive">
+                        What benefits can I get with a PWD ID?
+                    </button>
+                    </h3>
+                    <div id="faqFive" class="accordion-collapse collapse" aria-labelledby="faqHeadingFive" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        PWD ID holders are entitled to discounts and exemptions as provided by law, including:
+                        <ul class="mb-0 mt-2">
+                        <li>At least 20% discount and VAT exemption on medicines</li>
+                        <li>Discounts on medical/dental services, public transportation fares, and selected purchases</li>
+                        </ul>
+                        Benefits are subject to implementing rules and local policies.
+                    </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="faqHeadingSix">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqSix" aria-expanded="false" aria-controls="faqSix">
+                        Can I renew my PWD ID online?
+                    </button>
+                    </h3>
+                    <div id="faqSix" class="accordion-collapse collapse" aria-labelledby="faqHeadingSix" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes — renewals are available online for many LGUs. You will need to log in, upload updated documents, and submit a renewal request. Check our FAQ for the specific process and requirements.
+                    </div>
+                    </div>
+                </div>
+                </div>
+                <!-- End accordion -->
+            </div>
+            </div>
+        </section>
+
+        <!-- Resources (right column) -->
+        <section class="col-12 col-lg-5">
+            <div class="card shadow-sm sticky-top" style="top:1rem;">
+            <div class="card-body">
+                <h2 class="h6 card-title">Resources</h2>
+                <p class="text-muted small mb-3">Official pages and guidelines to help applicants and developers of the system.</p>
+
+                <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                    <div>
+                        <strong>Republic Act 7277</strong>
+                        <div class="small text-muted">Magna Carta for Disabled Persons</div>
+                    </div>
+                    </div>
+                    <a class="d-block mt-2 small" href="https://lawphil.net/statutes/repacts/ra1992/ra_7277_1992.html" target="_blank" rel="noopener noreferrer">
+                    Official text — LawPhil
+                    </a>
+                </li>
+
+                <li class="list-group-item">
+                    <div>
+                    <strong>National Council on Disability Affairs (NCDA)</strong>
+                    <div class="small text-muted">Policy, programs, and national resources</div>
+                    <a class="d-block mt-2 small" href="https://www.ncda.gov.ph/" target="_blank" rel="noopener noreferrer">NCDA Website</a>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div>
+                    <strong>Department of Social Welfare and Development (DSWD)</strong>
+                    <div class="small text-muted">Social protection programs and services</div>
+                    <a class="d-block mt-2 small" href="https://www.dswd.gov.ph/" target="_blank" rel="noopener noreferrer">DSWD Website</a>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div>
+                    <strong>Dasmariñas LGU Office Directory</strong>
+                    <div class="small text-muted">Pickup points & partner LGUs (when available)</div>
+                    <a class="d-block mt-2 small" href="https://dasmacitygov.weebly.com/city-government.html" target="_blank" rel="noopener noreferrer">Phone Directory</a>
+                    <!-- <span class="d-block mt-2 small text-muted">(Provide a link or PDF once compiled)</span> -->
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div>
+                    <strong>Cavite LGU Office of the Provincial Governor</strong>
+                    <div class="small text-muted">Office of the Provincial Persons with Disability Affairs Officer - Citizen Charter</div>
+                    <a class="d-block mt-2 small" href="https://cavite.gov.ph/home/wp-content/uploads/2022/04/04-2022-Chicha-PDAO.pdf" target="_blank" rel="noopener noreferrer">Persons with Disability Affairs Office (PDAO)</a>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div>
+                    <strong>Accessibility Guidelines (WCAG 2.1)</strong>
+                    <div class="small text-muted">Standards for web accessibility</div>
+                    <a class="d-block mt-2 small" href="https://www.w3.org/WAI/standards-guidelines/wcag/" target="_blank" rel="noopener noreferrer">W3C WCAG Overview</a>
+                    </div>
+                </li>
+                </ul>
+
+
+                <div class="d-grid gap-2">
+                <a href="#" class="btn btn-outline-primary btn-sm">View full resources page</a>
+                <a href="#" class="btn btn-primary btn-sm">Contact support</a>
+                </div>
+            </div>
+            </div>
+        </section>
+        <!-- End Resources -->
+        </div>
+    </section>
+    <!-- End FAQ/QNA & Resources -->
+
 
     <!-- Footer -->
     <footer class="footer">
@@ -277,10 +511,10 @@
                 <div class="col-md-4">
                     <h5>Quick Links</h5>
                     <ul class="list-unstyled">
-                        <li><a href="#">PWD Services</a></li>
+                        <li><a href="#services">PWD Services</a></li>
                         <li><a href="#">Application Status</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Download Forms</a></li>
+                        <li><a href="/faq.html">FAQ</a></li>
+                        <li><a href="/resources.html">Download Forms</a></li>
                     </ul>
                 </div>
             </div>
@@ -291,5 +525,19 @@
     <!-- End Footer -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script> //Loads the Services section if URL has ?scroll=services(footer link) 
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search); //Index URL parameter
+            const scrollTo = urlParams.get('scroll');
+            if (scrollTo === 'services') {
+                const servicesSection = document.getElementById('services');
+                if (servicesSection) {
+                    setTimeout(() => { //Transition/Delay
+                        servicesSection.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }
+            }
+        });  //Refer:https://stackoverflow.com/questions/63886025/add-parameter-from-url-to-an-element-and-scroll-to-element
+    </script>
 </body>
 </html>

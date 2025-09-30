@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City of Dasmariñas - PWD Application</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/homepage/dasma-logo-only.png"> <!--Faviconnnnn-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">  <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- External Fonts -->
+    <link rel="stylesheet" href="/assets/styles/homepage/faq-styles.css" />
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container"> <!-- Left Side -->
+            <a class="navbar-brand" href="Index.html">
+                <img src="/assets/images/homepage/dasma-logo-only.png" alt="City of Dasmariñas Logo" class="navbar-logo">
+                City of Dasmariñas — PWD Portal 
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent"> <!-- Right Side -->
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0"> <!-- Headers -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="Index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/news.html">News</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/faq.html">FAQ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/resources.html">Resources</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact.html">Contact</a>
+                    </li>
+                    <li class="nav-item ms-2 d-flex align-items-center">
+                        <button class="btn btn-login">Login</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- End Nav Bar -->
+
+    <!-- Content goes here -->
+    <section class="container">
+        <div class="row">
+            <div class="col-lx-12">
+                <div class="card">
+                    <div class="card-body">
+                    <!-- Start Header -->
+                    <div class="row justify-content-center mt-4">
+                        <div class="col-xl-5 col-lg-8">
+                            <div class="text-center">
+                                <h3>Frequently Asked Questions?</h3>
+                                    <p class="text-dark"  id="faq-intro">Below are answers to common questions regarding services, rights, and support for Persons with Disabilities (PWD).</p>
+                                <div>
+                                    <button type="button" class="btn btn-email me-2">Email Us</button>
+                                    <button type="button" class="btn btn-message">Send us a Message</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Header -->
+                    <!-- Start Pills -->
+                    <div class="row justify-content-center mt-5">
+                        <div class="col-9">
+                            <!-- Start Pills Selection -->
+                            <ul class="nav nav-tabs nav-justified justify-content-center faq-tab-box" id="pills-tab" role="tablist">
+                                <li class="nav-item pills-list" role="presentation">
+                                    <button class="nav-link active rounded-top" id="pills-general-tab" data-bs-toggle="pill" 
+                                    data-bs-target="#pills-general" type="button" role="tab" aria-controls="pills-general" aria-selected="true">
+                                    <span class="font-size-16">General Questions</span>
+                                    </button>
+                                </li>
+                                <li class="nav-item pills-list" role="presentation">
+                                    <button class="nav-link rounded-top" id="pills-privacy_policy-tab" data-bs-toggle="pill" 
+                                    data-bs-target="#pills-privacy_policy" type="button" role="tab" aria-controls="pills-privacy_policy" aria-selected="false">
+                                    <span class="font-size-16">Privacy Policy</span>
+                                    </button>
+                                </li>
+                                </ul>
+                            </div>
+                            <!-- End Pills Selection -->
+                            <div class="col-lg-9">
+                                <div class="tab-content pt-3" id="pills-tabContent">
+                                    <div class="tab-pane fade active show" id="pills-general" role="tabpanel" aria-labelledby="pills-genarel-tab">
+                                        <div class="row g-4 mt-2">
+                                            <div class="col-lg-6">
+                                                <h5>Who is eligible to apply for a PWD ID?</h5>
+                                                <p class="text-dark">Residents of Dasmariñas City with permanent disabilities that significantly impair daily activities. This includes visual, hearing, physical, intellectual, learning, mental, and psychosocial disabilities.</p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <h5>What documents do I need to prepare?</h5>
+                                                <p class="text-dark">You'll need a valid government ID, medical certificate from an accredited physician, proof of residency (barangay certificate or utility bill), 2x2 ID picture, and completed application form.</p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <h5>How long does the application process take?</h5>
+                                                <p class="text-dark">Processing typically takes 7-10 working days after submission of complete requirements. You will receive an SMS notification once your ID is ready for pickup at the PWD Affairs Office.</p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <h5>Is there any fee for the PWD ID?</h5>
+                                                <p class="text-dark">No, the PWD ID application and issuance are completely free of charge for qualified residents of Dasmariñas City.</p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <h5>What benefits can I avail with the PWD ID?</h5>
+                                                <p class="text-dark">PWD ID holders are entitled to discounts on medicines, medical services, transportation, and establishments, as well as VAT exemption and special privileges in government services.</p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <h5>Can I apply online if I'm not tech-savvy?</h5>
+                                                <p class="text-dark">Yes, our portal is designed to be user-friendly. Alternatively, you can visit the PWD Affairs Office at City Hall for assisted application, or ask family members to help you apply online.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="pills-privacy_policy" role="tabpanel" aria-labelledby="pills-privacy_policy-tab">
+                                        <div class="row g-4 mt-2">
+                                            <div class="col-lg-6">
+                                                <h5>How is my personal information protected?</h5>
+                                                <p class="text-dark">We follow the Data Privacy Act of 2012. Your information is encrypted and accessible only to authorized personnel. We never share your data with third parties without your consent.</p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <h5>What information do you collect?</h5>
+                                                <p class="text-dark">We collect only necessary information for your PWD application: personal details, contact information, medical certification, and proof of residency. Sensitive data is handled with strict confidentiality.</p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <h5>How long do you keep my data?</h5>
+                                                <p class="text-dark">We retain your application data for as long as your PWD ID is valid and for legal compliance purposes. You may request data deletion after your ID expires, subject to government retention policies.</p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <h5>Can I update my information later?</h5>
+                                                <p class="text-dark">Yes, you can update your contact details and address through this portal. For changes in disability status or personal information, please visit the PWD Affairs Office for verification.</p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <h5>Who has access to my medical information?</h5>
+                                                <p class="text-dark">Only accredited medical reviewers and authorized PWD Affairs Office staff have access to your medical certificate for verification purposes. This information is kept strictly confidential.</p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <h5>What if I lose my PWD ID?</h5>
+                                                <p class="text-dark">Report the loss immediately through this portal or at the PWD Affairs Office. A replacement ID can be issued with a sworn affidavit of loss and minimal processing fee for the replacement card.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <!-- End Pills -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5>City of Dasmariñas</h5>
+                    <p>Committed to serving all citizens, including Persons with Disabilities, with excellence and compassion.</p>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5>Contact Information</h5>
+                    <p><i class="fas fa-phone me-2"></i> (046) 501 2321</p>
+                    <p><i class="fas fa-envelope me-2"></i> info@dasmarinas.gov.ph</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i>Dasmariñas Bagong Bayan, Dasmariñas, Cavite 4115</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/Index.html?scroll=services">PWD Services</a></li>
+                        <li><a href="#">Application Status</a></li>
+                        <li><a href="/faq.html">FAQ</a></li>
+                        <li><a href="/resources.html">Download Forms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <p class="text-center mb-0">© 2025 City of Dasmariñas. All rights reserved.</p>
+        </div>
+    </footer>
+    <!-- End Footer -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
