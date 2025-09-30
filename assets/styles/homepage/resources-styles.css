@@ -1,0 +1,141 @@
+/* Color Schemes */
+:root { 
+    --dasma-green: #3a9e3d;
+    --dasma-dark-green: #2d7c2f;
+    --dasma-gold: #ffc107;
+    --dasma-dark-gold: #e6ac00;
+    --dasma-light: #f8f9fa;
+    --dasma-dark: #333;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--dasma-dark);
+    background-color: #f5f5f5;
+}
+
+/* Navbar Styles */
+.navbar {
+    background: linear-gradient(135deg, var(--dasma-green) 0%, var(--dasma-dark-green) 100%);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 0.8rem 0;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    color: white !important;
+    font-size: 1.4rem;
+}
+
+.navbar-logo {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    margin: 0 2px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.btn-login {
+    background-color: var(--dasma-gold);
+    color: #333;
+    border: none;
+    border-radius: 20px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+    background-color: var(--dasma-dark-gold);
+    transform: translateY(-2px);
+}
+
+.navbar-toggler {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+
+
+/* Footer */
+.footer {
+    background: linear-gradient(135deg, var(--dasma-green) 0%, var(--dasma-dark-green) 100%);
+    color: white;
+    padding: 3rem 0 1.5rem;
+}
+
+.footer h5 {
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    color: var(--dasma-gold);
+}
+
+.footer a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.footer a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.footer hr {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 0.9rem;
+    }
+    
+    .navbar-logo {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .hero {
+        text-align: center;
+        padding: 2rem 0;
+    }
+    
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .service-card, .process-step {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Template: Above
+    Dedicated: Below */
+
+#header p{
+    font-size: 1.4rem;
+    color: var(--dasma-dark);
+}
+
+#resources-header {
+    font-size: 2.5rem;
+    color: var(--dasma-green);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}

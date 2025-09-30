@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City of Dasmariñas - PWD Application</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/homepage/dasma-logo-only.png"> <!--Faviconnnnn-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">  <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- External Fonts -->
+    <link rel="stylesheet" href="/assets/styles/homepage/resources-styles.css" />
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+
+            <div class="container"> <!-- Left Side -->
+                <a class="navbar-brand" href="Index.html">
+                    <img src="/assets/images/homepage/dasma-logo-only.png" alt="City of Dasmariñas Logo" class="navbar-logo">
+                    City of Dasmariñas — PWD Portal 
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarContent"> <!-- Right Side -->
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0"> <!-- Headers -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="Index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/news.html">News</a> <!-- /news.html ('/' main/home directory. If moved, change file dir appropriately)-->
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/faq.html">FAQ</a> <!-- /faq.html ('/' main/home directory. If moved, change file dir appropriately)-->
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/resources.html">Resources</a> <!-- /resources.html ('/' main/home directory. If moved, change file dir appropriately)-->
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/contact.html">Contact</a> <!-- /contact.html ('/' main/home directory. If moved, change file dir appropriately)-->
+                        </li>
+                        <li class="nav-item ms-2 d-flex align-items-center">
+                            <button class="btn btn-login">Login</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <!-- End Nav Bar -->
+
+    <!-- Content goes here -->
+    <!-- Page Header -->
+    <main class="container my-5">
+
+        <!-- Resource Header -->
+        <section id="header" class="mb-5">
+            <div class="row mb-5">
+                <div class="col-12 text-center">
+                    <h1 class="display-5 fw-bold text-success mb-3" id="resources-header">PWD Resources & Documents</h1>
+                    <p>Essential resources, forms, and links for Persons with Disabilities in Dasmariñas City</p>
+                    <div class="row justify-content-center mt-4">
+                        <div class="col-md-8">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                All resources are provided by the City Government of Dasmariñas and relevant national agencies.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Start Resources List -->
+        <section class="row mb-5">
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-file-pdf text-danger display-6 mb-3"></i>
+                        <h5 class="card-title">Download Forms</h5>
+                        <p class="card-text">Application forms, requirements checklist, and other documents</p>
+                        <a href="#forms" class="btn btn-success">View Forms</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-link text-primary display-6 mb-3"></i>
+                        <h5 class="card-title">Useful Links</h5>
+                        <p class="card-text">Government agencies, support organizations, and online services</p>
+                        <a href="#links" class="btn btn-success">View Links</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-phone text-warning display-6 mb-3"></i>
+                        <h5 class="card-title">Contact & Schedule</h5>
+                        <p class="card-text">Contact information and scheduling details for PWD services</p>
+                        <a href="#contact" class="btn btn-success">View Contact Info</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- End Resources List -->
+
+        <!-- Start Application Forms & Documents(Downloadable Files) -->
+        <section id="forms" class="mb-5">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="h3 text-success mb-4 border-bottom pb-2">
+                        <i class="fas fa-file-alt me-2"></i>Application Forms & Documents
+                    </h2>
+                </div>
+            </div>
+            <div class="row">
+                <!-- PWD ID Application -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">PWD ID Application</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Forms and requirements for PWD Identification Card application</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                                    <a href="#" target="_blank" rel="noopener noreferrer" class="text-decoration-none">PWD Application Form</a> <!-- pwd-application-form.pdf -->
+                                    <small class="text-muted d-block">(PDF, 120KB)</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                                    <a href="#" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Medical Certificate Template</a> <!-- medical-certificate-template.pdf -->
+                                    <small class="text-muted d-block">(PDF, 120KB)</small>
+                                </li>
+                                <li>
+                                    <i class="fas fa-list text-info me-2"></i>
+                                    <a href="#" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Requirements Checklist</a> <!-- requirements-checklist.pdf -->
+                                    <small class="text-muted d-block">(PDF, 120KB)</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- Benefits & Privileges -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Benefits & Privileges Forms</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Forms for availing PWD discounts and privileges</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                                    <a href="#" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Discount Availment Form</a> <!-- discount-availment-form.pdf-->
+                                    <small class="text-muted d-block">(PDF, 120KB)</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                                    <a href="#" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Medicines Discount Form</a> <!-- mmedicines-discount-form.pdf-->
+                                    <small class="text-muted d-block">(PDF, 120KB)</small>
+                                </li>
+                                <li>
+                                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                                    <a href="#" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Funeral and Burial Services Discount Form</a> <!-- transportation-discount-form.pdf-->
+                                    <small class="text-muted d-block">(PDF, 120KB)</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Start Useful Links & Resources -->
+        <section id="links" class="mb-5">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="h3 text-success mb-4 border-bottom pb-2">
+                        <i class="fas fa-external-link-alt me-2"></i>Useful Links & Resources
+                    </h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Local Government -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Local Government Units</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-3">
+                                    <i class="fas fa-city text-success me-2"></i>
+                                    <a href="https://dasmacitygov.weebly.com/city-government.html" target="_blank" rel="noopener noreferrer" class="text-decoration-none fw-bold">City of Dasmariñas Official Website</a>
+                                    <small class="text-muted d-block">Official website of Dasmariñas City Government</small>
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fab fa-facebook text-primary me-2"></i>
+                                    <a href="https://www.facebook.com/pio.lgudasma/" target="_blank" rel="noopener noreferrer" class="text-decoration-none fw-bold">Dasmariñas City Government Facebook</a>
+                                    <small class="text-muted d-block">Latest updates and announcements</small>
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                    <a href="https://cavite.gov.ph" target="_blank" rel="noopener noreferrer" class="text-decoration-none fw-bold">Province of Cavite Official Website</a>
+                                    <small class="text-muted d-block">Provincial government services and programs</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- National Agencies -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">National Government Agencies</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-3">
+                                    <i class="fas fa-university text-warning me-2"></i>
+                                    <a href="https://dswd.gov.ph" target="_blank" rel="noopener noreferrer"class="text-decoration-none fw-bold">Department of Social Welfare and Development (DSWD)</a>
+                                    <small class="text-muted d-block">Social welfare programs and services</small>
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-heartbeat text-danger me-2"></i>
+                                    <a href="https://doh.gov.ph" target="_blank" rel="noopener noreferrer" class="text-decoration-none fw-bold">Department of Health (DOH)</a>
+                                    <small class="text-muted d-block">Health services and medical assistance</small>
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-gavel text-dark me-2"></i>
+                                    <a href="https://ncda.gov.ph/" target="_blank" rel="noopener noreferrer" class="text-decoration-none fw-bold">National Council on Disability Affairs (NCDA)</a>
+                                    <small class="text-muted d-block">National policies and programs for PWDs</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Useful Links & Resources End-->
+
+        <!-- Contact Information -->
+        <section id="contact" class="mb-5">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="h3 text-success mb-4 border-bottom pb-2">
+                        <i class="fas fa-phone-alt me-2"></i>Contact Information
+                    </h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mt-3">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Dasmariñas City PWD Office</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2"><i class="fas fa-map-marker-alt me-2 text-danger"></i> <strong>Address:</strong> New City Hall Complex, DBB-1, Cavite, Philippines</p>
+                            <p class="mb-2"><i class="fas fa-phone me-2 text-primary"></i> <strong>Telephone:</strong> (046) 123-4567</p>
+                            <p class="mb-2"><i class="fas fa-mobile-alt me-2 text-info"></i> <strong>Mobile:</strong> 0998-123-4567</p>
+                            <p class="mb-0"><i class="fas fa-envelope me-2 text-warning"></i> <strong>Email:</strong> pwd@dasmarinas.gov.ph</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mt-3">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Office Hours</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2"><strong>Monday - Friday:</strong> 8:00 AM - 5:00 PM</p>
+                            <p class="mb-2"><strong>Saturday:</strong> 8:00 AM - 12:00 PM</p>
+                            <p class="mb-0"><strong>Sunday:</strong> Closed</p>
+                            <hr>
+                            <p class="mb-0 text-muted"><small><i class="fas fa-info-circle me-1"></i> Closed on holidays</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- End Contact Information -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5>City of Dasmariñas</h5>
+                    <p>Committed to serving all citizens, including Persons with Disabilities, with excellence and compassion.</p>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5>Contact Information</h5>
+                    <p><i class="fas fa-phone me-2"></i> (046) 501 2321</p>
+                    <p><i class="fas fa-envelope me-2"></i> info@dasmarinas.gov.ph</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i>Dasmariñas Bagong Bayan, Dasmariñas, Cavite 4115</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/Index.html?scroll=services">PWD Services</a></li> <!-- Scrollspy to Index.html(homepage) to the id#services section-->
+                        <li><a href="#">Application Status</a></li> <!-- /status.html (login first*) ('/' main/home directory. If moved, change file dir appropriately)-->
+                        <li><a href="/faq.html">FAQ</a></li> <!-- /faq.html ('/' main/home directory. If moved, change file dir appropriately)-->
+                        <li><a href="/resources.html">Download Forms</a></li> <!-- /down-forms.html ('/' main/home directory. If moved, change file dir appropriately)-->
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <p class="text-center mb-0">© 2025 City of Dasmariñas. All rights reserved.</p>
+        </div>
+    </footer>
+    <!-- End Footer -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
