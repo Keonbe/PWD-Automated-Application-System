@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration - PWD Application</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/assets/images/homepage/dasma-logo-only.png" />
+    <!--Faviconnnnn-->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- External Fonts -->
+    <link rel="stylesheet" href="/assets/styles/homepage/index-styles.css" />
+    <!-- Custom CSS -->
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <!-- Left Side -->
+        <a class="navbar-brand" href="Index.html">
+          <img
+            src="/assets/images/homepage/dasma-logo-only.png"
+            alt="City of Dasmariñas Logo"
+            class="navbar-logo" />
+          City of Dasmariñas — PWD Services Portal
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarContent">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <!-- Right Side -->
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <!-- Headers -->
+            <li class="nav-item">
+              <a class="nav-link active" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">News</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">FAQ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Resources</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Contact</a>
+            </li>
+            <li class="nav-item ms-2 d-flex align-items-center">
+              <button class="btn btn-login">Login</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- End Nav Bar -->
+    <div class="container my-4">
+      <p class="h3 mb-4">Registration Form</p>
+
+      <!-- Registration Number + Date -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <div class="form-floating">
+            <input
+              type="text"
+              class="form-control"
+              id="regNumber"
+              placeholder="Registration Number" />
+            <label for="regNumber">Registration Number</label>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-floating">
+            <input
+              type="text"
+              class="form-control"
+              id="regDate"
+              placeholder="YYYY-MM-DD"
+              data-coreui-toggle="date-picker"
+              data-coreui-locale="en-US" />
+            <label for="regDate">Date</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Name -->
+      <div class="input-group mb-3">
+        <span class="input-group-text">Surname, First, Middle</span>
+        <input
+          type="text"
+          aria-label="Last name"
+          class="form-control"
+          placeholder="Last Name" />
+        <input
+          type="text"
+          aria-label="First name"
+          class="form-control"
+          placeholder="First Name" />
+        <input
+          type="text"
+          aria-label="Middle name"
+          class="form-control"
+          placeholder="Middle Name" />
+      </div>
+
+      <!-- Type of Disability -->
+      <div class="mb-3">
+        <label class="form-label fw-bold"
+          >Type of Disability (check one):</label
+        >
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="psycho" /><label class="form-check-label" for="psycho"
+                >Psychosocial Disability</label
+              >
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="mental" /><label class="form-check-label" for="mental"
+                >Mental Disability</label
+              >
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="hearing" /><label class="form-check-label" for="hearing"
+                >Hearing Disability</label
+              >
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="speech" /><label class="form-check-label" for="speech"
+                >Speech Impairment</label
+              >
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="visual" /><label class="form-check-label" for="visual"
+                >Visual Disability</label
+              >
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="learning" /><label class="form-check-label" for="learning"
+                >Learning Disability</label
+              >
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="ortho" /><label class="form-check-label" for="ortho"
+                >Orthopedic (Musculoskeletal) Disability</label
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="mb-3">
+        <label class="form-label fw-bold">Address:</label>
+        <div class="row g-2">
+          <div class="col-md-6">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="House No. and Street" />
+          </div>
+          <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Barangay" />
+          </div>
+          <div class="col-md-6">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Municipality" />
+          </div>
+          <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Province" />
+          </div>
+          <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Region" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <div class="form-floating">
+            <input
+              type="tel"
+              class="form-control"
+              id="tel"
+              placeholder="Telephone" />
+            <label for="tel">Tel. No.</label>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-floating">
+            <input
+              type="tel"
+              class="form-control"
+              id="mobile"
+              placeholder="09XXXXXXXXX" />
+            <label for="mobile">Mobile No.</label>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-floating">
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              placeholder="Email" />
+            <label for="email">Email Address</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date of Birth / Sex / Nationality / Blood Type -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-3">
+          <div class="form-floating">
+            <input
+              type="text"
+              class="form-control"
+              id="dob"
+              placeholder="YYYY-MM-DD"
+              data-coreui-toggle="date-picker"
+              data-coreui-locale="en-US" />
+            <label for="dob">Date of Birth</label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-floating">
+            <select class="form-select" id="sex">
+              <option disabled selected>Select</option>
+              <option>Male</option>
+              <option>Female</option>
+            </select>
+            <label for="sex">Sex</label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-floating">
+            <input
+              type="text"
+              class="form-control"
+              id="nationality"
+              placeholder="Nationality" />
+            <label for="nationality">Nationality</label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-floating">
+            <select class="form-select" id="blood">
+              <option disabled selected>Select</option>
+              <option>A+</option>
+              <option>A-</option>
+              <option>B+</option>
+              <option>B-</option>
+              <option>AB+</option>
+              <option>AB-</option>
+              <option>O+</option>
+              <option>O-</option>
+            </select>
+            <label for="blood">Blood Type</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Civil Status -->
+      <div class="mb-3">
+        <label class="form-label fw-bold">Civil Status:</label>
+        <div class="row">
+          <div class="col-md-12 d-flex flex-wrap">
+            <div class="form-check me-3">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="civil"
+                id="single" /><label class="form-check-label" for="single"
+                >Single</label
+              >
+            </div>
+            <div class="form-check me-3">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="civil"
+                id="married" /><label class="form-check-label" for="married"
+                >Married</label
+              >
+            </div>
+            <div class="form-check me-3">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="civil"
+                id="widow" /><label class="form-check-label" for="widow"
+                >Widow/er</label
+              >
+            </div>
+            <div class="form-check me-3">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="civil"
+                id="separated" /><label class="form-check-label" for="separated"
+                >Separated</label
+              >
+            </div>
+            <div class="form-check me-3">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="civil"
+                id="cohab" /><label class="form-check-label" for="cohab"
+                >Co-Habitation</label
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- More sections (Educational Attainment, Employment Status, Skills, etc.) can be added below in same style -->
+      <!--Proof of Identity-->
+      <label class="form-label fw-bold">
+        Proof of Identity: (ID, Barangay Certificate, etc)
+      </label>
+
+      <div class="input-group mb-3">
+        <input
+          type="file"
+          class="form-control"
+          id="proofIdentity"
+          accept="image/*,application/pdf" />
+        <label class="input-group-text" for="proofIdentity">Upload</label>
+      </div>
+
+      <!-- Proof of Disability -->
+      <label class="form-label fw-bold">
+        Proof of Disability: (Medical Certificate)
+      </label>
+      <div class="input-group mb-3">
+        <input
+          type="file"
+          class="form-control"
+          id="proofDisability"
+          accept="image/*,application/pdf" />
+        <label class="input-group-text" for="proofDisability">Upload</label>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 mb-4 mb-md-0">
+            <h5>City of Dasmariñas</h5>
+            <p>
+              Committed to serving all citizens, including Persons with
+              Disabilities, with excellence and compassion.
+            </p>
+          </div>
+          <div class="col-md-4 mb-4 mb-md-0">
+            <h5>Contact Information</h5>
+            <p><i class="fas fa-phone me-2"></i> (046) 501 2321</p>
+            <p><i class="fas fa-envelope me-2"></i> info@dasmarinas.gov.ph</p>
+            <p>
+              <i class="fas fa-map-marker-alt me-2"></i>Dasmariñas Bagong Bayan,
+              Dasmariñas, Cavite 4115
+            </p>
+          </div>
+          <div class="col-md-4">
+            <h5>Quick Links</h5>
+            <ul class="list-unstyled">
+              <li><a href="#">PWD Services</a></li>
+              <li><a href="#">Application Status</a></li>
+              <li><a href="#">FAQ</a></li>
+              <li><a href="#">Download Forms</a></li>
+            </ul>
+          </div>
+        </div>
+        <hr class="my-4" />
+        <p class="text-center mb-0">
+          © 2025 City of Dasmariñas. All rights reserved.
+        </p>
+      </div>
+    </footer>
+    <!-- End Footer -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
