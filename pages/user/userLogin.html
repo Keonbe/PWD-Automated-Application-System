@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City of Dasmariñas - PWD Application</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/homepage/dasma-logo-only.png"> <!--Favicon-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">  <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- External Fonts -->
+    <style>  /* Internal style - No need for external CSS (Reason: Independent page, Neither uses 'user' nor 'admin' nor 'homepage' templates(header + footer w/ universal styles) */
+    body { 
+        background: #F8F8FF; 
+    }
+    .brand-logo {  /* Image style */
+        width:75px; 
+        height:75px; 
+        object-fit:cover;
+    }
+    .login-section { /* Centering the main login form */
+        min-height: 80vh; 
+    }
+    .card { 
+        border-radius:12px;
+    }
+    #loginCard { 
+        border-radius: 12px;
+        box-shadow: 1px 2px 24px -4px rgba(0,0,0,0.87);
+        -webkit-box-shadow: 1px 2px 24px -4px rgba(0,0,0,0.87);
+        -moz-box-shadow: 1px 2px 24px -4px rgba(0,0,0,0.87);
+    }
+    .assist-desc a {  /* Assistance Style */
+        text-decoration: none; 
+        color: inherit; 
+        font-weight:600; 
+    }
+    #register-admin-links a {  /* Register & Admin Links Style */
+        text-decoration: none; 
+    }
+    #footer-links a {  /* Footer Links Style */
+        text-decoration: none; 
+        color: inherit; 
+    }
+    </style>
+</head>
+<body> 
+    <!-- Content goes here: (ref: https://www.geeksforgeeks.org/bootstrap/bootstrap-login-form/ )-->
+    <main class="container d-flex align-items-center justify-content-center py-5 login-section">
+        <div class="row w-100 justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-5">
+
+                <!-- Logo + Title -->
+                <div class="text-center mb-3">
+                    <img src="/assets/images/homepage/dasma-logo-only.png" alt="City of Dasmariñas logo" class="brand-logo mb-2" />
+                    <h1 class="h4 mb-0 text-success">City of Dasmariñas — PWD Services Portal</h1>
+                    <p class="h5 text-black mt-1">Login Form</p>
+                </div>
+
+                <!-- Card Form -->
+                <div class="card shadow-sm">
+                    <div class="card-body" id="loginCard">
+                        <form id="loginForm" action="" aria-describedby="login-desc" novalidate>
+                            <p id="login-desc" class="small text-muted"><i class="fa fa-info-circle me-1" aria-hidden="true"></i> <em>Sign in as <strong>user</strong>.</em> For admin, use the Admin Login link below.</p>
+
+                            <!-- Username -->
+                            <div class="form-group mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="username-addon" aria-hidden="true">
+                                        <i class="fa fa-circle-user" title="username icon" aria-hidden="true"></i>
+                                    </span>
+                                    <input type="text"
+                                            class="form-control"
+                                            id="username"
+                                            name="username"
+                                            placeholder="Enter your username"
+                                            aria-describedby="username-addon"
+                                            autocomplete="username"
+                                            required />
+                                </div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="form-group mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="password-addon" aria-hidden="true">
+                                        <i class="fa fa-lock" title="password icon" aria-hidden="true"></i>
+                                    </span>
+                                    <input type="password"
+                                            class="form-control"
+                                            id="password"
+                                            name="password"
+                                            placeholder="Enter your password"
+                                            aria-describedby="password-addon"
+                                            autocomplete="current-password"
+                                            required />
+                                </div>
+                            </div>
+
+                            <!-- Login button -->
+                            <div class="d-grid mb-2">
+                                <button type="submit" class="btn btn-success" id="loginBtn">
+                                    <i class="fa fa-right-to-bracket me-1" aria-hidden="true"></i> Login
+                                </button>
+                            </div>
+
+                            <!-- Assistance -->
+                            <div id="assist-contact" class="assist-desc small text-muted mb-3">
+                                For assistance, contact IT Department: <br>
+                                <a href="tel:+63461234567" aria-label="Call IT Department at (046) 123-4567">(046) 123-4567</a>
+                                &nbsp;|&nbsp; <a href="mailto:it@dasmarinas.gov.ph" aria-label="Email IT Department">it@dasmarinas.gov.ph</a>
+                            </div>
+
+                            <!-- Links: Register & Admin -->
+                            <div id="register-admin-links" class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <span class="small text-muted">Not registered?</span>
+                                    <a href="/consent.html" class="small text-primary fw-semibold order-2">Create an account</a> <!--consent.html -> registration.html -->
+                                </div>
+                                <div>
+                                    <span class="small text-muted">Are you an Admin?</span>
+                                    <a href="admin-login.html" class="small text-danger fw-semibold order-1" data-bs-toggle="modal" data-bs-target="#adminloginModal" >Admin login</a> <!--admin-login.html -->
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Message display area (Alert, User Login) -->
+                        <div id="loginMessage" class="mt-3" role="status" aria-live="polite"></div>
+
+                        <!-- Admin Login Modal ref: https://bootstrapexamples.com/@anonymous/bootstrap-5-login-modal -->
+                        <!-- Modal must be outside the form, else wouldnt work or conflict with js main user login-->
+                        <div class="modal fade" id="adminloginModal" tabindex="-1" aria-labelledby="adminloginModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="adminloginModalLabel">Admin Login</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="adminLoginForm" novalidate>
+                                            <div class="mb-3">
+                                                <label for="adminEmail" class="form-label">Email address</label>
+                                                <input type="email" class="form-control" id="adminEmail" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="adminPassword" class="form-label">Password</label>
+                                                <input type="password" class="form-control" id="adminPassword" required>
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="adminRememberMe">
+                                                <label class="form-check-label" for="adminRememberMe">Remember me</label>
+                                            </div>
+                                            <button type="submit" class="btn btn-success" id="adminLoginBtn">
+                                                <i class="fa fa-right-to-bracket me-1" aria-hidden="true"></i> Login
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Message display area (Alert) -->
+                                    <div id="adminLoginMessage" class="mt-3 p-3" role="status" aria-live="polite"></div>
+
+                                    <div class="modal-footer flex-nowrap justify-content-around">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Quick Links -->
+                        <p class="alert alert-warning small text-muted fw-semibold mt-3 mb-0">
+                            This portal is for registered users and authorized personnel. Unauthorized use is prohibited.
+                        </p>
+                    </div>
+                </div>
+                <!-- End Card Form -->
+
+                <!-- Footer Quick Links -->
+                <div class="text-center mt-3" id="footer-links">
+                    <a href="https://dasmacitygov.weebly.com/" class="small me-2">City of Dasmariñas</a>
+                    <a href="/faq.html" class="small me-2">Privacy & FAQ</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script> /* JS User Login */
+    const sheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; /* TEST api WHERE user:test pass:test*/
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        //Get DOM elements
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const loginBtn = document.getElementById("loginBtn");
+        const messageDiv = document.getElementById("loginMessage");
+
+        // Clear previous messages
+        messageDiv.innerHTML = '';
+        messageDiv.className = 'mt-3';
+
+        // Basic validation
+        if (!username || !password) {
+            messageDiv.innerHTML = '<div class="alert alert-danger">Please enter both username and password.</div>'; //Error alert
+            return;
+        }
+
+        // Show loading state - disable button and show spinner
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Logging in...'; //Loading spinner
+
+        //Fetch API to verify credentials
+        fetch(`${sheetdbUrl}/search?username=${username}&password=${password}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length > 0) {
+                    sessionStorage.setItem("loggedInUser", username); //if username is in sheetdb, store in session
+                    messageDiv.innerHTML = '<div class="alert alert-success">Login successful! Redirecting...</div>'; //Info alert
+                    setTimeout(() => { // Redirect to user dashboard after a short delay
+                        window.location.href = "userHomepage.html";
+                    }, 1000);
+                } else {  //if username is NOT in sheetdb
+                    messageDiv.innerHTML = '<div class="alert alert-danger">Invalid username or password. Please try again.</div>'; //Error alert
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fa fa-right-to-bracket me-1"></i> Login';
+                }
+            })
+            .catch(error => { //HTTP or network error alert
+                console.error("Error:", error);
+                messageDiv.innerHTML = '<div class="alert alert-danger">Login service is temporarily unavailable. Please try again later.</div>'; 
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fa fa-right-to-bracket me-1"></i> Login';
+            });
+    });
+
+    if (sessionStorage.getItem("loggedInUser")) { //if already logged in, redirect to user homepage
+        window.location.href = "userHomepage.html";
+    }
+    </script>
+
+    <!-- user js: above
+        admin js: below -->
+
+    <script> /* Admin Login JS */
+    const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; // Admin API URL
+
+    document.getElementById("adminLoginForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        // Get DOM elements
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const adminMessageDiv = document.getElementById('adminLoginMessage');
+        const adminEmailInput = document.getElementById('adminEmail');
+        const adminPasswordInput = document.getElementById('adminPassword');
+        const adminRememberCheckbox = document.getElementById('adminRememberMe');
+
+        // Get values from inputs
+        const adminEmail = adminEmailInput.value;
+        const adminPassword = adminPasswordInput.value;
+        const adminRemember = adminRememberCheckbox.checked;
+
+        // Clear previous messages
+        adminMessageDiv.innerHTML = '';
+        adminMessageDiv.className = 'mt-3';
+
+        // Basic validation
+        if (!adminEmail || !adminPassword) {
+            adminMessageDiv.innerHTML = '<div class="alert alert-danger m-3 p-3">Please enter both email and password.</div>';
+            return;
+        }
+
+        // Show loading state
+        adminLoginBtn.disabled = true;
+        adminLoginBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Logging in...';
+
+        // Fetch API to verify admin credentials 
+        fetch(`${adminSheetdbUrl}/search?username=${adminEmail}&password=${adminPassword}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length > 0) {
+                    if (adminRemember) {
+                        sessionStorage.setItem("adminLoggedIn", adminEmail);
+                    } else {
+                        sessionStorage.setItem("adminLoggedIn", adminEmail);
+                    }
+                    
+                    adminMessageDiv.innerHTML = '<div class="alert alert-success m-3 p-3">Admin login successful! Redirecting...</div>';
+                    setTimeout(() => {
+                        window.location.href = "adminPage.html";
+                    }, 1000);
+                } else {
+                    adminMessageDiv.innerHTML = '<div class="alert alert-danger m-3 p-3">Invalid admin credentials. Please try again.</div>';
+                    adminLoginBtn.disabled = false;
+                    adminLoginBtn.innerHTML = '<i class="fa fa-right-to-bracket me-1"></i> Login';
+                }
+            })
+            .catch(error => {
+                console.error("Admin login error:", error);
+                adminMessageDiv.innerHTML = '<div class="alert alert-danger m-3 p-3">Admin login service is temporarily unavailable.</div>';
+                adminLoginBtn.disabled = false;
+                adminLoginBtn.innerHTML = '<i class="fa fa-right-to-bracket me-1"></i> Login';
+            });
+    });
+
+    // Check if admin is already logged in
+    if (sessionStorage.getItem("adminLoggedIn") || localStorage.getItem("adminLoggedIn")) {
+        window.location.href = "adminPage.html";
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
