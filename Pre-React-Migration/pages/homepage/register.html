@@ -8,26 +8,26 @@
       rel="icon"
       type="image/x-icon"
       href="/assets/images/homepage/dasma-logo-only.png" />
-    <!--Faviconnnnn-->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet" />
-    <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <!-- External Fonts -->
-    <link rel="stylesheet" href="/Pre-React-Migration/assets/styles/homepage/index-styles.css" />
-    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="/Pre-React-Migration/assets/styles/homepage/index-styles.css" />
   </head>
   <body>
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container">
         <!-- Left Side -->
-        <a class="navbar-brand" href="Index.html">
+        <a
+          class="navbar-brand"
+          href="/Pre-React-Migration/pages/homepage/Index.html">
           <img
-            src="/Pre-React-Migration/assets/images/homepage/dasma-logo-only.png""
+            src="/Pre-React-Migration/assets/images/homepage/dasma-logo-only.png"
             alt="City of Dasmariñas Logo"
             class="navbar-logo" />
           City of Dasmariñas — PWD Services Portal
@@ -44,25 +44,47 @@
         <div class="collapse navbar-collapse" id="navbarContent">
           <!-- Right Side -->
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <!-- Headers -->
-              <li class="nav-item">
-                  <a class="nav-link" href="/Pre-React-Migration/pages/homepage/Index.html">Home</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="/Pre-React-Migration/pages/homepage/news.html">News</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="/Pre-React-Migration/pages/homepage/faq.html">FAQ</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="/Pre-React-Migration/pages/homepage/resources.html">Resources</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="/Pre-React-Migration/pages/homepage/contact.html">Contact</a>
-              </li>
-              <li class="nav-item ms-2 d-flex align-items-center">
-                  <button class="btn btn-login" onclick="location.href='/Pre-React-Migration/pages/user/userLogin.html'">Login</button>
-              </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="/Pre-React-Migration/pages/homepage/Index.html"
+                >Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="/Pre-React-Migration/pages/homepage/news.html"
+                >News</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="/Pre-React-Migration/pages/homepage/faq.html"
+                >FAQ</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="/Pre-React-Migration/pages/homepage/resources.html"
+                >Resources</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="/Pre-React-Migration/pages/homepage/contact.html"
+                >Contact</a
+              >
+            </li>
+            <li class="nav-item ms-2 d-flex align-items-center">
+              <button
+                class="btn btn-login"
+                onclick="location.href='/Pre-React-Migration/pages/user/userLogin.html'">
+                Login
+              </button>
             </li>
           </ul>
         </div>
@@ -72,246 +94,334 @@
     <div class="container my-4">
       <p class="h3 mb-4">Registration Form</p>
 
-      <!-- Registration Number + Date -->
-      <div class="row g-3 mb-3">
-        <div class="col-md-6">
-          <div class="form-floating">
-            <input
-              type="text"
-              class="form-control"
-              id="regNumber"
-              placeholder="Registration Number" />
-            <label for="regNumber">Registration Number</label>
+      <!-- Registration Form -->
+      <form action="submit.php" method="post" enctype="multipart/form-data">
+        <!-- Registration Number + Date -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control"
+                id="regNumber"
+                name="regNumber"
+                placeholder="Registration Number"
+                required />
+              <label for="regNumber">Registration Number</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input
+                type="date"
+                class="form-control"
+                id="regDate"
+                name="regDate"
+                required />
+              <label for="regDate">Date</label>
+            </div>
           </div>
         </div>
-        <div class="col-md-6">
-          <div class="form-floating">
-            <input
-              type="text"
-              class="form-control"
-              id="regDate"
-              placeholder="YYYY-MM-DD"
-              data-coreui-toggle="date-picker"
-              data-coreui-locale="en-US" />
-            <label for="regDate">Date</label>
-          </div>
-        </div>
-      </div>
 
-      <!-- Name -->
-      <div class="input-group mb-3">
-        <span class="input-group-text">Surname, First, Middle</span>
-        <input
-          type="text"
-          aria-label="Last name"
-          class="form-control"
-          placeholder="Last Name" />
-        <input
-          type="text"
-          aria-label="First name"
-          class="form-control"
-          placeholder="First Name" />
-        <input
-          type="text"
-          aria-label="Middle name"
-          class="form-control"
-          placeholder="Middle Name" />
-      </div>
+        <!-- Name -->
+        <div class="input-group mb-3">
+          <span class="input-group-text">Surname, First, Middle</span>
+          <input
+            type="text"
+            name="lastName"
+            class="form-control"
+            placeholder="Last Name"
+            required />
+          <input
+            type="text"
+            name="firstName"
+            class="form-control"
+            placeholder="First Name"
+            required />
+          <input
+            type="text"
+            name="middleName"
+            class="form-control"
+            placeholder="Middle Name" />
+        </div>
 
-      <!-- Type of Disability -->
-      <div class="mb-3">
-        <label class="form-label fw-bold"
-          >Type of Disability (check one):</label
-        >
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="psycho" /><label class="form-check-label" for="psycho"
-                >Psychosocial Disability</label
-              >
+        <!-- Type of Disability -->
+        <div class="mb-3">
+          <label class="form-label fw-bold"
+            >Type of Disability (choose one):</label
+          >
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="disability"
+                  id="speech"
+                  value="Speech Impairment"
+                  required />
+                <label class="form-check-label" for="speech"
+                  >Speech Impairment</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="disability"
+                  id="learning"
+                  value="Learning Disability" />
+                <label class="form-check-label" for="learning"
+                  >Learning Disability</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="disability"
+                  id="intellectual"
+                  value="Intellectual Disability" />
+                <label class="form-check-label" for="intellectual"
+                  >Intellectual Disability</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="disability"
+                  id="mental"
+                  value="Mental Disability" />
+                <label class="form-check-label" for="mental"
+                  >Mental Disability</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="disability"
+                  id="visual"
+                  value="Visual Disability" />
+                <label class="form-check-label" for="visual"
+                  >Visual Disability</label
+                >
+              </div>
             </div>
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="mental" /><label class="form-check-label" for="mental"
-                >Mental Disability</label
-              >
-            </div>
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="hearing" /><label class="form-check-label" for="hearing"
-                >Hearing Disability</label
-              >
-            </div>
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="speech" /><label class="form-check-label" for="speech"
-                >Speech Impairment</label
-              >
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="visual" /><label class="form-check-label" for="visual"
-                >Visual Disability</label
-              >
-            </div>
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="learning" /><label class="form-check-label" for="learning"
-                >Learning Disability</label
-              >
-            </div>
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="ortho" /><label class="form-check-label" for="ortho"
-                >Orthopedic (Musculoskeletal) Disability</label
-              >
+            <div class="col-md-6">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="disability"
+                  id="psychosocial"
+                  value="Psychosocial Disability" />
+                <label class="form-check-label" for="psychosocial"
+                  >Psychosocial Disability</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="disability"
+                  id="physical"
+                  value="Physical Disability" />
+                <label class="form-check-label" for="physical"
+                  >Physical Disability</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="disability"
+                  id="hearing"
+                  value="Deaf and Hard of Hearing" />
+                <label class="form-check-label" for="hearing"
+                  >Deaf and Hard of Hearing</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="disability"
+                  id="cancer"
+                  value="Cancer" />
+                <label class="form-check-label" for="cancer">Cancer</label>
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="disability"
+                  id="rare"
+                  value="Rare Diseases" />
+                <label class="form-check-label" for="rare">Rare Diseases</label>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Address -->
-      <div class="mb-3">
-        <label class="form-label fw-bold">Address:</label>
-        <div class="row g-2">
-          <div class="col-md-6">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="House No. and Street" />
-          </div>
-          <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Barangay" />
-          </div>
-          <div class="col-md-6">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Municipality" />
-          </div>
-          <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Province" />
-          </div>
-          <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Region" />
+        <!-- Address -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">Address:</label>
+          <div class="row g-2">
+            <div class="col-md-6">
+              <input
+                type="text"
+                name="street"
+                id="street"
+                class="form-control"
+                placeholder="House No. and Street"
+                required />
+            </div>
+            <div class="col-md-6">
+              <input
+                type="text"
+                name="barangay"
+                id="barangay"
+                class="form-control"
+                placeholder="Barangay"
+                required />
+            </div>
+            <div class="col-md-6">
+              <input
+                type="text"
+                name="municipality"
+                id="municipality"
+                class="form-control"
+                placeholder="Municipality"
+                required />
+            </div>
+            <div class="col-md-6">
+              <input
+                type="text"
+                name="province"
+                id="province"
+                class="form-control"
+                placeholder="Province"
+                required />
+            </div>
+            <div class="col-md-6">
+              <input
+                type="text"
+                name="region"
+                id="region"
+                class="form-control"
+                placeholder="Region"
+                required />
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Contact Info -->
-      <div class="row g-3 mb-3">
-        <div class="col-md-4">
-          <div class="form-floating">
-            <input
-              type="tel"
-              class="form-control"
-              id="tel"
-              placeholder="Telephone" />
-            <label for="tel">Tel. No.</label>
+        <!-- Contact Info -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input
+                type="tel"
+                class="form-control"
+                id="tel"
+                name="tel"
+                placeholder="Telephone" />
+              <label for="tel">Tel. No.</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input
+                type="tel"
+                class="form-control"
+                id="mobile"
+                name="mobile"
+                placeholder="09XXXXXXXXX"
+                pattern="09[0-9]{9}"
+                required />
+              <label for="mobile">Mobile No.</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="Email"
+                required />
+              <label for="email">Email Address</label>
+            </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="form-floating">
-            <input
-              type="tel"
-              class="form-control"
-              id="mobile"
-              placeholder="09XXXXXXXXX" />
-            <label for="mobile">Mobile No.</label>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="form-floating">
-            <input
-              type="email"
-              class="form-control"
-              id="email"
-              placeholder="Email" />
-            <label for="email">Email Address</label>
-          </div>
-        </div>
-      </div>
 
-      <!-- Date of Birth / Sex / Nationality / Blood Type -->
-      <div class="row g-3 mb-3">
-        <div class="col-md-3">
-          <div class="form-floating">
-            <input
-              type="text"
-              class="form-control"
-              id="dob"
-              placeholder="YYYY-MM-DD"
-              data-coreui-toggle="date-picker"
-              data-coreui-locale="en-US" />
-            <label for="dob">Date of Birth</label>
+        <!-- Date of Birth / Sex / Nationality / Blood Type -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-3">
+            <div class="form-floating">
+              <input
+                type="date"
+                class="form-control"
+                id="dob"
+                name="dob"
+                required />
+              <label for="dob">Date of Birth</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-floating">
+              <select class="form-select" id="sex" name="sex" required>
+                <option disabled selected>Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+              <label for="sex">Sex</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control"
+                id="nationality"
+                name="nationality"
+                placeholder="Nationality"
+                required />
+              <label for="nationality">Nationality</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-floating">
+              <select class="form-select" id="blood" name="blood">
+                <option disabled selected>Select</option>
+                <option>A+</option>
+                <option>A-</option>
+                <option>B+</option>
+                <option>B-</option>
+                <option>AB+</option>
+                <option>AB-</option>
+                <option>O+</option>
+                <option>O-</option>
+              </select>
+              <label for="blood">Blood Type</label>
+            </div>
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="form-floating">
-            <select class="form-select" id="sex">
-              <option disabled selected>Select</option>
-              <option>Male</option>
-              <option>Female</option>
-            </select>
-            <label for="sex">Sex</label>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="form-floating">
-            <input
-              type="text"
-              class="form-control"
-              id="nationality"
-              placeholder="Nationality" />
-            <label for="nationality">Nationality</label>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="form-floating">
-            <select class="form-select" id="blood">
-              <option disabled selected>Select</option>
-              <option>A+</option>
-              <option>A-</option>
-              <option>B+</option>
-              <option>B-</option>
-              <option>AB+</option>
-              <option>AB-</option>
-              <option>O+</option>
-              <option>O-</option>
-            </select>
-            <label for="blood">Blood Type</label>
-          </div>
-        </div>
-      </div>
 
-      <!-- Civil Status -->
-      <div class="mb-3">
-        <label class="form-label fw-bold">Civil Status:</label>
-        <div class="row">
-          <div class="col-md-12 d-flex flex-wrap">
+        <!-- Civil Status -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">Civil Status:</label>
+          <div class="d-flex flex-wrap">
             <div class="form-check me-3">
               <input
                 class="form-check-input"
                 type="radio"
                 name="civil"
-                id="single" /><label class="form-check-label" for="single"
+                id="single"
+                value="Single"
+                required /><label class="form-check-label" for="single"
                 >Single</label
               >
             </div>
@@ -320,7 +430,8 @@
                 class="form-check-input"
                 type="radio"
                 name="civil"
-                id="married" /><label class="form-check-label" for="married"
+                id="married"
+                value="Married" /><label class="form-check-label" for="married"
                 >Married</label
               >
             </div>
@@ -329,7 +440,8 @@
                 class="form-check-input"
                 type="radio"
                 name="civil"
-                id="widow" /><label class="form-check-label" for="widow"
+                id="widow"
+                value="Widow/er" /><label class="form-check-label" for="widow"
                 >Widow/er</label
               >
             </div>
@@ -338,7 +450,10 @@
                 class="form-check-input"
                 type="radio"
                 name="civil"
-                id="separated" /><label class="form-check-label" for="separated"
+                id="separated"
+                value="Separated" /><label
+                class="form-check-label"
+                for="separated"
                 >Separated</label
               >
             </div>
@@ -347,45 +462,133 @@
                 class="form-check-input"
                 type="radio"
                 name="civil"
-                id="cohab" /><label class="form-check-label" for="cohab"
+                id="cohab"
+                value="Co-Habitation" /><label
+                class="form-check-label"
+                for="cohab"
                 >Co-Habitation</label
               >
             </div>
           </div>
         </div>
-      </div>
+        <!-- Emergency Contact -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">Emergency Contact:</label>
+          <div class="row g-2">
+            <div class="col-md-6">
+              <input
+                type="text"
+                name="emergencyName"
+                class="form-control"
+                placeholder="Full Name"
+                required />
+            </div>
+            <div class="col-md-6">
+              <input
+                type="tel"
+                name="emergencyPhone"
+                class="form-control"
+                placeholder="Contact Number"
+                required />
+            </div>
+            <div class="col-md-6">
+              <input
+                type="text"
+                name="emergencyName"
+                class="form-control"
+                placeholder="Relationship"
+                required />
+            </div>
+          </div>
+        </div>
 
-      <!-- More sections (Educational Attainment, Employment Status, Skills, etc.) can be added below in same style -->
-      <!--Proof of Identity-->
-      <label class="form-label fw-bold">
-        Proof of Identity: (ID, Barangay Certificate, etc)
-      </label>
+        <!-- Proof Upload Section -->
+        <div class="row mb-4">
+          <!-- Proof of Identity -->
+          <div class="col-md-6 text-center">
+            <h5>Sample ID</h5>
+            <img
+              src="/Pre-React-Migration/assets/images/homepage/sample-id.png"
+              alt="Sample ID"
+              class="img-fluid mb-2"
+              style="
+                max-width: 250px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+              " />
+            <p class="mt-3 mb-1">
+              Please upload a clear image of your latest government-issued ID
+              (e.g., PWD ID, PhilHealth, UMID, or any valid ID with photo and
+              signature).
+            </p>
+            <p class="text-danger" style="font-size: 0.95em">
+              *Ensure all details are readable and the ID is not expired.
+            </p>
+            <input
+              type="file"
+              class="form-control d-none"
+              id="proofIdentity"
+              name="proofIdentity"
+              accept="image/*,application/pdf"
+              required
+              onchange="document.getElementById('idBtn').innerText = this.files[0]?.name || '+ Upload/Take Image of Latest ID';" />
+            <button
+              type="button"
+              class="btn rounded-pill px-4 mt-2"
+              id="idBtn"
+              style="background: #ffc107; color: #222; font-weight: 600"
+              onclick="document.getElementById('proofIdentity').click();">
+              + Upload/Take Image of Latest ID
+            </button>
+          </div>
+          <!-- Proof of Disability -->
+          <div class="col-md-6 text-center">
+            <h5>Sample Med Cert</h5>
+            <img
+              src="/Pre-React-Migration/assets/images/homepage/sample-medcert.png"
+              alt="Sample Med Cert"
+              class="img-fluid mb-2"
+              style="
+                max-width: 250px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+              " />
+            <p class="mt-3 mb-1">
+              Please upload a recent medical certificate or proof of disability,
+              signed by a licensed physician or specialist.
+            </p>
+            <p class="text-danger" style="font-size: 0.95em">
+              *Certificate must be issued within the last 6 months and clearly
+              state your diagnosis.
+            </p>
+            <input
+              type="file"
+              class="form-control d-none"
+              id="proofDisability"
+              name="proofDisability"
+              accept="image/*,application/pdf"
+              required
+              onchange="document.getElementById('medBtn').innerText = this.files[0]?.name || '+ Upload/Take Image of Latest Cert';" />
+            <button
+              type="button"
+              class="btn rounded-pill px-4 mt-2"
+              id="medBtn"
+              style="background: #ffc107; color: #222; font-weight: 600"
+              onclick="document.getElementById('proofDisability').click();">
+              + Upload/Take Image of Latest Cert
+            </button>
+          </div>
+        </div>
 
-      <div class="input-group mb-3">
-        <input
-          type="file"
-          class="form-control"
-          id="proofIdentity"
-          accept="image/*,application/pdf" />
-        <label class="input-group-text" for="proofIdentity">Upload</label>
-      </div>
-
-      <!-- Proof of Disability -->
-      <label class="form-label fw-bold">
-        Proof of Disability: (Medical Certificate)
-      </label>
-      <div class="input-group mb-3">
-        <input
-          type="file"
-          class="form-control"
-          id="proofDisability"
-          accept="image/*,application/pdf" />
-        <label class="input-group-text" for="proofDisability">Upload</label>
-      </div>
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary">
+          Submit Application
+        </button>
+      </form>
     </div>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer mt-5">
       <div class="container">
         <div class="row">
           <div class="col-md-4 mb-4 mb-md-0">
@@ -407,10 +610,21 @@
           <div class="col-md-4">
             <h5>Quick Links</h5>
             <ul class="list-unstyled">
-                <li><a href="/Pre-React-Migration/pages/homepage/Index.html?scroll=services">PWD Services</a></li>
-                <li><a href="#">Application Status</a></li>
-                <li><a href="/Pre-React-Migration/pages/homepage/faq.html">FAQ</a></li>
-                <li><a href="/Pre-React-Migration/pages/homepage/resources.html">Download Forms</a></li>
+              <li>
+                <a
+                  href="/Pre-React-Migration/pages/homepage/Index.html?scroll=services"
+                  >PWD Services</a
+                >
+              </li>
+              <li><a href="#">Application Status</a></li>
+              <li>
+                <a href="/Pre-React-Migration/pages/homepage/faq.html">FAQ</a>
+              </li>
+              <li>
+                <a href="/Pre-React-Migration/pages/homepage/resources.html"
+                  >Download Forms</a
+                >
+              </li>
             </ul>
           </div>
         </div>
@@ -421,6 +635,7 @@
       </div>
     </footer>
     <!-- End Footer -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
