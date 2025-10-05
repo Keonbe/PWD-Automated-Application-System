@@ -181,6 +181,7 @@ export default function FAQ() {
                     </div>
                     </div>
                     {/* End Pills */}
+                    
                 </div>
                 </div>
             </div>

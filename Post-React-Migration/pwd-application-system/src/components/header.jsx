@@ -4,7 +4,7 @@ import logo from '../assets/images/dasma-logo-only.png';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Header = () => {
+export default function Header() {
   const navigate = useNavigate();
 
   return (
@@ -26,7 +26,7 @@ const Header = () => {
         <div className="collapse navbar-collapse" id="navbarContent">
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className="nav-link active" to="/">Home</Link>
+              <Link className="nav-link" to="/">Home</Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/news">News</Link>
@@ -41,7 +41,7 @@ const Header = () => {
               <Link className="nav-link" to="/contact">Contact</Link>
             </li>
             <li className="nav-item ms-2 d-flex align-items-center">
-              <button className="btn btn-login" onClick={() => navigate('/login')}>
+              <button className="btn btn-login" onClick={() => navigate('/userLogin')}>
                 Login
               </button>
             </li>
@@ -51,5 +51,3 @@ const Header = () => {
     </nav>
   );
 };
-
-export default Header;

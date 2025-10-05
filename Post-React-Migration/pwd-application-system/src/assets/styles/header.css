@@ -8,6 +8,9 @@
     --dasma-dark: #333;
 }
 
+/*  Universal Styles: Above
+    Dedicated Styles: Below */
+
 /* Navbar Styles */
 .navbar {
     background: linear-gradient(135deg, var(--dasma-green) 0%, var(--dasma-dark-green) 100%);

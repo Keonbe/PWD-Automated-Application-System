@@ -1,5 +1,6 @@
 import React from "react";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import '../../assets/styles/news-styles.css';
 
 export default function News() {
     return (
@@ -22,7 +23,7 @@ export default function News() {
             <nav aria-label="Page navigation example" className="mb-3 pager-top">
                 <ul className="pagination justify-content-center">
                 <li className="page-item">
-                    <a className="page-link disabled" href="#" aria-hidden="true">&laquo;</a>
+                    <a className="page-link disabled" href="#" aria-hidden="true">&laquo;</a> {/* NEXT NEWS PAGE */}
                 </li>
 
                 <li className="page-item">
@@ -36,7 +37,7 @@ export default function News() {
                 </li>
 
                 <li className="page-item">
-                    <a className="page-link disabled" href="#" aria-hidden="true">&raquo;</a>
+                    <a className="page-link disabled" href="#" aria-hidden="true">&raquo;</a> {/* NEXT NEWS PAGE */}
                 </li>
                 </ul>
             </nav>
@@ -116,7 +117,7 @@ export default function News() {
             <nav aria-label="Page navigation example" className="mt-4 pager-bottom">
                 <ul className="pagination justify-content-center">
                 <li className="page-item">
-                    <a className="page-link disabled" href="#" aria-hidden="true">&laquo;</a>
+                    <a className="page-link disabled" href="#" aria-hidden="true">&laquo;</a> {/* NEXT NEWS PAGE */}
                 </li>
                 <li className="page-item">
                     <a className="page-link active" href="#pg1">1</a>
@@ -128,7 +129,7 @@ export default function News() {
                     <a className="page-link" href="#pg3">3</a>
                 </li>
                 <li className="page-item">
-                    <a className="page-link disabled" href="#" aria-hidden="true">&raquo;</a>
+                    <a className="page-link disabled" href="#" aria-hidden="true">&raquo;</a> {/* NEXT NEWS PAGE */}
                 </li>
                 </ul>
             </nav>
