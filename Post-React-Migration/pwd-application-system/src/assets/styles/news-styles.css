@@ -1,0 +1,129 @@
+/* Color Schemes */
+:root { 
+    --dasma-green: #3a9e3d;
+    --dasma-dark-green: #2d7c2f;
+    --dasma-gold: #ffc107;
+    --dasma-dark-gold: #e6ac00;
+    --dasma-light: #f8f9fa;
+    --dasma-dark: #333;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--dasma-dark);
+    background-color: #f5f5f5;
+}
+
+
+
+/* News Styles */
+body {  
+    line-height: 1.6;
+}
+
+/* Header section */
+.heading-row { 
+    align-items: center; 
+    gap: 1rem; 
+    margin-bottom: 0.5rem; 
+}
+
+.heading-accent { 
+    width: 64px; 
+    height: 5px; 
+    background: var(--dasma-dark-green); 
+    border-radius: 2px;
+    margin-top: 5px;
+}
+
+.subtext { 
+    color: var(--dasma-dark-green); 
+    display: flex;
+    align-items: center; 
+    gap: 0.5rem; 
+    margin-bottom: 1.5rem; 
+}
+
+
+/* Pagination styling */
+.pagination .page-link {
+    border-radius: .25rem;
+    border: 1px solid var(--dasma-green);
+    color: var(--dasma-green);
+    transition: all .18s ease;
+}
+
+.pagination .page-link:hover,
+.pagination .page-link:focus {
+    background: var(--dasma-green);
+    color: var(--dasma-light);
+    border-color: var(--dasma-green);
+    outline: 2px solid var(--dasma-gold);
+    outline-offset: 2px;
+}
+
+.pagination .page-link.active { /* ref: https://stackoverflow.com/questions/32355009/changing-pagination-colour-bootstrap */
+    background: var(--dasma-green);
+    color: var(--dasma-light);
+    border-color: var(--dasma-green);
+    cursor: default;
+}
+
+
+/* News card styling */
+.news-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e9ecef;
+}
+
+.news-card:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12); 
+}
+
+.news-card:focus-within {
+    outline: 3px solid var(--dasma-gold);
+    outline-offset: 2px;
+}
+
+.card-image { 
+    width: 100%; 
+    height: 200px; 
+    object-fit: cover; 
+    display: block;
+    border-radius: 12px 12px 0px 0px;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.post-title { 
+    font-weight: bolder; 
+    font-size: 1.25rem; 
+    margin: 0 0 0.5rem; 
+    color: var(--dasma-dark-green);
+    line-height: 1.5;
+}
+
+.post-sub { 
+    display: flex; 
+    gap: 0.5rem; 
+    align-items: center; 
+    color: #666; 
+    font-size: 1rem; 
+    margin-bottom: 0.75rem; 
+}
+
+.post-excerpt { 
+    color: #555; 
+    margin: 0; 
+    line-height: 1.5;
+}
+
+
+

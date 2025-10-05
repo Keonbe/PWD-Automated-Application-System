@@ -1,0 +1,162 @@
+/* Color Schemes */
+:root { 
+    --dasma-green: #3a9e3d;
+    --dasma-dark-green: #2d7c2f;
+    --dasma-gold: #ffc107;
+    --dasma-dark-gold: #e6ac00;
+    --dasma-light: #f8f9fa;
+    --dasma-dark: #333;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--dasma-dark);
+    background-color: #f5f5f5;
+}
+
+
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(rgba(58, 158, 61, 0.9), rgba(58, 158, 61, 0.8)), url('https://placeholder.com/1200x400');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 4rem 0;
+}
+
+.hero h1 {
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.text-accent {
+    color: var(--dasma-gold);
+}
+
+.hero-image {
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    margin: 16px;
+}
+
+.btn-primary {
+    background-color: var(--dasma-gold);
+    border-color: var(--dasma-gold);
+    color: #333;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: var(--dasma-dark-gold);
+    border-color: var(--dasma-dark-gold);
+    color: #333;
+}
+
+.btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Learn More Modal (parent hero section) */
+.modal-body .text-accent {
+    color: var(--dasma-dark-green);
+}
+
+/* Services Section */
+.services {
+    padding: 4rem 0;
+    background-color: white;
+}
+
+.services h2 {
+    color: var(--dasma-green);
+    font-weight: 700;
+}
+
+.service-card {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.service-icon {
+    font-size: 3rem;
+    color: var(--dasma-green);
+    margin-bottom: 1rem;
+}
+
+/* Process Section */
+.process {
+    padding: 4rem 0;
+    background-color: var(--dasma-light);
+}
+
+.process h2 {
+    color: var(--dasma-green);
+    font-weight: 700;
+}
+
+.process-step {
+    text-align: center;
+    position: relative;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    background-color: var(--dasma-gold);
+    color: #333;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 auto 1rem;
+}
+
+/* Latest News */
+.latest {
+    padding-top: 3rem ! important;
+    padding-bottom: 3rem ! important;
+}
+
+.latest a span:hover{
+    color: var(--dasma-green);
+}
+
+.latest a p:hover{
+    color: var(--dasma-dark-green);
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .hero {
+        text-align: center;
+        padding: 2rem 0;
+    }
+    
+    .hero h1 {
+        font-size: 2rem;
+    }
+    .hero-image {
+        max-width: 95%;
+        height: auto;
+        display: block; 
+        margin: auto;
+        margin-top: 5%;
+    }
+    
+    .service-card, .process-step {
+        margin-bottom: 1.5rem;
+    }
+}

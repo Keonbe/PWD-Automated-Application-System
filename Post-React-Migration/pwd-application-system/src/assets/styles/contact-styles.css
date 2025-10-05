@@ -1,0 +1,92 @@
+/* Color Schemes */
+:root { 
+    --dasma-green: #3a9e3d;
+    --dasma-dark-green: #2d7c2f;
+    --dasma-gold: #ffc107;
+    --dasma-dark-gold: #e6ac00;
+    --dasma-light: #f8f9fa;
+    --dasma-dark: #333;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--dasma-dark);
+    background-color: #f5f5f5;
+}
+
+
+
+.page-header {
+    background: var(--dasma-light);
+    border-bottom: 2px solid var(--dasma-green);
+    padding: 2rem 0;
+}
+
+.page-header h1 {
+    color: var(--dasma-dark);
+    font-weight: 700;
+}
+
+.breadcrumb {
+    margin-bottom: 0;
+    background: transparent;
+}
+
+.breadcrumb .breadcrumb-item a {
+    color: var(--dasma-green);
+    text-decoration: none;
+}
+
+.breadcrumb .breadcrumb-item.active {
+    color: var(--dasma-dark);
+    font-weight: 600;
+}
+
+/* Contact Cards */
+.contact-card {
+    background: var(--dasma-light);
+    border: 1px solid #e0e0e0;
+    border-left: 5px solid var(--dasma-green);
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.contact-card i {
+    color: var(--dasma-green);
+}
+
+/* Form Styles */
+.contact-form .form-label {
+    font-weight: 600;
+    color: var(--dasma-dark);
+}
+
+.contact-form .form-control {
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.contact-form .form-control:focus {
+    border-color: var(--dasma-green);
+    box-shadow: 0 0 0 0.2rem rgba(58, 158, 61, 0.25);
+}
+
+.btn-contact {
+    background-color: var(--dasma-green);
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.btn-contact:hover {
+    background-color: var(--dasma-dark-green);
+    transform: translateY(-2px);
+}

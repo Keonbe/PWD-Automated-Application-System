@@ -1,0 +1,37 @@
+/* Color Schemes */
+:root { 
+    --dasma-green: #3a9e3d;
+    --dasma-dark-green: #2d7c2f;
+    --dasma-gold: #ffc107;
+    --dasma-dark-gold: #e6ac00;
+    --dasma-light: #f8f9fa;
+    --dasma-dark: #333;
+}
+
+/* Footer */
+.footer {
+    background: linear-gradient(135deg, var(--dasma-green) 0%, var(--dasma-dark-green) 100%);
+    color: white;
+    padding: 3rem 0 1.5rem;
+}
+
+.footer h5 {
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    color: var(--dasma-gold);
+}
+
+.footer a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.footer a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.footer hr {
+    border-color: rgba(255, 255, 255, 0.2);
+}
