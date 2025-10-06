@@ -20,6 +20,10 @@
     <style>
       body {
         background: #f8f9fa;
+        font-family: "Poppins", "Segoe UI", Arial, Verdana, Helvetica,
+          sans-serif;
+        color: #222;
+        font-size: 1rem;
       }
       .status-title {
         color: #e53935;
@@ -28,6 +32,7 @@
         margin-top: 1rem;
         margin-bottom: 2rem;
         text-align: center;
+        font-family: inherit;
       }
       .status-card {
         background: #fff;
@@ -45,29 +50,35 @@
         margin-bottom: 1.5em;
       }
       .status-label {
-        font-size: 2.2rem;
-        font-family: Georgia, serif;
+        font-size: 2rem;
+        font-family: inherit;
         margin-bottom: 0.5em;
+        font-weight: 600;
+        letter-spacing: 1px;
       }
       .status-id {
-        font-size: 1.7rem;
-        font-family: Georgia, serif;
+        font-size: 1.3rem;
+        font-family: inherit;
         margin-bottom: 0.5em;
+        font-weight: 500;
       }
       .status-updated {
-        font-size: 1.1rem;
+        font-size: 1rem;
         color: #444;
         margin-bottom: 2em;
       }
       .status-info {
-        font-size: 2rem;
-        font-family: Georgia, serif;
-        line-height: 1.5;
+        font-size: 1.2rem;
+        font-family: inherit;
+        line-height: 1.7;
+      }
+      .status-info b {
+        font-weight: 600;
       }
       .btn-home {
         background: #1976d2;
         color: #fff;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         font-weight: 500;
         border-radius: 2em;
         padding: 0.7em 2em;
@@ -75,6 +86,7 @@
         transition: background 0.2s;
         outline: none;
         border: none;
+        font-family: inherit;
       }
       .btn-home:focus,
       .btn-home:hover {
@@ -86,11 +98,11 @@
           padding: 1em;
         }
         .status-info {
-          font-size: 1.2rem;
+          font-size: 1rem;
         }
         .status-label,
         .status-id {
-          font-size: 1.3rem;
+          font-size: 1.1rem;
         }
       }
     </style>
