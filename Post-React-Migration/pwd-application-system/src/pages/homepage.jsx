@@ -180,9 +180,7 @@ export default function Home() {
                 <path d="M2 3h10v2H2zm0 3h4v3H2zm0 4h4v1H2zm0 2h4v1H2zm5-6h2v1H7zm3 0h2v1h-2zM7 8h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2z"/>
               </svg>
               {/* NOT WORKING */}
-              <a href="#" className="link-success link-underline-light" onClick={(e) => { e.preventDefault(); /* maybe go to news page */ window.location.href = '/Pre-React-Migration/pages/homepage/news.html'; }}>
-                <span className="link-underline-light-hover">Check out the latest news and announcements.</span>
-              </a>
+              <Link to="/news" className="link-success link-underline-light">Check out the latest news and announcements.</Link>
             </div>
           </div>
 
