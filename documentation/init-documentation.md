@@ -23,10 +23,10 @@ A **PWD Automated Application System** built using **React**, **HTML, CSS, & Jav
     - [6. Build for Production](#6-build-for-production)
   - [Migration Strategy](#migration-strategy)
     - [Phase 1: Component Creation](#phase-1-component-creation)
-    - [Phase 2: State Management](#phase-2-state-management)
-    - [Phase 3: Styling Migration](#phase-3-styling-migration)
-    - [Phase 4: Backend Integration (left for Final Term)](#phase-4-backend-integration-left-for-final-term)
-  - [Dependencies to Install](#dependencies-to-install)
+    - [Phase 2: Styling Migration](#phase-2-styling-migration)
+    - [Phase 3: State Management](#phase-3-state-management)
+    - [Phase 4: Backend Integration](#phase-4-backend-integration)
+  - [Dependencies Installed](#dependencies-installed)
 
 ## Overview
 This system is designed to:
@@ -49,10 +49,8 @@ PWD-AUTOMATED-APPLICATION/
 ├── Post-React-Migration/          # React Application (Current)
 │   ├── node_modules/
 │   ├── public/
-│   │   ├── favicon.ico
+│   │   ├── dasma-logo-only.png
 │   │   ├── index.html
-│   │   ├── logo192.png
-│   │   ├── logo512.png
 │   │   ├── manifest.json
 │   │   └── robots.txt
 │   ├── src/
@@ -68,18 +66,30 @@ PWD-AUTOMATED-APPLICATION/
 │   │   │       ├── Card.js
 │   │   │       └── Button.js
 │   │   ├── pages/                 # Page components
-│   │   │   ├── Homepage.js
-│   │   │   ├── Login.js
-│   │   │   ├── Register.js
-│   │   │   ├── News.js
-│   │   │   ├── FAQ.js
-│   │   │   ├── Contact.js
-│   │   │   ├── Consent.js
-│   │   │   └── Resources.js
-│   │   ├── styles/                # CSS modules
-│   │   │   ├── common.css
-│   │   │   ├── homepage.css
-│   │   │   └── components.css
+│   │   │   ├── adminpage/
+│   │   │   │   └── dashboard.jsx
+│   │   │   ├── homepage/
+│   │   │   │   ├── consent.jsx
+│   │   │   │   ├── contact.jsx
+│   │   │   │   ├── faq.jsx
+│   │   │   │   ├── news.jsx
+│   │   │   │   ├── register.jsx
+│   │   │   │   └── resources.jsx
+│   │   │   └── userpage/
+│   │   │       └── userLogin.jsx
+│   │   ├── assets/                # Assets
+│   │   │   ├── images/             # Media (Images/Videos)
+│   │   │   │   ├── dasma-logo-only.png
+│   │   │   │   └── dasmarinas-holder.jpg
+│   │   │   └── styles/                 # CSS Styling
+│   │   │   │   ├── contact-styles.css
+│   │   │   │   ├── faq-styles.css
+│   │   │   │   ├── footer.css
+│   │   │   │   ├── header.css
+│   │   │   │   ├── index-styles.css
+│   │   │   │   ├── news-styles.css
+│   │   │   │   ├── resources-styles.css
+│   │   │   │   └── userlogin-styles.css
 │   │   ├── utils/                 # Helper functions
 │   │   │   ├── api.js
 │   │   │   └── validation.js
@@ -87,6 +97,7 @@ PWD-AUTOMATED-APPLICATION/
 │   │   ├── App.css
 │   │   ├── index.js
 │   │   └── index.css
+│   ├── .gitignore      # React Project Git Ignore (node_modules and build)
 │   ├── package.json
 │   ├── package-lock.json
 │   └── README.md
@@ -113,10 +124,11 @@ PWD-AUTOMATED-APPLICATION/
 │   ├── templates/
 │   │   ├── styles.css
 │   │   └── template.html
-│   └── README.md
 ├── documentation/
-│   └── init-documentation.md # This Document
-└── .gitignore
+│   ├── developer-documentation # Documentation for Developers and development
+│   ├──init-documentation.md # This Document
+├── README.md     # Github Readme.md
+└── .gitignore    # Project Git Ignore
 ```
 
 ## Setup Instructions
@@ -145,6 +157,14 @@ cd PWD-AUTOMATED-APPLICATION-SYSTEM # Change directory to the cloned repository
 # Navigate to React project folder
 cd Post-React-Migration # Change directory to the react project folder
 cd pwd-application-system # Change directory to the react folder
+
+
+# Quick Navigation and Run React (Change file $PATH)
+cd "/c/Users/user_name/Documents/folder_name/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/pwd-application-system" && npm run build 
+# Navigates to the React Project (pwd-application-system, where react files are stored). Creates production build and The build folder will contain optimized production files
+
+cd "/c/Users/user_name/Documents/folder_name/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/pwd-application-system" && npm start 
+# Navigates to the React Project (pwd-application-system, where react files are stored). Starts the development server
 ```
 
 ### 2. Install Dependencies
@@ -163,6 +183,8 @@ npm install
 npm install react-router-dom # Library that provides routing capabilities for React applications.
 npm react-bootstrap bootstrap # React-Bootstrap replaces the Bootstrap JavaScript.
 ```
+
+Kindly refer to [Dependencies Installed](#dependencies-installed) for specific dependencies used for this project
 
 ### 3. Project Configuration
 
@@ -183,6 +205,7 @@ npm react-bootstrap bootstrap # React-Bootstrap replaces the Bootstrap JavaScrip
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.3",
+    "react-router-hash-link": "^2.4.3",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
@@ -371,22 +394,22 @@ npm run build
 2. Convert HTML pages to React components
 3. Implement React Router for navigation
 
-### Phase 2: State Management
-1. Add form handling
-2. Implement API integration with SheetDB
-3. Add client-side validation
-
-### Phase 3: Styling Migration
+### Phase 2: Styling Migration
 1. Convert CSS to CSS Modules or Styled Components
 2. Integrate Bootstrap with React-Bootstrap
 3. Ensure responsive design
 
-### Phase 4: Backend Integration (left for Final Term)
+### Phase 3: State Management
+1. Add form handling
+2. Implement API integration with SheetDB
+3. Add client-side validation
+
+### Phase 4: Backend Integration
 1. Connect to Laravel API endpoints
 2. Implement authentication
 3. Add error handling
 
-## Dependencies to Install
+## Dependencies Installed
 
 ```bash
 # Core React
@@ -397,4 +420,7 @@ npm install react-router-dom
 
 # UI Framework
 npm install react-bootstrap bootstrap
+
+# Hash link or Anchor link (Scrolls to a certain element with a certain ID)
+npm install react-router-hash-link
 ```
