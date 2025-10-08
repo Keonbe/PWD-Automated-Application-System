@@ -423,4 +423,7 @@ npm install react-bootstrap bootstrap
 
 # Hash link or Anchor link (Scrolls to a certain element with a certain ID)
 npm install react-router-hash-link
+
+# Font Awesome Icons and Fonts
+npm install @fortawesome/fontawesome-free --save # Defunct Command: npm install @fortawesome/fontawesome-free; Doesn't save to package.json
 ```

@@ -2,6 +2,7 @@ import React from 'react';
 import '../assets/styles/footer.css';
 import { Link } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function UserFooter() {
   return (

@@ -29,8 +29,8 @@ export default App;
 /* NEED DIFFERENT PAGE FOR USER +  ADMIN + LOGIN(No Header & Footer) */
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import UserHeader from './components/header';
-import UserFooter from './components/footer';
+import UserHeader from './components/user-header';
+import UserFooter from './components/user-footer';
 import HomePage from './pages/homepage';
 import News from './pages/homepage/news';
 import FAQ from './pages/homepage/faq';
