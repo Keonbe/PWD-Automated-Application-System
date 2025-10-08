@@ -4,6 +4,8 @@ import '../../assets/styles/login-styles.css';
 import logo from '../../assets/images/dasma-logo-only.png';
 import { Link } from 'react-router-dom';
 
+
+{/** TODO: Bootstrap Color Text Styling Grey - Not constrasting*/ }
 export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -304,7 +306,7 @@ export default function Login() {
                     {/* Footer Quick Links */}
                     <div className="text-center mt-3" id="footer-links">
                         <a href="https://dasmacitygov.weebly.com/" className="small me-2">City of Dasmariñas</a>
-                        <a href="/faq.html" className="small me-2">Privacy & FAQ</a>
+                        <Link to="/FAQ" className="small me-2">Privacy & FAQ</Link>
                     </div>
                 </div>
             </div>
