@@ -1,0 +1,32 @@
+body { 
+    background: #F8F8FF; 
+}
+.brand-logo {
+    width:75px; 
+    height:75px; 
+    object-fit:cover;
+}
+.login-section {
+    min-height: 80vh; 
+}
+.card { 
+    border-radius:12px;
+}
+#loginCard { 
+    border-radius: 12px;
+    box-shadow: 1px 2px 24px -4px rgba(0,0,0,0.87);
+    -webkit-box-shadow: 1px 2px 24px -4px rgba(0,0,0,0.87);
+    -moz-box-shadow: 1px 2px 24px -4px rgba(0,0,0,0.87);
+}
+.assist-desc a {
+    text-decoration: none; 
+    color: inherit; 
+    font-weight:600; 
+}
+#register-admin-links a {
+    text-decoration: none; 
+}
+#footer-links a {
+    text-decoration: none; 
+    color: inherit; 
+}

@@ -38,7 +38,7 @@ import Resources from './pages/homepage/resources';
 import Contact from './pages/homepage/contact';
 import Consent from './pages/homepage/consent';
 import Register from './pages/homepage/register';
-import UserLogin from './pages/userpage/userLogin';
+import Login from './pages/userpage/login';
 import './App.css';
 
 
@@ -56,7 +56,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/consent" element={<Consent />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/Userlogin" element={<UserLogin />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </main>
         <UserFooter />

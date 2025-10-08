@@ -2,11 +2,9 @@ import React from 'react';
 import '../assets/styles/header.css';
 import logo from '../assets/images/dasma-logo-only.png';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export default function UserHeader() {
-  const navigate = useNavigate();
-
   return (
     <nav className="navbar navbar-expand-lg navbar-dark">
       <div className="container">
@@ -41,9 +39,7 @@ export default function UserHeader() {
               <Link className="nav-link" to="/contact">Contact</Link>
             </li>
             <li className="nav-item ms-2 d-flex align-items-center">
-              <button className="btn btn-login" onClick={() => navigate('/userLogin')}>
-                Login
-              </button>
+              <Link className="btn btn-login" to="/login">Login</Link>
             </li>
           </ul>
         </div>
