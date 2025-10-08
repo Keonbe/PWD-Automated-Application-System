@@ -29,8 +29,8 @@ export default App;
 /* NEED DIFFERENT PAGE FOR USER +  ADMIN + LOGIN(No Header & Footer) */
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Header from './components/header';
-import Footer from './components/footer';
+import UserHeader from './components/header';
+import UserFooter from './components/footer';
 import HomePage from './pages/homepage';
 import News from './pages/homepage/news';
 import FAQ from './pages/homepage/faq';
@@ -46,7 +46,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="app">
-        <Header />
+        <UserHeader />
         <main className="main-content">
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -59,7 +59,7 @@ function App() {
             <Route path="/Userlogin" element={<UserLogin />} />
           </Routes>
         </main>
-        <Footer />
+        <UserFooter />
       </div>
     </BrowserRouter>
   );

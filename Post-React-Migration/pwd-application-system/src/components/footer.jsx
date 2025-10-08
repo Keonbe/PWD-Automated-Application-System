@@ -3,7 +3,7 @@ import '../assets/styles/footer.css';
 import { Link } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 
-const Footer = () => {
+export default function UserFooter() {
   return (
     <footer className="footer">
       <div className="container">
@@ -34,5 +34,3 @@ const Footer = () => {
     </footer>
   );
 };
-
-export default Footer;

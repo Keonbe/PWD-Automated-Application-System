@@ -4,7 +4,7 @@ import logo from '../assets/images/dasma-logo-only.png';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { Link, useNavigate } from 'react-router-dom';
 
-export default function Header() {
+export default function UserHeader() {
   const navigate = useNavigate();
 
   return (
