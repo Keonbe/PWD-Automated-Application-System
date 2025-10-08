@@ -39,6 +39,8 @@ import Contact from './pages/homepage/contact';
 import Consent from './pages/homepage/consent';
 import Register from './pages/homepage/register';
 import Login from './pages/userpage/login';
+import Testuser from './pages/userpage/userpage';
+import Testadmin from './pages/adminpage/adminpage';
 import './App.css';
 
 
@@ -57,6 +59,11 @@ function App() {
             <Route path="/consent" element={<Consent />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="*" element={<h1>404 - Page Not Found</h1>} />
+            
+            <Route path="/testuser" element={<Testuser />} />
+            <Route path="/testadmin" element={<Testadmin />} />
+          { /* Add more routes as needed */ }
           </Routes>
         </main>
         <UserFooter />
@@ -66,3 +73,15 @@ function App() {
 }
 
 export default App;
+
+/* Add more routes as needed */ 
+/* Example for user/admin pages after login: */
+/* <Route path="/userpage" element={<UserPage />} /> */
+/* <Route path="/adminpage" element={<AdminPage />} /> */
+/* or if you use /testuser and /testadmin: */
+/* <Route path="/testuser" element={<UserPage />} /> */
+/* <Route path="/testadmin" element={<AdminPage />} /> */
+/* Ensure to import UserPage and AdminPage components at the top */ 
+/* import UserPage from './pages/userpage/userpage'; */ 
+/* import AdminPage from './pages/adminpage/adminpage'; */ 
+/* Adjust paths as necessary */ 

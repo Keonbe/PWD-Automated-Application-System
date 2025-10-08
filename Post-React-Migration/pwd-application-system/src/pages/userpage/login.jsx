@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../assets/styles/login-styles.css';
 import logo from '../../assets/images/dasma-logo-only.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
-{/** TODO: Bootstrap Color Text Styling Grey - Not constrasting*/ }
+/** TODO: Bootstrap Color Text Styling Grey - Not constrasting*/ 
 export default function Login() {
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [adminEmail, setAdminEmail] = useState('');
@@ -20,15 +21,17 @@ export default function Login() {
     const sheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9";
     const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9";
 
-    useEffect(() => {
-        // Check if already logged in
+    useEffect(() => { // Check if already logged in
         if (sessionStorage.getItem("loggedInUser")) {
-            window.location.href = "userHomepage.html";
+            // SPA navigation (avoid full page reload)
+            navigate('/testuser', { replace: true });
+            return;
         }
         if (sessionStorage.getItem("adminLoggedIn") || localStorage.getItem("adminLoggedIn")) {
-            window.location.href = "adminPage.html";
+            navigate('/testadmin', { replace: true });
+            return;
         }
-    }, []);
+    }, [navigate]);
 
     const handleUserLogin = async (e) => {
         e.preventDefault();
@@ -49,7 +52,8 @@ export default function Login() {
                 sessionStorage.setItem("loggedInUser", username);
                 setLoginMessage('<div class="alert alert-success">Login successful! Redirecting...</div>');
                 setTimeout(() => {
-                    window.location.href = "userHomepage.html";
+                    // navigate within the SPA; replace so back doesn't return to login
+                    navigate('/testuser', { replace: true });
                 }, 1000);
             } else {
                 setLoginMessage('<div class="alert alert-danger">Invalid username or password. Please try again.</div>');
@@ -86,7 +90,7 @@ export default function Login() {
                 
                 setAdminLoginMessage('<div class="alert alert-success m-3 p-3">Admin login successful! Redirecting...</div>');
                 setTimeout(() => {
-                    window.location.href = "adminPage.html";
+                    navigate('/testadmin', { replace: true });
                 }, 1000);
             } else {
                 setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Invalid admin credentials. Please try again.</div>');
