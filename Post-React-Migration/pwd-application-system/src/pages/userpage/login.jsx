@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../assets/styles/login-styles.css';
-import logo from '../assets/images/dasma-logo-only.png';
+import logo from '../../assets/images/dasma-logo-only.png';
 import { Link } from 'react-router-dom';
 
 export default function Login() {
@@ -103,9 +103,7 @@ export default function Login() {
                 <div className="col-12 col-sm-10 col-md-8 col-lg-5">
                     {/* Logo + Title */}
                     <div className="text-center mb-3">
-                        <img src="/assets/images/homepage/dasma-logo-only.png" alt="City of Dasmariñas logo" className="brand-logo mb-2" />
-                        <Link className="brand-logo mb-2" to="/"><img src={logo} alt="City of Dasmariñas Logo" className="brand-logo" />
-                                </Link>
+                        <Link to="/"><img src={logo} alt="City of Dasmariñas Logo" className="brand-logo mb-2" /></Link>
                         <h1 className="h4 mb-0 text-success">City of Dasmariñas — PWD Services Portal</h1>
                         <p className="h5 text-black mt-1">Login Form</p>
                     </div>
