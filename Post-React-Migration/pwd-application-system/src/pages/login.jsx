@@ -5,7 +5,7 @@ import logo from '../assets/images/dasma-logo-only.png';
 import { Link, useNavigate } from 'react-router-dom';
 
 
-/** TODO: Bootstrap Color Text Styling Grey - Not constrasting*/ 
+/** TODO: JS CODE*/ 
 export default function Login() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
@@ -118,7 +118,7 @@ export default function Login() {
                     <div className="card shadow-sm">
                         <div className="card-body" id="loginCard">
                             <form id="loginForm" onSubmit={handleUserLogin} aria-describedby="login-desc" noValidate>
-                                <p id="login-desc" className="small text-muted">
+                                <p id="login-desc" className="small text-black">
                                     <i className="fa fa-info-circle me-1" aria-hidden="true"></i> 
                                     <em>Sign in as <strong>user</strong>.</em> For admin, use the Admin Login link below.
                                 </p>
@@ -188,7 +188,7 @@ export default function Login() {
                                 </div>
 
                                 {/* Assistance */}
-                                <div id="assist-contact" className="assist-desc small text-muted mb-3">
+                                <div id="assist-contact" className="assist-desc small text-black mb-3">
                                     For assistance, contact IT Department: <br />
                                     <a href="tel:+63461234567" aria-label="Call IT Department at (046) 123-4567">(046) 123-4567</a>
                                     &nbsp;|&nbsp; <a href="mailto:it@dasmarinas.gov.ph" aria-label="Email IT Department">it@dasmarinas.gov.ph</a>
@@ -197,19 +197,12 @@ export default function Login() {
                                 {/* Links: Register & Admin */}
                                 <div id="register-admin-links" className="d-flex align-items-center justify-content-between">
                                     <div>
-                                        <span className="small text-muted">Not registered?</span>
+                                        <span className="small text-black m-2">Not registered?</span>
                                         <a href="/Pre-React-Migration/pages/homepage/consent.html" className="small text-primary fw-semibold order-2">Create an account</a>
                                     </div>
                                     <div>
-                                        <span className="small text-muted">Are you an Admin?</span>
-                                        <a 
-                                            href="admin-login.html" 
-                                            className="small text-danger fw-semibold order-1" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#adminloginModal"
-                                        >
-                                            Admin login
-                                        </a>
+                                        <span className="small text-black m-2">Are you an Admin?</span>
+                                        <a  href="admin-login.html"  className="small text-danger fw-semibold order-1"  data-bs-toggle="modal"  data-bs-target="#adminloginModal">Admin login</a>
                                     </div>
                                 </div>
                             </form>
@@ -301,7 +294,7 @@ export default function Login() {
                             </div>
 
                             {/* Footer Quick Links */}
-                            <p className="alert alert-warning small text-muted fw-semibold mt-3 mb-0">
+                            <p className="alert alert-warning small text-black fw-semibold mt-3 mb-0">
                                 This portal is for registered users and authorized personnel. Unauthorized use is prohibited.
                             </p>
                         </div>
