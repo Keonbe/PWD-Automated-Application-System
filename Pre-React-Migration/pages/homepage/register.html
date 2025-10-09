@@ -7,95 +7,102 @@
     <link
       rel="icon"
       type="image/x-icon"
-      href="/assets/images/homepage/dasma-logo-only.png" />
+      href="/assets/images/homepage/dasma-logo-only.png"
+    />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-      rel="stylesheet" />
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <link
       rel="stylesheet"
-      href="/Pre-React-Migration/assets/styles/homepage/register-styles.css" />
+      href="/Pre-React-Migration/assets/styles/homepage/register-styles.css"
+    />
   </head>
   <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark" aria-label="Main navigation">
-      <div class="container">
-        <!-- Left Side -->
-        <a
-          class="navbar-brand"
-          href="/Pre-React-Migration/pages/homepage/Index.html"
-          aria-label="City of Dasmariñas PWD Services Portal - Home">
-          <img
-            src="/Pre-React-Migration/assets/images/homepage/dasma-logo-only.png"
-            alt="City of Dasmariñas Logo"
-            class="navbar-logo" />
-          <span>City of Dasmariñas — PWD Services Portal</span>
-        </a>
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+          <!-- Left Side -->
+          <a class="navbar-brand" href="Index.html">
+            <img
+              src="/Pre-React-Migration/assets/images/homepage/dasma-logo-only.png"
+              alt="City of Dasmariñas Logo"
+              class="navbar-logo"
+            />
+            City of Dasmariñas — PWD Portal
+          </a>
 
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarContent"
-          aria-controls="navbarContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarContent"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
 
-        <div class="collapse navbar-collapse" id="navbarContent">
-          <!-- Right Side -->
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                href="/Pre-React-Migration/pages/homepage/Index.html"
-                >Home</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                href="/Pre-React-Migration/pages/homepage/news.html"
-                >News</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                href="/Pre-React-Migration/pages/homepage/faq.html"
-                >FAQ</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                href="/Pre-React-Migration/pages/homepage/resources.html"
-                >Resources</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                href="/Pre-React-Migration/pages/homepage/contact.html"
-                >Contact</a
-              >
-            </li>
-            <li class="nav-item ms-2">
-              <button
-                class="btn btn-login"
-                onclick="location.href='/Pre-React-Migration/pages/user/userLogin.html'"
-                aria-label="Login to your account">
-                <i class="fas fa-sign-in-alt me-1" aria-hidden="true"></i>
-                Login
-              </button>
-            </li>
-          </ul>
+          <!-- Change 'active' class based on the current page; On this page Index.html has the 'active' class -->
+          <div class="collapse navbar-collapse" id="navbarContent">
+            <!-- Right Side -->
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              <!-- Headers -->
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  href="/Pre-React-Migration/pages/homepage/Index.html"
+                  >Home</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  href="/Pre-React-Migration/pages/homepage/news.html"
+                  >News</a
+                >
+                <!-- /news.html ('/' main/home directory. If moved, change file dir appropriately)-->
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  href="/Pre-React-Migration/pages/homepage/faq.html"
+                  >FAQ</a
+                >
+                <!-- /faq.html ('/' main/home directory. If moved, change file dir appropriately)-->
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  href="/Pre-React-Migration/pages/homepage/resources.html"
+                  >Resources</a
+                >
+                <!-- /resources.html ('/' main/home directory. If moved, change file dir appropriately)-->
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  href="/Pre-React-Migration/pages/homepage/contact.html"
+                  >Contact</a
+                >
+                <!-- /contact.html ('/' main/home directory. If moved, change file dir appropriately)-->
+              </li>
+              <li class="nav-item ms-2 d-flex align-items-center">
+                <button
+                  class="btn btn-login"
+                  onclick="location.href='/Pre-React-Migration/pages/user/userLogin.html'"
+                >
+                  Login
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </header>
     <!-- End Nav Bar -->
 
     <main class="container my-5">
@@ -103,22 +110,36 @@
       <div class="row mb-4">
         <div class="col-12">
           <h1 class="h2 mb-2 text-success">PWD Registration Form</h1>
-          <p class="lead text-muted">Complete this form to apply for Persons with Disabilities services and benefits.</p>
+          <p class="lead text-muted">
+            Complete this form to apply for Persons with Disabilities services
+            and benefits.
+          </p>
           <div class="alert alert-info" role="alert">
             <i class="fas fa-info-circle me-2" aria-hidden="true"></i>
-            Please fill out all required fields marked with an asterisk (<span class="text-danger">*</span>). 
-            Your information will be kept confidential and secure.
+            Please fill out all required fields marked with an asterisk (<span
+              class="text-danger"
+              >*</span
+            >). Your information will be kept confidential and secure.
           </div>
         </div>
       </div>
 
       <!-- Registration Form -->
-      <form action="submit.php" method="post" enctype="multipart/form-data" aria-labelledby="form-title">
-        <span id="form-title" class="visually-hidden">PWD Registration Form</span>
+      <form
+        action="submit.php"
+        method="post"
+        enctype="multipart/form-data"
+        aria-labelledby="form-title"
+      >
+        <span id="form-title" class="visually-hidden"
+          >PWD Registration Form</span
+        >
 
         <!-- Registration Number + Date -->
         <section class="form-section" aria-labelledby="registration-info">
-          <h2 id="registration-info" class="section-title h4">Registration Information</h2>
+          <h2 id="registration-info" class="section-title h4">
+            Registration Information
+          </h2>
           <div class="row g-3">
             <div class="col-md-6">
               <div class="form-floating">
@@ -129,9 +150,14 @@
                   name="regNumber"
                   placeholder="Registration Number"
                   aria-describedby="regNumberHelp"
-                  required />
-                <label for="regNumber" class="required-field">Registration Number</label>
-                <div id="regNumberHelp" class="form-text">Your unique registration identifier</div>
+                  required
+                />
+                <label for="regNumber" class="required-field"
+                  >Registration Number</label
+                >
+                <div id="regNumberHelp" class="form-text">
+                  Your unique registration identifier
+                </div>
               </div>
             </div>
             <div class="col-md-6">
@@ -142,8 +168,11 @@
                   id="regDate"
                   name="regDate"
                   aria-describedby="regDateHelp"
-                  required />
-                <label for="regDate" class="required-field">Date of Registration</label>
+                  required
+                />
+                <label for="regDate" class="required-field"
+                  >Date of Registration</label
+                >
                 <div id="regDateHelp" class="form-text">Today's date</div>
               </div>
             </div>
@@ -152,8 +181,10 @@
 
         <!-- Personal Information -->
         <section class="form-section" aria-labelledby="personal-info">
-          <h2 id="personal-info" class="section-title h4">Personal Information</h2>
-          
+          <h2 id="personal-info" class="section-title h4">
+            Personal Information
+          </h2>
+
           <!-- Name -->
           <div class="form-group-enhanced">
             <label class="form-label fw-bold required-field">Full Name</label>
@@ -165,28 +196,35 @@
                 class="form-control"
                 placeholder="Last Name"
                 aria-label="Last Name"
-                required />
+                required
+              />
               <input
                 type="text"
                 name="firstName"
                 class="form-control"
                 placeholder="First Name"
                 aria-label="First Name"
-                required />
+                required
+              />
               <input
                 type="text"
                 name="middleName"
                 class="form-control"
                 placeholder="Middle Name"
-                aria-label="Middle Name" />
+                aria-label="Middle Name"
+              />
             </div>
-            <div class="form-text">Enter your name as it appears on your official documents</div>
+            <div class="form-text">
+              Enter your name as it appears on your official documents
+            </div>
           </div>
 
           <!-- Type of Disability -->
           <div class="form-group-enhanced">
             <fieldset>
-              <legend class="form-label fw-bold required-field">Type of Disability</legend>
+              <legend class="form-label fw-bold required-field">
+                Type of Disability
+              </legend>
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-check mb-2">
@@ -196,8 +234,11 @@
                       name="disability"
                       id="speech"
                       value="Speech Impairment"
-                      required />
-                    <label class="form-check-label" for="speech">Speech Impairment</label>
+                      required
+                    />
+                    <label class="form-check-label" for="speech"
+                      >Speech Impairment</label
+                    >
                   </div>
                   <div class="form-check mb-2">
                     <input
@@ -205,8 +246,11 @@
                       type="radio"
                       name="disability"
                       id="learning"
-                      value="Learning Disability" />
-                    <label class="form-check-label" for="learning">Learning Disability</label>
+                      value="Learning Disability"
+                    />
+                    <label class="form-check-label" for="learning"
+                      >Learning Disability</label
+                    >
                   </div>
                   <div class="form-check mb-2">
                     <input
@@ -214,8 +258,11 @@
                       type="radio"
                       name="disability"
                       id="intellectual"
-                      value="Intellectual Disability" />
-                    <label class="form-check-label" for="intellectual">Intellectual Disability</label>
+                      value="Intellectual Disability"
+                    />
+                    <label class="form-check-label" for="intellectual"
+                      >Intellectual Disability</label
+                    >
                   </div>
                   <div class="form-check mb-2">
                     <input
@@ -223,8 +270,11 @@
                       type="radio"
                       name="disability"
                       id="mental"
-                      value="Mental Disability" />
-                    <label class="form-check-label" for="mental">Mental Disability</label>
+                      value="Mental Disability"
+                    />
+                    <label class="form-check-label" for="mental"
+                      >Mental Disability</label
+                    >
                   </div>
                   <div class="form-check mb-2">
                     <input
@@ -232,8 +282,11 @@
                       type="radio"
                       name="disability"
                       id="visual"
-                      value="Visual Disability" />
-                    <label class="form-check-label" for="visual">Visual Disability</label>
+                      value="Visual Disability"
+                    />
+                    <label class="form-check-label" for="visual"
+                      >Visual Disability</label
+                    >
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -243,8 +296,11 @@
                       type="radio"
                       name="disability"
                       id="psychosocial"
-                      value="Psychosocial Disability" />
-                    <label class="form-check-label" for="psychosocial">Psychosocial Disability</label>
+                      value="Psychosocial Disability"
+                    />
+                    <label class="form-check-label" for="psychosocial"
+                      >Psychosocial Disability</label
+                    >
                   </div>
                   <div class="form-check mb-2">
                     <input
@@ -252,8 +308,11 @@
                       type="radio"
                       name="disability"
                       id="physical"
-                      value="Physical Disability" />
-                    <label class="form-check-label" for="physical">Physical Disability</label>
+                      value="Physical Disability"
+                    />
+                    <label class="form-check-label" for="physical"
+                      >Physical Disability</label
+                    >
                   </div>
                   <div class="form-check mb-2">
                     <input
@@ -261,8 +320,11 @@
                       type="radio"
                       name="disability"
                       id="hearing"
-                      value="Deaf and Hard of Hearing" />
-                    <label class="form-check-label" for="hearing">Deaf and Hard of Hearing</label>
+                      value="Deaf and Hard of Hearing"
+                    />
+                    <label class="form-check-label" for="hearing"
+                      >Deaf and Hard of Hearing</label
+                    >
                   </div>
                   <div class="form-check mb-2">
                     <input
@@ -270,7 +332,8 @@
                       type="radio"
                       name="disability"
                       id="cancer"
-                      value="Cancer" />
+                      value="Cancer"
+                    />
                     <label class="form-check-label" for="cancer">Cancer</label>
                   </div>
                   <div class="form-check mb-2">
@@ -279,8 +342,11 @@
                       type="radio"
                       name="disability"
                       id="rare"
-                      value="Rare Diseases" />
-                    <label class="form-check-label" for="rare">Rare Diseases</label>
+                      value="Rare Diseases"
+                    />
+                    <label class="form-check-label" for="rare"
+                      >Rare Diseases</label
+                    >
                   </div>
                 </div>
               </div>
@@ -289,7 +355,9 @@
 
           <!-- Address -->
           <div class="form-group-enhanced">
-            <label class="form-label fw-bold required-field">Complete Address</label>
+            <label class="form-label fw-bold required-field"
+              >Complete Address</label
+            >
             <div class="row g-2">
               <div class="col-md-6">
                 <input
@@ -299,7 +367,8 @@
                   class="form-control"
                   placeholder="House No. and Street"
                   aria-label="Street Address"
-                  required />
+                  required
+                />
               </div>
               <div class="col-md-6">
                 <input
@@ -309,7 +378,8 @@
                   class="form-control"
                   placeholder="Barangay"
                   aria-label="Barangay"
-                  required />
+                  required
+                />
               </div>
               <div class="col-md-6">
                 <input
@@ -319,7 +389,8 @@
                   class="form-control"
                   placeholder="Municipality/City"
                   aria-label="Municipality or City"
-                  required />
+                  required
+                />
               </div>
               <div class="col-md-6">
                 <input
@@ -329,7 +400,8 @@
                   class="form-control"
                   placeholder="Province"
                   aria-label="Province"
-                  required />
+                  required
+                />
               </div>
               <div class="col-md-6">
                 <input
@@ -339,7 +411,8 @@
                   class="form-control"
                   placeholder="Region"
                   aria-label="Region"
-                  required />
+                  required
+                />
               </div>
             </div>
           </div>
@@ -354,7 +427,8 @@
                   id="tel"
                   name="tel"
                   placeholder="Telephone"
-                  aria-describedby="telHelp" />
+                  aria-describedby="telHelp"
+                />
                 <label for="tel">Telephone Number</label>
                 <div id="telHelp" class="form-text">Optional</div>
               </div>
@@ -369,7 +443,8 @@
                   placeholder="09XXXXXXXXX"
                   pattern="09[0-9]{9}"
                   aria-describedby="mobileHelp"
-                  required />
+                  required
+                />
                 <label for="mobile" class="required-field">Mobile Number</label>
                 <div id="mobileHelp" class="form-text">Format: 09XXXXXXXXX</div>
               </div>
@@ -383,9 +458,12 @@
                   name="email"
                   placeholder="Email Address"
                   aria-describedby="emailHelp"
-                  required />
+                  required
+                />
                 <label for="email" class="required-field">Email Address</label>
-                <div id="emailHelp" class="form-text">We'll never share your email</div>
+                <div id="emailHelp" class="form-text">
+                  We'll never share your email
+                </div>
               </div>
             </div>
           </div>
@@ -393,8 +471,10 @@
 
         <!-- Additional Personal Details -->
         <section class="form-section" aria-labelledby="additional-info">
-          <h2 id="additional-info" class="section-title h4">Additional Information</h2>
-          
+          <h2 id="additional-info" class="section-title h4">
+            Additional Information
+          </h2>
+
           <!-- Date of Birth / Sex / Nationality / Blood Type -->
           <div class="row g-3 mb-4">
             <div class="col-md-3">
@@ -405,14 +485,21 @@
                   id="dob"
                   name="dob"
                   aria-describedby="dobHelp"
-                  required />
+                  required
+                />
                 <label for="dob" class="required-field">Date of Birth</label>
                 <div id="dobHelp" class="form-text">Your birth date</div>
               </div>
             </div>
             <div class="col-md-3">
               <div class="form-floating">
-                <select class="form-select" id="sex" name="sex" aria-describedby="sexHelp" required>
+                <select
+                  class="form-select"
+                  id="sex"
+                  name="sex"
+                  aria-describedby="sexHelp"
+                  required
+                >
                   <option value="" disabled selected>Select Gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
@@ -431,14 +518,24 @@
                   placeholder="Filipino"
                   value="Filipino"
                   aria-describedby="nationalityHelp"
-                  required />
-                <label for="nationality" class="required-field">Nationality</label>
-                <div id="nationalityHelp" class="form-text">Your citizenship</div>
+                  required
+                />
+                <label for="nationality" class="required-field"
+                  >Nationality</label
+                >
+                <div id="nationalityHelp" class="form-text">
+                  Your citizenship
+                </div>
               </div>
             </div>
             <div class="col-md-3">
               <div class="form-floating">
-                <select class="form-select" id="blood" name="blood" aria-describedby="bloodHelp">
+                <select
+                  class="form-select"
+                  id="blood"
+                  name="blood"
+                  aria-describedby="bloodHelp"
+                >
                   <option value="" disabled selected>Select Blood Type</option>
                   <option>A+</option>
                   <option>A-</option>
@@ -458,7 +555,9 @@
           <!-- Civil Status -->
           <div class="form-group-enhanced">
             <fieldset>
-              <legend class="form-label fw-bold required-field">Civil Status</legend>
+              <legend class="form-label fw-bold required-field">
+                Civil Status
+              </legend>
               <div class="d-flex flex-wrap gap-3">
                 <div class="form-check">
                   <input
@@ -467,7 +566,8 @@
                     name="civil"
                     id="single"
                     value="Single"
-                    required />
+                    required
+                  />
                   <label class="form-check-label" for="single">Single</label>
                 </div>
                 <div class="form-check">
@@ -476,7 +576,8 @@
                     type="radio"
                     name="civil"
                     id="married"
-                    value="Married" />
+                    value="Married"
+                  />
                   <label class="form-check-label" for="married">Married</label>
                 </div>
                 <div class="form-check">
@@ -485,7 +586,8 @@
                     type="radio"
                     name="civil"
                     id="widow"
-                    value="Widow/er" />
+                    value="Widow/er"
+                  />
                   <label class="form-check-label" for="widow">Widow/er</label>
                 </div>
                 <div class="form-check">
@@ -494,8 +596,11 @@
                     type="radio"
                     name="civil"
                     id="separated"
-                    value="Separated" />
-                  <label class="form-check-label" for="separated">Separated</label>
+                    value="Separated"
+                  />
+                  <label class="form-check-label" for="separated"
+                    >Separated</label
+                  >
                 </div>
                 <div class="form-check">
                   <input
@@ -503,8 +608,11 @@
                     type="radio"
                     name="civil"
                     id="cohab"
-                    value="Co-Habitation" />
-                  <label class="form-check-label" for="cohab">Co-Habitation</label>
+                    value="Co-Habitation"
+                  />
+                  <label class="form-check-label" for="cohab"
+                    >Co-Habitation</label
+                  >
                 </div>
               </div>
             </fieldset>
@@ -512,7 +620,9 @@
 
           <!-- Emergency Contact -->
           <div class="form-group-enhanced">
-            <label class="form-label fw-bold required-field">Emergency Contact Information</label>
+            <label class="form-label fw-bold required-field"
+              >Emergency Contact Information</label
+            >
             <div class="row g-2">
               <div class="col-md-6">
                 <input
@@ -521,7 +631,8 @@
                   class="form-control"
                   placeholder="Full Name of Emergency Contact"
                   aria-label="Emergency Contact Full Name"
-                  required />
+                  required
+                />
               </div>
               <div class="col-md-6">
                 <input
@@ -531,7 +642,8 @@
                   placeholder="Contact Number"
                   aria-label="Emergency Contact Phone Number"
                   pattern="09[0-9]{9}"
-                  required />
+                  required
+                />
               </div>
               <div class="col-md-6">
                 <input
@@ -540,18 +652,26 @@
                   class="form-control"
                   placeholder="Relationship to You"
                   aria-label="Relationship to Emergency Contact"
-                  required />
+                  required
+                />
               </div>
             </div>
-            <div class="form-text">Please provide someone we can contact in case of emergency</div>
+            <div class="form-text">
+              Please provide someone we can contact in case of emergency
+            </div>
           </div>
         </section>
 
         <!-- Proof Upload Section -->
         <section class="form-section" aria-labelledby="document-upload">
-          <h2 id="document-upload" class="section-title h4">Required Documents</h2>
-          <p class="text-muted mb-4">Please upload clear images or scans of the following required documents.</p>
-          
+          <h2 id="document-upload" class="section-title h4">
+            Required Documents
+          </h2>
+          <p class="text-muted mb-4">
+            Please upload clear images or scans of the following required
+            documents.
+          </p>
+
           <div class="row">
             <!-- Proof of Identity -->
             <div class="col-md-6 mb-4">
@@ -561,12 +681,18 @@
                   src="/Pre-React-Migration/assets/images/homepage/sample-id.png"
                   alt="Sample Government ID showing proper format"
                   class="sample-image mb-3"
-                  style="max-width: 250px;" />
+                  style="max-width: 250px"
+                />
                 <p class="mb-2">
-                  Upload a clear image of your latest government-issued ID (Passport, PhilHealth, UMID, or any valid ID with photo and signature).
+                  Upload a clear image of your latest government-issued ID
+                  (Passport, PhilHealth, UMID, or any valid ID with photo and
+                  signature).
                 </p>
                 <p class="text-danger small mb-3">
-                  <i class="fas fa-exclamation-circle me-1" aria-hidden="true"></i>
+                  <i
+                    class="fas fa-exclamation-circle me-1"
+                    aria-hidden="true"
+                  ></i>
                   Ensure all details are readable and the ID is not expired.
                 </p>
                 <input
@@ -576,12 +702,14 @@
                   name="proofIdentity"
                   accept="image/*,application/pdf"
                   required
-                  onchange="updateFileName('proofIdentity', 'idBtn')" />
+                  onchange="updateFileName('proofIdentity', 'idBtn')"
+                />
                 <button
                   type="button"
                   class="btn upload-btn"
                   id="idBtn"
-                  onclick="document.getElementById('proofIdentity').click();">
+                  onclick="document.getElementById('proofIdentity').click();"
+                >
                   <i class="fas fa-upload me-2" aria-hidden="true"></i>
                   Upload ID Document
                 </button>
@@ -596,13 +724,19 @@
                   src="/Pre-React-Migration/assets/images/homepage/sample-medcert.png"
                   alt="Sample medical certificate showing proper format"
                   class="sample-image mb-3"
-                  style="max-width: 250px;" />
+                  style="max-width: 250px"
+                />
                 <p class="mb-2">
-                  Upload a recent medical certificate or proof of disability, signed by a licensed physician or specialist.
+                  Upload a recent medical certificate or proof of disability,
+                  signed by a licensed physician or specialist.
                 </p>
                 <p class="text-danger small mb-3">
-                  <i class="fas fa-exclamation-circle me-1" aria-hidden="true"></i>
-                  Certificate must be issued within the last 6 months and clearly state your diagnosis.
+                  <i
+                    class="fas fa-exclamation-circle me-1"
+                    aria-hidden="true"
+                  ></i>
+                  Certificate must be issued within the last 6 months and
+                  clearly state your diagnosis.
                 </p>
                 <input
                   type="file"
@@ -611,12 +745,14 @@
                   name="proofDisability"
                   accept="image/*,application/pdf"
                   required
-                  onchange="updateFileName('proofDisability', 'medBtn')" />
+                  onchange="updateFileName('proofDisability', 'medBtn')"
+                />
                 <button
                   type="button"
                   class="btn upload-btn"
                   id="medBtn"
-                  onclick="document.getElementById('proofDisability').click();">
+                  onclick="document.getElementById('proofDisability').click();"
+                >
                   <i class="fas fa-upload me-2" aria-hidden="true"></i>
                   Upload Medical Certificate
                 </button>
@@ -629,17 +765,18 @@
         <section class="form-section text-center">
           <div class="alert alert-warning" role="alert">
             <i class="fas fa-shield-alt me-2" aria-hidden="true"></i>
-            Your information is protected and will only be used for PWD services and benefits processing.
+            Your information is protected and will only be used for PWD services
+            and benefits processing.
           </div>
-          
+
           <button type="submit" class="btn btn-success btn-lg px-5">
             <i class="fas fa-paper-plane me-2" aria-hidden="true"></i>
             Submit Application
           </button>
-          
+
           <p class="text-muted mt-3 small">
-            By submitting this form, you agree to our 
-            <a href="#" class="text-decoration-none">Terms of Service</a> and 
+            By submitting this form, you agree to our
+            <a href="#" class="text-decoration-none">Terms of Service</a> and
             <a href="#" class="text-decoration-none">Privacy Policy</a>
           </p>
         </section>
@@ -659,10 +796,10 @@
           </div>
           <div class="col-md-4 mb-4 mb-md-0">
             <h5>Contact Information</h5>
-            <p><i class="fas fa-phone me-2" aria-hidden="true"></i> (046) 501 2321</p>
-            <p><i class="fas fa-envelope me-2" aria-hidden="true"></i> info@dasmarinas.gov.ph</p>
+            <p><i class="fas fa-phone me-2"></i> (046) 501 2321</p>
+            <p><i class="fas fa-envelope me-2"></i> info@dasmarinas.gov.ph</p>
             <p>
-              <i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>Dasmariñas Bagong Bayan,
+              <i class="fas fa-map-marker-alt me-2"></i>Dasmariñas Bagong Bayan,
               Dasmariñas, Cavite 4115
             </p>
           </div>
@@ -675,15 +812,19 @@
                   >PWD Services</a
                 >
               </li>
+              <!-- Scrollspy to Index.html(homepage) to the id#services section-->
               <li><a href="#">Application Status</a></li>
+              <!-- /status.html (login first*) ('/' main/home directory. If moved, change file dir appropriately)-->
               <li>
                 <a href="/Pre-React-Migration/pages/homepage/faq.html">FAQ</a>
               </li>
+              <!-- /faq.html ('/' main/home directory. If moved, change file dir appropriately)-->
               <li>
                 <a href="/Pre-React-Migration/pages/homepage/resources.html"
                   >Download Forms</a
                 >
               </li>
+              <!-- /down-forms.html ('/' main/home directory. If moved, change file dir appropriately)-->
             </ul>
           </div>
         </div>
@@ -696,7 +837,7 @@
     <!-- End Footer -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
       // File upload
       function updateFileName(inputId, buttonId) {
@@ -707,36 +848,44 @@
         // Update button text and styles based on file selection
         if (fileName) {
           button.innerHTML = `<i class="fas fa-check me-2" aria-hidden="true"></i> ${fileName}`;
-          button.classList.add('btn-success');
-          button.classList.remove('upload-btn');
+          button.classList.add("btn-success");
+          button.classList.remove("upload-btn");
         } else {
-          button.innerHTML = `<i class="fas fa-upload me-2" aria-hidden="true"></i> ${buttonId === 'idBtn' ? 'Upload ID Document' : 'Upload Medical Certificate'}`;
-          button.classList.remove('btn-success');
-          button.classList.add('upload-btn');
+          button.innerHTML = `<i class="fas fa-upload me-2" aria-hidden="true"></i> ${
+            buttonId === "idBtn"
+              ? "Upload ID Document"
+              : "Upload Medical Certificate"
+          }`;
+          button.classList.remove("btn-success");
+          button.classList.add("upload-btn");
         }
       }
 
       // Form validation
-      document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('form');
-        
-        form.addEventListener('submit', function(event) { //
-          const requiredFields = form.querySelectorAll('[required]');
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+
+        form.addEventListener("submit", function (event) {
+          const requiredFields = form.querySelectorAll("[required]");
           let valid = true;
-          
-          requiredFields.forEach(field => { // Check if field is empty
+
+          requiredFields.forEach((field) => {
+            // Check if field is empty
             if (!field.value.trim()) {
               valid = false;
-              field.classList.add('is-invalid');
+              field.classList.add("is-invalid");
             } else {
-              field.classList.remove('is-invalid');
-              field.classList.add('is-valid');
+              field.classList.remove("is-invalid");
+              field.classList.add("is-valid");
             }
           });
-          
-          if (!valid) { // Prevent submission if any required field is invalid
+
+          if (!valid) {
+            // Prevent submission if any required field is invalid
             event.preventDefault();
-            alert('Please fill in all required fields marked with an asterisk (*).');
+            alert(
+              "Please fill in all required fields marked with an asterisk (*)."
+            );
           }
         });
       });
