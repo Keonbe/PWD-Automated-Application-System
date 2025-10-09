@@ -1,6 +1,7 @@
 import React  from "react";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '../../assets/styles/faq-styles.css';
+import { Link } from "react-router-dom";
 
 export default function FAQ() {
     return (
@@ -19,7 +20,7 @@ export default function FAQ() {
                         </p>
                         <div>
                         <button type="button" className="btn btn-email me-2">Email Us</button>
-                        <button type="button" className="btn btn-message">Send us a Message</button>
+                        <Link to="/contact" className="btn btn-message">Send us a Message</Link>
                         </div>
                     </div>
                     </div>

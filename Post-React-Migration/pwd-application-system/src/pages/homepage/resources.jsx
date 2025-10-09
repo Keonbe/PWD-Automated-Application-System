@@ -227,7 +227,7 @@ export default function Resources() {
                                 <p className="mb-2"><strong>Monday - Friday:</strong> 8:00 AM - 5:00 PM</p>
                                 <p className="mb-2"><strong>Saturday:</strong> 8:00 AM - 12:00 PM</p>
                                 <p className="mb-0"><strong>Sunday:</strong> Closed</p>
-                                <p className="mb-0 text-muted"><small><i className="fas fa-info-circle me-1"></i> Closed on holidays</small></p>
+                                <p className="mb-0 text-secondary"><small><i className="fas fa-info-circle me-1"></i> Closed on holidays</small></p>
                             </div>
                         </div>
                     </div>
