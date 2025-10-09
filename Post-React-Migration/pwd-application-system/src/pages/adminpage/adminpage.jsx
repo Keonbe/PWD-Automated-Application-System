@@ -1,5 +1,4 @@
 import React from 'react';
-import '../../assets/styles/userlogin-styles.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 export default function Testadmin() {

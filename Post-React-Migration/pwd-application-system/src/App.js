@@ -27,6 +27,18 @@ export default App;
 */ 
 
 /* NEED DIFFERENT PAGE FOR USER +  ADMIN + LOGIN(No Header & Footer) */
+  /* Add more routes as needed */ 
+  /* Example for user/admin pages after login: */
+  /* <Route path="/userpage" element={<UserPage />} /> */
+  /* <Route path="/adminpage" element={<AdminPage />} /> */
+  /* or if you use /testuser and /testadmin: */
+  /* <Route path="/testuser" element={<UserPage />} /> */
+  /* <Route path="/testadmin" element={<AdminPage />} /> */
+  /* Ensure to import UserPage and AdminPage components at the top */ 
+  /* import UserPage from './pages/userpage/userpage'; */ 
+  /* import AdminPage from './pages/adminpage/adminpage'; */ 
+  /* Adjust paths as necessary */ 
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import UserHeader from './components/user-header';
@@ -38,11 +50,10 @@ import Resources from './pages/homepage/resources';
 import Contact from './pages/homepage/contact';
 import Consent from './pages/homepage/consent';
 import Register from './pages/homepage/register';
-import Login from './pages/userpage/login';
+import Login from './pages/login';
 import Testuser from './pages/userpage/userpage';
 import Testadmin from './pages/adminpage/adminpage';
 import './App.css';
-
 
 function App() { 
   return (
@@ -60,10 +71,10 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
-            
+            {/* Add more routes as needed */}
+            {/* test pages for user/admin after login */}
             <Route path="/testuser" element={<Testuser />} />
             <Route path="/testadmin" element={<Testadmin />} />
-          { /* Add more routes as needed */ }
           </Routes>
         </main>
         <UserFooter />
@@ -73,15 +84,3 @@ function App() {
 }
 
 export default App;
-
-/* Add more routes as needed */ 
-/* Example for user/admin pages after login: */
-/* <Route path="/userpage" element={<UserPage />} /> */
-/* <Route path="/adminpage" element={<AdminPage />} /> */
-/* or if you use /testuser and /testadmin: */
-/* <Route path="/testuser" element={<UserPage />} /> */
-/* <Route path="/testadmin" element={<AdminPage />} /> */
-/* Ensure to import UserPage and AdminPage components at the top */ 
-/* import UserPage from './pages/userpage/userpage'; */ 
-/* import AdminPage from './pages/adminpage/adminpage'; */ 
-/* Adjust paths as necessary */ 

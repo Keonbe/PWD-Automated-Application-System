@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../../assets/styles/login-styles.css';
-import logo from '../../assets/images/dasma-logo-only.png';
+import '../assets/styles/login-styles.css';
+import logo from '../assets/images/dasma-logo-only.png';
 import { Link, useNavigate } from 'react-router-dom';
 
 
