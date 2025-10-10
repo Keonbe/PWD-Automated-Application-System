@@ -86,6 +86,7 @@ export default function Home() {
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              {/* TODO: Modal dim background error when link to consent.jsx */}
               <Link className="btn btn-primary" to="/consent">Start Application</Link>
             </div>
           </div>

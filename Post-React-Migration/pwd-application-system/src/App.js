@@ -70,11 +70,12 @@ function App() {
             <Route path="/consent" element={<Consent />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="*" element={<h1>404 - Page Not Found</h1>} />
             {/* Add more routes as needed */}
             {/* test pages for user/admin after login */}
             <Route path="/testuser" element={<Testuser />} />
             <Route path="/testadmin" element={<Testadmin />} />
+            {/* Catch-all 404 must be last */}
+            <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Routes>
         </main>
         <UserFooter />

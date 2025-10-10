@@ -1,296 +1,768 @@
-import React  from "react";
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import React, { useRef } from "react";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "../../assets/styles/register-styles.css";
+import id from "../../assets/images/sample-id.png";
+import medCert from "../../assets/images/sample-medcert.png";
+import { Link } from "react-router-dom";
 
 export default function Register() {
-    return (
-        <div className="container my-4">
-        <p className="h3 mb-4">Registration Form</p>
+  const identityRef = useRef(null);
+  const disabilityRef = useRef(null);
+  const updateFileName = (inputRef, buttonId) => {
+    const fileInput = inputRef.current;
+    const button = document.getElementById(buttonId);
+    const fileName = fileInput?.files[0]?.name;
 
-        {/* Registration Number */}
-        <div className="row g-3 mb-3">
+    if (fileName) {
+      button.innerHTML = `<i class="fas fa-check me-2" aria-hidden="true"></i> ${fileName}`;
+      button.classList.add("btn-success");
+      button.classList.remove("upload-btn");
+    } else {
+      button.innerHTML = `<i class="fas fa-upload me-2" aria-hidden="true"></i> ${
+        buttonId === "idBtn"
+          ? "Upload ID Document"
+          : "Upload Medical Certificate"
+      }`;
+      button.classList.remove("btn-success");
+      button.classList.add("upload-btn");
+    }
+  };
+
+  const handleSubmit = (event) => {
+    const form = event.target;
+    const requiredFields = form.querySelectorAll("[required]");
+    let valid = true;
+
+    requiredFields.forEach((field) => {
+      if (!field.value.trim()) {
+        valid = false;
+        field.classList.add("is-invalid");
+      } else {
+        field.classList.remove("is-invalid");
+        field.classList.add("is-valid");
+      }
+    });
+
+    if (!valid) {
+      event.preventDefault();
+      alert("Please fill in all required fields marked with an asterisk (*).");
+    }
+  };
+
+  return (
+    <main className="container my-5">
+      {/* Page Header */}
+      <div className="row mb-4">
+        <div className="col-12">
+          <h1 className="h2 mb-2 text-success">PWD Registration Form</h1>
+          <p className="lead text-muted">
+            Complete this form to apply for Persons with Disabilities services
+            and benefits.
+          </p>
+          <div className="alert alert-info" role="alert">
+            <i className="fas fa-info-circle me-2" aria-hidden="true"></i>
+            Please fill out all required fields marked with an asterisk (
+            <span className="text-danger">*</span>). Your information will be
+            kept confidential and secure.
+          </div>
+        </div>
+      </div>
+
+      {/* Registration Form */}
+      <form
+        action="submit.php"
+        method="post"
+        encType="multipart/form-data"
+        aria-labelledby="form-title"
+        onSubmit={handleSubmit}
+      >
+        <span id="form-title" className="visually-hidden">
+          PWD Registration Form
+        </span>
+
+        {/* Registration Number + Date */}
+        <section className="form-section" aria-labelledby="registration-info">
+          <h2 id="registration-info" className="section-title h4">
+            Registration Information
+          </h2>
+          <div className="row g-3">
             <div className="col-md-6">
-            <div className="form-floating">
+              <div className="form-floating">
                 <input
-                type="text"
-                className="form-control"
-                id="regNumber"
-                placeholder="Registration Number"
+                  type="text"
+                  className="form-control"
+                  id="regNumber"
+                  name="regNumber"
+                  placeholder="Registration Number"
+                  aria-describedby="regNumberHelp"
+                  required
                 />
-                <label htmlFor="regNumber">Registration Number</label>
+                <label htmlFor="regNumber" className="required-field">
+                  Registration Number
+                </label>
+                <div id="regNumberHelp" className="form-text">
+                  Your unique registration identifier
+                </div>
+              </div>
             </div>
-            </div>
-
             <div className="col-md-6">
-            <div className="form-floating">
+              <div className="form-floating">
                 <input
-                type="text"
-                className="form-control"
-                id="regDate"
-                placeholder="YYYY-MM-DD"
-                data-coreui-toggle="date-picker"
-                data-coreui-locale="en-US"
+                  type="date"
+                  className="form-control"
+                  id="regDate"
+                  name="regDate"
+                  aria-describedby="regDateHelp"
+                  required
                 />
-                <label htmlFor="regDate">Date</label>
+                <label htmlFor="regDate" className="required-field">
+                  Date of Registration
+                </label>
+                <div id="regDateHelp" className="form-text">
+                  Today's date
+                </div>
+              </div>
             </div>
+          </div>
+        </section>
+
+        {/* Personal Information */}
+        <section className="form-section" aria-labelledby="personal-info">
+          <h2 id="personal-info" className="section-title h4">
+            Personal Information
+          </h2>
+
+          {/* Name */}
+          <div className="form-group-enhanced">
+            <label className="form-label fw-bold required-field">
+              Full Name
+            </label>
+            <div className="input-group">
+              <span className="input-group-text bg-light">Name Format</span>
+              <input
+                type="text"
+                name="lastName"
+                className="form-control"
+                placeholder="Last Name"
+                aria-label="Last Name"
+                required
+              />
+              <input
+                type="text"
+                name="firstName"
+                className="form-control"
+                placeholder="First Name"
+                aria-label="First Name"
+                required
+              />
+              <input
+                type="text"
+                name="middleName"
+                className="form-control"
+                placeholder="Middle Name"
+                aria-label="Middle Name"
+              />
             </div>
-        </div>
-
-        {/* Name */}
-        <div className="input-group mb-3">
-            <span className="input-group-text">Surname, First, Middle</span>
-            <input
-            type="text"
-            aria-label="Last name"
-            className="form-control"
-            placeholder="Last Name"
-            />
-            <input
-            type="text"
-            aria-label="First name"
-            className="form-control"
-            placeholder="First Name"
-            />
-            <input
-            type="text"
-            aria-label="Middle name"
-            className="form-control"
-            placeholder="Middle Name"
-            />
-        </div>
-
-        {/* Type of Disability */}
-        <div className="mb-3">
-            <label className="form-label fw-bold">Type of Disability (check one):</label>
-            <div className="row">
-            <div className="col-md-6">
-                <div className="form-check">
-                <input className="form-check-input" type="checkbox" id="psycho" />
-                <label className="form-check-label" htmlFor="psycho">
-                    Psychosocial Disability
-                </label>
-                </div>
-
-                <div className="form-check">
-                <input className="form-check-input" type="checkbox" id="mental" />
-                <label className="form-check-label" htmlFor="mental">
-                    Mental Disability
-                </label>
-                </div>
-
-                <div className="form-check">
-                <input className="form-check-input" type="checkbox" id="hearing" />
-                <label className="form-check-label" htmlFor="hearing">
-                    Hearing Disability
-                </label>
-                </div>
-
-                <div className="form-check">
-                <input className="form-check-input" type="checkbox" id="speech" />
-                <label className="form-check-label" htmlFor="speech">
-                    Speech Impairment
-                </label>
-                </div>
+            <div className="form-text">
+              Enter your name as it appears on your official documents
             </div>
+          </div>
 
-            <div className="col-md-6">
-                <div className="form-check">
-                <input className="form-check-input" type="checkbox" id="visual" />
-                <label className="form-check-label" htmlFor="visual">
-                    Visual Disability
-                </label>
+          {/* Type of Disability */}
+          <div className="form-group-enhanced">
+            <fieldset>
+              <legend className="form-label fw-bold required-field">
+                Type of Disability
+              </legend>
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="form-check mb-2">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="disability"
+                      id="speech"
+                      value="Speech Impairment"
+                      required
+                    />
+                    <label className="form-check-label" htmlFor="speech">
+                      Speech Impairment
+                    </label>
+                  </div>
+                  <div className="form-check mb-2">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="disability"
+                      id="learning"
+                      value="Learning Disability"
+                    />
+                    <label className="form-check-label" htmlFor="learning">
+                      Learning Disability
+                    </label>
+                  </div>
+                  <div className="form-check mb-2">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="disability"
+                      id="intellectual"
+                      value="Intellectual Disability"
+                    />
+                    <label className="form-check-label" htmlFor="intellectual">
+                      Intellectual Disability
+                    </label>
+                  </div>
+                  <div className="form-check mb-2">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="disability"
+                      id="mental"
+                      value="Mental Disability"
+                    />
+                    <label className="form-check-label" htmlFor="mental">
+                      Mental Disability
+                    </label>
+                  </div>
+                  <div className="form-check mb-2">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="disability"
+                      id="visual"
+                      value="Visual Disability"
+                    />
+                    <label className="form-check-label" htmlFor="visual">
+                      Visual Disability
+                    </label>
+                  </div>
                 </div>
-
-                <div className="form-check">
-                <input className="form-check-input" type="checkbox" id="learning" />
-                <label className="form-check-label" htmlFor="learning">
-                    Learning Disability
-                </label>
+                <div className="col-md-6">
+                  <div className="form-check mb-2">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="disability"
+                      id="psychosocial"
+                      value="Psychosocial Disability"
+                    />
+                    <label className="form-check-label" htmlFor="psychosocial">
+                      Psychosocial Disability
+                    </label>
+                  </div>
+                  <div className="form-check mb-2">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="disability"
+                      id="physical"
+                      value="Physical Disability"
+                    />
+                    <label className="form-check-label" htmlFor="physical">
+                      Physical Disability
+                    </label>
+                  </div>
+                  <div className="form-check mb-2">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="disability"
+                      id="hearing"
+                      value="Deaf and Hard of Hearing"
+                    />
+                    <label className="form-check-label" htmlFor="hearing">
+                      Deaf and Hard of Hearing
+                    </label>
+                  </div>
+                  <div className="form-check mb-2">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="disability"
+                      id="cancer"
+                      value="Cancer"
+                    />
+                    <label className="form-check-label" htmlFor="cancer">
+                      Cancer
+                    </label>
+                  </div>
+                  <div className="form-check mb-2">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="disability"
+                      id="rare"
+                      value="Rare Diseases"
+                    />
+                    <label className="form-check-label" htmlFor="rare">
+                      Rare Diseases
+                    </label>
+                  </div>
                 </div>
+              </div>
+            </fieldset>
+          </div>
 
-                <div className="form-check">
-                <input className="form-check-input" type="checkbox" id="ortho" />
-                <label className="form-check-label" htmlFor="ortho">
-                    Orthopedic (Musculoskeletal) Disability
-                </label>
-                </div>
-            </div>
-            </div>
-        </div>
-
-        {/* Address */}
-        <div className="mb-3">
-            <label className="form-label fw-bold">Address:</label>
+          {/* Address */}
+          <div className="form-group-enhanced">
+            <label className="form-label fw-bold required-field">
+              Complete Address
+            </label>
             <div className="row g-2">
-            <div className="col-md-6">
-                <input type="text" className="form-control" placeholder="House No. and Street" />
-            </div>
-            <div className="col-md-6">
-                <input type="text" className="form-control" placeholder="Barangay" />
-            </div>
-            <div className="col-md-6">
-                <input type="text" className="form-control" placeholder="Municipality" />
-            </div>
-            <div className="col-md-6">
-                <input type="text" className="form-control" placeholder="Province" />
-            </div>
-            <div className="col-md-6">
-                <input type="text" className="form-control" placeholder="Region" />
-            </div>
-            </div>
-        </div>
-
-        {/* Contact Info */}
-        <div className="row g-3 mb-3">
-            <div className="col-md-4">
-            <div className="form-floating">
-                <input type="tel" className="form-control" id="tel" placeholder="Telephone" />
-                <label htmlFor="tel">Tel. No.</label>
-            </div>
-            </div>
-
-            <div className="col-md-4">
-            <div className="form-floating">
-                <input type="tel" className="form-control" id="mobile" placeholder="09XXXXXXXXX" />
-                <label htmlFor="mobile">Mobile No.</label>
-            </div>
-            </div>
-
-            <div className="col-md-4">
-            <div className="form-floating">
-                <input type="email" className="form-control" id="email" placeholder="Email" />
-                <label htmlFor="email">Email Address</label>
-            </div>
-            </div>
-        </div>
-
-        {/* Date of Birth / Sex / Nationality / Blood Type */}
-        <div className="row g-3 mb-3">
-            <div className="col-md-3">
-            <div className="form-floating">
+              <div className="col-md-6">
                 <input
-                type="text"
-                className="form-control"
-                id="dob"
-                placeholder="YYYY-MM-DD"
-                data-coreui-toggle="date-picker"
-                data-coreui-locale="en-US"
+                  type="text"
+                  name="street"
+                  id="street"
+                  className="form-control"
+                  placeholder="House No. and Street"
+                  aria-label="Street Address"
+                  required
                 />
-                <label htmlFor="dob">Date of Birth</label>
+              </div>
+              <div className="col-md-6">
+                <input
+                  type="text"
+                  name="barangay"
+                  id="barangay"
+                  className="form-control"
+                  placeholder="Barangay"
+                  aria-label="Barangay"
+                  required
+                />
+              </div>
+              <div className="col-md-6">
+                <input
+                  type="text"
+                  name="municipality"
+                  id="municipality"
+                  className="form-control"
+                  placeholder="Municipality/City"
+                  aria-label="Municipality or City"
+                  required
+                />
+              </div>
+              <div className="col-md-6">
+                <input
+                  type="text"
+                  name="province"
+                  id="province"
+                  className="form-control"
+                  placeholder="Province"
+                  aria-label="Province"
+                  required
+                />
+              </div>
+              <div className="col-md-6">
+                <input
+                  type="text"
+                  name="region"
+                  id="region"
+                  className="form-control"
+                  placeholder="Region"
+                  aria-label="Region"
+                  required
+                />
+              </div>
             </div>
-            </div>
+          </div>
 
+          {/* Contact Info */}
+          <div className="row g-3">
+            <div className="col-md-4">
+              <div className="form-floating">
+                <input
+                  type="tel"
+                  className="form-control"
+                  id="tel"
+                  name="tel"
+                  placeholder="Telephone"
+                  aria-describedby="telHelp"
+                />
+                <label htmlFor="tel">Telephone Number</label>
+                <div id="telHelp" className="form-text">
+                  Optional
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="form-floating">
+                <input
+                  type="tel"
+                  className="form-control"
+                  id="mobile"
+                  name="mobile"
+                  placeholder="09XXXXXXXXX"
+                  pattern="09[0-9]{9}"
+                  aria-describedby="mobileHelp"
+                  required
+                />
+                <label htmlFor="mobile" className="required-field">
+                  Mobile Number
+                </label>
+                <div id="mobileHelp" className="form-text">
+                  Format: 09XXXXXXXXX
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="form-floating">
+                <input
+                  type="email"
+                  className="form-control"
+                  id="email"
+                  name="email"
+                  placeholder="Email Address"
+                  aria-describedby="emailHelp"
+                  required
+                />
+                <label htmlFor="email" className="required-field">
+                  Email Address
+                </label>
+                <div id="emailHelp" className="form-text">
+                  We'll never share your email
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Additional Personal Details */}
+        <section className="form-section" aria-labelledby="additional-info">
+          <h2 id="additional-info" className="section-title h4">
+            Additional Information
+          </h2>
+
+          {/* Date of Birth / Sex / Nationality / Blood Type */}
+          <div className="row g-3 mb-4">
             <div className="col-md-3">
-            <div className="form-floating">
-                <select className="form-select" id="sex" defaultValue="">
-                <option value="" disabled>
-                    Select
-                </option>
-                <option>Male</option>
-                <option>Female</option>
+              <div className="form-floating">
+                <input
+                  type="date"
+                  className="form-control"
+                  id="dob"
+                  name="dob"
+                  aria-describedby="dobHelp"
+                  required
+                />
+                <label htmlFor="dob" className="required-field">
+                  Date of Birth
+                </label>
+                <div id="dobHelp" className="form-text">
+                  Your birth date
+                </div>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="form-floating">
+                <select
+                  className="form-select"
+                  id="sex"
+                  name="sex"
+                  aria-describedby="sexHelp"
+                  required
+                >
+                  <option value="" disabled selected>
+                    Select Gender
+                  </option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
                 </select>
-                <label htmlFor="sex">Sex</label>
+                <label htmlFor="sex" className="required-field">
+                  Gender
+                </label>
+                <div id="sexHelp" className="form-text">
+                  Select your gender
+                </div>
+              </div>
             </div>
-            </div>
-
             <div className="col-md-3">
-            <div className="form-floating">
-                <input type="text" className="form-control" id="nationality" placeholder="Nationality" />
-                <label htmlFor="nationality">Nationality</label>
+              <div className="form-floating">
+                <input
+                  type="text"
+                  className="form-control"
+                  id="nationality"
+                  name="nationality"
+                  placeholder="Filipino"
+                  defaultValue="Filipino"
+                  aria-describedby="nationalityHelp"
+                  required
+                />
+                <label htmlFor="nationality" className="required-field">
+                  Nationality
+                </label>
+                <div id="nationalityHelp" className="form-text">
+                  Your citizenship
+                </div>
+              </div>
             </div>
-            </div>
-
             <div className="col-md-3">
-            <div className="form-floating">
-                <select className="form-select" id="blood" defaultValue="">
-                <option value="" disabled>
-                    Select
-                </option>
-                <option>A+</option>
-                <option>A-</option>
-                <option>B+</option>
-                <option>B-</option>
-                <option>AB+</option>
-                <option>AB-</option>
-                <option>O+</option>
-                <option>O-</option>
+              <div className="form-floating">
+                <select
+                  className="form-select"
+                  id="blood"
+                  name="blood"
+                  aria-describedby="bloodHelp"
+                >
+                  <option value="" disabled selected>
+                    Select Blood Type
+                  </option>
+                  <option>A+</option>
+                  <option>A-</option>
+                  <option>B+</option>
+                  <option>B-</option>
+                  <option>AB+</option>
+                  <option>AB-</option>
+                  <option>O+</option>
+                  <option>O-</option>
                 </select>
                 <label htmlFor="blood">Blood Type</label>
+                <div id="bloodHelp" className="form-text">
+                  Optional
+                </div>
+              </div>
             </div>
-            </div>
-        </div>
+          </div>
 
-        {/* Civil Status */}
-        <div className="mb-3">
-            <label className="form-label fw-bold">Civil Status:</label>
-            <div className="row">
-            <div className="col-md-12 d-flex flex-wrap">
-                <div className="form-check me-3">
-                <input className="form-check-input" type="radio" name="civil" id="single" />
-                <label className="form-check-label" htmlFor="single">
+          {/* Civil Status */}
+          <div className="form-group-enhanced">
+            <fieldset>
+              <legend className="form-label fw-bold required-field">
+                Civil Status
+              </legend>
+              <div className="d-flex flex-wrap gap-3">
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="civil"
+                    id="single"
+                    value="Single"
+                    required
+                  />
+                  <label className="form-check-label" htmlFor="single">
                     Single
-                </label>
+                  </label>
                 </div>
-
-                <div className="form-check me-3">
-                <input className="form-check-input" type="radio" name="civil" id="married" />
-                <label className="form-check-label" htmlFor="married">
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="civil"
+                    id="married"
+                    value="Married"
+                  />
+                  <label className="form-check-label" htmlFor="married">
                     Married
-                </label>
+                  </label>
                 </div>
-
-                <div className="form-check me-3">
-                <input className="form-check-input" type="radio" name="civil" id="widow" />
-                <label className="form-check-label" htmlFor="widow">
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="civil"
+                    id="widow"
+                    value="Widow/er"
+                  />
+                  <label className="form-check-label" htmlFor="widow">
                     Widow/er
-                </label>
+                  </label>
                 </div>
-
-                <div className="form-check me-3">
-                <input className="form-check-input" type="radio" name="civil" id="separated" />
-                <label className="form-check-label" htmlFor="separated">
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="civil"
+                    id="separated"
+                    value="Separated"
+                  />
+                  <label className="form-check-label" htmlFor="separated">
                     Separated
-                </label>
+                  </label>
                 </div>
-
-                <div className="form-check me-3">
-                <input className="form-check-input" type="radio" name="civil" id="cohab" />
-                <label className="form-check-label" htmlFor="cohab">
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="civil"
+                    id="cohab"
+                    value="Co-Habitation"
+                  />
+                  <label className="form-check-label" htmlFor="cohab">
                     Co-Habitation
-                </label>
+                  </label>
                 </div>
-            </div>
-            </div>
-        </div>
+              </div>
+            </fieldset>
+          </div>
 
-        {/* Proof of Identity */}
-        <label className="form-label fw-bold">Proof of Identity: (ID, Barangay Certificate, etc)</label>
-        <div className="input-group mb-3">
-            <input
-            type="file"
-            className="form-control"
-            id="proofIdentity"
-            accept="image/*,application/pdf"
-            />
-            <label className="input-group-text" htmlFor="proofIdentity">
-            Upload
+          {/* Emergency Contact */}
+          <div className="form-group-enhanced">
+            <label className="form-label fw-bold required-field">
+              Emergency Contact Information
             </label>
-        </div>
+            <div className="row g-2">
+              <div className="col-md-6">
+                <input
+                  type="text"
+                  name="emergencyName"
+                  className="form-control"
+                  placeholder="Full Name of Emergency Contact"
+                  aria-label="Emergency Contact Full Name"
+                  required
+                />
+              </div>
+              <div className="col-md-6">
+                <input
+                  type="tel"
+                  name="emergencyPhone"
+                  className="form-control"
+                  placeholder="Contact Number"
+                  aria-label="Emergency Contact Phone Number"
+                  pattern="09[0-9]{9}"
+                  required
+                />
+              </div>
+              <div className="col-md-6">
+                <input
+                  type="text"
+                  name="emergencyRelationship"
+                  className="form-control"
+                  placeholder="Relationship to You"
+                  aria-label="Relationship to Emergency Contact"
+                  required
+                />
+              </div>
+            </div>
+            <div className="form-text">
+              Please provide someone we can contact in case of emergency
+            </div>
+          </div>
+        </section>
 
-        {/* Proof of Disability */}
-        <label className="form-label fw-bold">Proof of Disability: (Medical Certificate)</label>
-        <div className="input-group mb-3">
-            <input
-            type="file"
-            className="form-control"
-            id="proofDisability"
-            accept="image/*,application/pdf"
-            />
-            <label className="input-group-text" htmlFor="proofDisability">
-            Upload
-            </label>
-        </div>
-        </div>
+        {/* Proof Upload Section */}
+        <section className="form-section" aria-labelledby="document-upload">
+          <h2 id="document-upload" className="section-title h4">
+            Required Documents
+          </h2>
+          <p className="text-muted mb-4">
+            Please upload clear images or scans of the following required
+            documents.
+          </p>
 
-        /* INCOMPLETE; NO BUTTON YET */
-    );
+          <div className="row">
+            {/* Proof of Identity */}
+            <div className="col-md-6 mb-4">
+              <div className="upload-section h-100">
+                <h5 className="fw-bold text-success mb-3">Proof of Identity</h5>
+                <img
+                  src={id}
+                  alt="Sample Government ID showing proper format"
+                  className="sample-image mb-3"
+                  style={{ maxWidth: "250px" }}
+                />
+                <p className="mb-2">
+                  Upload a clear image of your latest government-issued ID
+                  (Passport, PhilHealth, UMID, or any valid ID with photo and
+                  signature).
+                </p>
+                <p className="text-danger small mb-3">
+                  <i
+                    className="fas fa-exclamation-circle me-1"
+                    aria-hidden="true"
+                  ></i>
+                  Ensure all details are readable and the ID is not expired.
+                </p>
+                <input
+                  type="file"
+                  className="form-control d-none"
+                  id="proofIdentity"
+                  name="proofIdentity"
+                  accept="image/*,application/pdf"
+                  required
+                  ref={identityRef}
+                  onChange={() => updateFileName(identityRef, "idBtn")}
+                />
+                <button
+                  type="button"
+                  className="btn upload-btn"
+                  id="idBtn"
+                  onClick={() => identityRef.current?.click()}
+                >
+                  <i className="fas fa-upload me-2" aria-hidden="true"></i>
+                  Upload ID Document
+                </button>
+              </div>
+            </div>
+
+            {/* Proof of Disability */}
+            <div className="col-md-6 mb-4">
+              <div className="upload-section h-100">
+                <h5 className="fw-bold text-success mb-3">
+                  Medical Certificate
+                </h5>
+                <img
+                  src={medCert}
+                  alt="Sample medical certificate showing proper format"
+                  className="sample-image mb-3"
+                  style={{ maxWidth: "250px" }}
+                />
+                <p className="mb-2">
+                  Upload a recent medical certificate or proof of disability,
+                  signed by a licensed physician or specialist.
+                </p>
+                <p className="text-danger small mb-3">
+                  <i
+                    className="fas fa-exclamation-circle me-1"
+                    aria-hidden="true"
+                  ></i>
+                  Certificate must be issued within the last 6 months and
+                  clearly state your diagnosis.
+                </p>
+                <input
+                  type="file"
+                  className="form-control d-none"
+                  id="proofDisability"
+                  name="proofDisability"
+                  accept="image/*,application/pdf"
+                  required
+                  ref={disabilityRef}
+                  onChange={() => updateFileName(disabilityRef, "medBtn")}
+                />
+                <button
+                  type="button"
+                  className="btn upload-btn"
+                  id="medBtn"
+                  onClick={() => disabilityRef.current?.click()}
+                >
+                  <i className="fas fa-upload me-2" aria-hidden="true"></i>
+                  Upload Medical Certificate
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Submit Section */}
+        <section className="form-section text-center">
+          <div className="alert alert-warning" role="alert">
+            <i className="fas fa-shield-alt me-2" aria-hidden="true"></i>
+            Your information is protected and will only be used for PWD services
+            and benefits processing.
+          </div>
+
+          <button type="submit" className="btn btn-success btn-lg px-5">
+            <i className="fas fa-paper-plane me-2" aria-hidden="true"></i>
+            Submit Application
+          </button>
+
+          <p className="text-muted mt-3 small">
+            By submitting this form, you agree to our
+            <li><Link to="/faq" className="text-decoration-none">PWD Services</Link></li>
+          </p>
+        </section>
+      </form>
+    </main>
+  );
 }

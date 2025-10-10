@@ -1,8 +1,33 @@
-import React  from "react";
+import React, { useState }  from "react";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function Consent() {
+    //First use of state hook: managing checkbox state
+    //useState lets you add a state variable to your component.
+    const [agreed, setAgreed] = useState(false);
+    const [errorMsg, setErrorMsg] = useState(""); // State for error message - errorMsg; default, setErrorMsg is function to update it
+    const navigate = useNavigate();
+
+    //Now using inline error than alert() for better accessibility
+    const handleProceed = () => {
+        if (!agreed) {
+        // setErrorMsg sets "message" to be displayed in the error div: see below in return()
+        setErrorMsg("Wait! You have not checked the checkbox yet.");
+        return;
+        }
+
+        // clear any previous error
+        setErrorMsg("");
+
+        navigate("/register");
+    };
+
+    // go back to home
+    const handleDecline = () => {
+        navigate("/");
+    };
+
     return (
         <div className="container my-5">
         <h1 className="display-3">Registration Consent</h1>
@@ -36,12 +61,14 @@ export default function Consent() {
 
         {/* Registration Consent */}
         <h1 className="display-4 mt-5">Register Now</h1>
+        
         <div className="form-check my-3">
             <input
             className="form-check-input"
             type="checkbox"
-            value=""
             id="checkDefault"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
             />
             <label className="form-check-label" htmlFor="checkDefault">
             I agree and certify that I have read the above instructions and fully
@@ -49,11 +76,39 @@ export default function Consent() {
             </label>
         </div>
 
-        {/* NOT WORKING CHECKBOX */}
+        {/* Accessible inline error message - replacing alert from legacy code*/}
+        {errorMsg && (
+            <div
+            role="alert"
+            aria-live="assertive"
+            className="alert alert-danger"
+            style={{ maxWidth: 600 }}
+            >
+            {errorMsg} 
+            </div>
+        )} 
+
         <div className="d-flex gap-2 mb-5">
-            <Link to="/register" className="btn btn-primary"  id="proceedBtn">Proceed</Link>
-            <Link to="/" className="btn btn-secondary"  id="proceedBtn">Decline</Link>
+        <button
+            type="button"
+            id="proceedBtn"
+            className="btn btn-primary"
+            onClick={handleProceed}
+        >
+            Proceed
+        </button>
+
+        <button
+            type="button"
+            id="declineBtn"
+            className="btn btn-secondary"
+            onClick={handleDecline}
+        >
+        Decline
+        </button>
+        
         </div>
+
         </div>
     );
 }
