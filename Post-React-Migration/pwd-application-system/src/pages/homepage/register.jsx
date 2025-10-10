@@ -759,7 +759,7 @@ export default function Register() {
 
           <p className="text-muted mt-3 small">
             By submitting this form, you agree to our
-            <li><Link to="/faq" className="text-decoration-none">PWD Services</Link></li>
+            <Link to="/faq" className="p-1 text-decoration-none">Privacy Policy</Link>
           </p>
         </section>
       </form>
