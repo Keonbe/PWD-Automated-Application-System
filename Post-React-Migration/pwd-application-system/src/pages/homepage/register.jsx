@@ -48,6 +48,24 @@ export default function Register() {
     }
   };
 
+  // Generate random 12-digit registration number
+  const generateRegistrationNumber = () => {
+    let result = '';
+    for (let i = 0; i < 12; i++) {
+      result += Math.floor(Math.random() * 10); // Random number 0-9
+    }
+    return result;
+  };
+
+  // Get today's date in YYYY-MM-DD format
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <main className="container my-5">
       {/* Page Header */}
@@ -94,7 +112,9 @@ export default function Register() {
                   name="regNumber"
                   placeholder="Registration Number"
                   aria-describedby="regNumberHelp"
-                  required
+                  disabled
+                  value={generateRegistrationNumber()}
+                  readOnly
                 />
                 <label htmlFor="regNumber" className="required-field">
                   Registration Number
@@ -112,7 +132,9 @@ export default function Register() {
                   id="regDate"
                   name="regDate"
                   aria-describedby="regDateHelp"
-                  required
+                  disabled
+                  value={getTodayDate()}
+                  readOnly
                 />
                 <label htmlFor="regDate" className="required-field">
                   Date of Registration
