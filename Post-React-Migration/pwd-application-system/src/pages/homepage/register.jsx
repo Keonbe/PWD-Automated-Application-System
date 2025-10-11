@@ -771,6 +771,100 @@ export default function Register() {
           </div>
         </section>
 
+
+        {/* Certification Section */}
+        <section className="form-section" aria-labelledby="certification-info">
+          <h2 id="certification-info" className="section-title h4">
+            Certification
+          </h2>
+          
+          <div className="card border-0 bg-light">
+            <div className="card-body">
+              <p className="fw-bold text-center mb-4">This is to certify that:</p>
+              
+              <div className="certification-list">
+                <div className="form-check mb-3">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="certify1" 
+                    name="certify1" 
+                    required 
+                  />
+                  <label className="form-check-label" htmlFor="certify1">
+                    The information entered above is true and correct.
+                  </label>
+                </div>
+                
+                <div className="form-check mb-3">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="certify2" 
+                    name="certify2" 
+                    required 
+                  />
+                  <label className="form-check-label" htmlFor="certify2">
+                    I have the full knowledge in providing the above information.
+                  </label>
+                </div>
+                
+                <div className="form-check mb-3">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="certify3" 
+                    name="certify3" 
+                    required 
+                  />
+                  <label className="form-check-label" htmlFor="certify3">
+                    I understand the purpose of enrolling myself in the City of Dasmariñas registry of Persons with Disabilities.
+                  </label>
+                </div>
+                
+                <div className="form-check mb-3">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="certify4" 
+                    name="certify4" 
+                    required 
+                  />
+                  <label className="form-check-label" htmlFor="certify4">
+                    I have personally given my consent to allow the use of the information contained in this form.
+                  </label>
+                </div>
+                
+                <div className="form-check mb-3">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="certify5" 
+                    name="certify5" 
+                    required 
+                  />
+                  <label className="form-check-label" htmlFor="certify5">
+                    I understand that this form contains my personal information to be stored in the PWD database.
+                  </label>
+                </div>
+                
+                <div className="form-check mb-4">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="certify6" 
+                    name="certify6" 
+                    required 
+                  />
+                  <label className="form-check-label fw-bold" htmlFor="certify6">
+                    I confirm and agree to all of the above.
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Submit Section */}
         <section className="form-section text-center">
           <div className="alert alert-warning" role="alert">
@@ -779,10 +873,17 @@ export default function Register() {
             and benefits processing.
           </div>
 
+          {/* Buttons Group */}
+          <div className="d-flex justify-content-center gap-3">
           <button type="submit" className="btn btn-success btn-lg px-5">
             <i className="fas fa-paper-plane me-2" aria-hidden="true"></i>
             Submit Application
           </button>
+
+          <button type="button" className="btn btn-outline-secondary btn-lg px-5">
+            Cancel
+          </button>
+          </div>
 
           <p className="text-muted mt-3 small">
             By submitting this form, you agree to our
