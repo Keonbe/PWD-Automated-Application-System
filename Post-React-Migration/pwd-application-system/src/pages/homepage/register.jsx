@@ -5,6 +5,11 @@ import medCert from "../../assets/images/sample-medcert.png";
 import { Link } from "react-router-dom";
 
 export default function Register() {
+
+
+  /*Above Code: After API(API Integration not yet done) - Below Code: Before API*/
+
+  //File input function
   const identityRef = useRef(null);
   const disabilityRef = useRef(null);
   const updateFileName = (inputRef, buttonId) => {
@@ -27,6 +32,7 @@ export default function Register() {
     }
   };
 
+  //Form validation
   const handleSubmit = (event) => {
     const form = event.target;
     const requiredFields = form.querySelectorAll("[required]");
@@ -48,16 +54,16 @@ export default function Register() {
     }
   };
 
-  // Generate random 12-digit registration number
+  //Generate random 12-digit registration number
   const generateRegistrationNumber = () => {
     let result = '';
     for (let i = 0; i < 12; i++) {
-      result += Math.floor(Math.random() * 10); // Random number 0-9
+      result += Math.floor(Math.random() * 10); //Random number 0-9
     }
     return result;
   };
 
-  // Get today's date in YYYY-MM-DD format
+  //Get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
     const today = new Date();
     const year = today.getFullYear();

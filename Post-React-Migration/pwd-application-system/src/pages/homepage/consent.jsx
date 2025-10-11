@@ -16,13 +16,13 @@ export default function Consent() {
         return;
         }
 
-        // clear any previous error
+        //Clear any previous error
         setErrorMsg("");
 
         navigate("/register");
     };
 
-    // go back to home
+    //Go back to home
     const handleDecline = () => {
         navigate("/");
     };
@@ -61,53 +61,52 @@ export default function Consent() {
         {/* Registration Consent */}
         <h1 className="display-4 mt-5">Register Now</h1>
         
-        <div className="form-check my-3">
-            <input
-            className="form-check-input"
-            type="checkbox"
-            id="checkDefault"
-            checked={agreed}
-            onChange={(e) => setAgreed(e.target.checked)}
-            />
-            <label className="form-check-label" htmlFor="checkDefault">
-            I agree and certify that I have read the above instructions and fully
-            understand my participation in the registration process.
-            </label>
-        </div>
-
-        {/* Accessible inline error message - replacing alert from legacy code*/}
-        {errorMsg && (
-            <div
-            role="alert"
-            aria-live="assertive"
-            className="alert alert-danger"
-            style={{ maxWidth: 600 }}
-            >
-            {errorMsg} 
+            <div className="form-check my-3">
+                <input
+                className="form-check-input"
+                type="checkbox"
+                id="checkDefault"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                />
+                <label className="form-check-label" htmlFor="checkDefault">
+                I agree and certify that I have read the above instructions and fully
+                understand my participation in the registration process.
+                </label>
             </div>
-        )} 
 
-        <div className="d-flex gap-2 mb-5">
-        <button
-            type="button"
-            id="proceedBtn"
-            className="btn btn-primary"
-            onClick={handleProceed}
-        >
-            Proceed
-        </button>
+            {/* Accessible inline error message - replacing alert from legacy code*/}
+            {errorMsg && (
+                <div
+                role="alert"
+                aria-live="assertive"
+                className="alert alert-danger"
+                style={{ maxWidth: 600 }}
+                >
+                {errorMsg} 
+                </div>
+            )} 
 
-        <button
-            type="button"
-            id="declineBtn"
-            className="btn btn-secondary"
-            onClick={handleDecline}
-        >
-        Decline
-        </button>
-        
-        </div>
+            <div className="d-flex gap-2 mb-5">
+            <button
+                type="button"
+                id="proceedBtn"
+                className="btn btn-primary"
+                onClick={handleProceed}
+            >
+                Proceed
+            </button>
 
+            <button
+                type="button"
+                id="declineBtn"
+                className="btn btn-secondary"
+                onClick={handleDecline}
+            >
+            Decline
+            </button>
+            
+            </div>
         </div>
     );
 }
