@@ -1,7 +1,6 @@
 import React from 'react';
 import '../assets/styles/header.css';
 import logo from '../assets/images/dasma-logo-only.png';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { Link } from 'react-router-dom';
 
 export default function UserHeader() {

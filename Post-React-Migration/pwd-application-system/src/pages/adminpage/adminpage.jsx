@@ -1,5 +1,4 @@
 import React from 'react';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 export default function Testadmin() {
     return ( /* placeholder content,to be replace with actual login form and logic */

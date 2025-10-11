@@ -1,6 +1,5 @@
 import React  from "react";
 import { Link } from "react-router-dom";
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '../../assets/styles/contact-styles.css';
 /*No Font Awesome Icons - Install/Import here*/
 

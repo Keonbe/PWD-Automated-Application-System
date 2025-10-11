@@ -1,5 +1,4 @@
 import React from "react";
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '../../assets/styles/news-styles.css';
 
 export default function News() {

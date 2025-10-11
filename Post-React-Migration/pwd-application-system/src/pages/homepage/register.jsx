@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "../../assets/styles/register-styles.css";
 import id from "../../assets/images/sample-id.png";
 import medCert from "../../assets/images/sample-medcert.png";
