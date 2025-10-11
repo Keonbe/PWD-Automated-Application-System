@@ -11,8 +11,7 @@ export default function Home() {
       1. The modal is not unmounted from the DOM. (or React's DOM rather)
       2. Bootstrap's js doesn't handle the cleanup automatically.
       3. The modal backdrop remains in the DOM even after navigation.
-    */
-
+      
     const navigate = useNavigate();
     const handleStartApplication = () => {
     const modalElement = document.getElementById('learnMoreModal');
@@ -57,6 +56,7 @@ export default function Home() {
     document.body.classList.remove('modal-open');
     navigate('/consent');
   };
+  */
 
   return (
     <>
@@ -137,7 +137,7 @@ export default function Home() {
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" className="btn btn-primary" onClick={handleStartApplication}>Start Application</button>
+              {/*<button type="button" className="btn btn-primary" onClick={handleStartApplication}>Start Application</button>*/}
             </div>
           </div>
         </div>
