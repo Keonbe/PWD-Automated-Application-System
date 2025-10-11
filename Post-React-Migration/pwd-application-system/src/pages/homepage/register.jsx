@@ -639,7 +639,7 @@ export default function Register() {
                   type="tel"
                   name="emergencyPhone"
                   className="form-control"
-                  placeholder="Contact Number"
+                  placeholder="Contact Number - Format: 09XXXXXXXXX"
                   aria-label="Emergency Contact Phone Number"
                   pattern="09[0-9]{9}"
                   required
@@ -667,7 +667,7 @@ export default function Register() {
           <h2 id="document-upload" className="section-title h4">
             Required Documents
           </h2>
-          <p className="text-muted mb-4">
+          <p className="text-secondary mb-4">
             Please upload clear images or scans of the following required
             documents.
           </p>
