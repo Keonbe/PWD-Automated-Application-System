@@ -1,19 +1,87 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import "../../assets/styles/register-styles.css";
 import id from "../../assets/images/sample-id.png";
 import medCert from "../../assets/images/sample-medcert.png";
 import { Link, useNavigate } from "react-router-dom";
+import { submitRegistration } from "../../api/registrationApi";
 
 export default function Register() {
-
-
-  /*Above Code: After API(API Integration not yet done) - Below Code: Before API*/
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
   const navigate = useNavigate();
 
-  //File input function
+  //File input refs
   const identityRef = useRef(null);
   const disabilityRef = useRef(null);
+
+  //Handle form submit with API integration
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+    const form = event.target;
+
+    if (!validateForm(form)) {
+      setSubmitMessage("Please fill in all required fields marked with an asterisk (*). Please check highlighted fields.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitMessage('');
+
+    try {
+      // Collect form values using FormData
+      const fd = new FormData(form);
+      const formData = {};
+      
+      for (const [key, value] of fd.entries()) {
+        // Handle multiple entries with same name
+        if (formData.hasOwnProperty(key)) {
+          if (Array.isArray(formData[key])) {
+            formData[key].push(value);
+          } else {
+            formData[key] = [formData[key], value];
+          }
+        } else {
+          formData[key] = value;
+        }
+      }
+
+      // Add generated registration number and date
+      formData.regNumber = generateRegistrationNumber();
+      formData.regDate = getTodayDate();
+
+      // Include selected file names
+      formData.proofIdentityName = identityRef.current?.files?.[0]?.name || '';
+      formData.proofDisabilityName = disabilityRef.current?.files?.[0]?.name || '';
+
+      // Submit to API
+      const result = await submitRegistration(formData);
+
+      if (result.success) {
+        setSubmitMessage(result.message);
+        
+        // Store in sessionStorage for result page
+        try {
+          sessionStorage.setItem('lastRegistration', JSON.stringify(formData));
+        } catch (e) {
+          console.warn('Could not save to sessionStorage:', e);
+        }
+
+        // Navigate to result page after a short delay
+        setTimeout(() => {
+          navigate('/register/result', { state: { formData } });
+        }, 2000);
+      } else {
+        setSubmitMessage(result.message);
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitMessage('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  //Update file input button text and style based on selected file
   const updateFileName = (inputRef, buttonId) => {
     const fileInput = inputRef.current;
     const button = document.getElementById(buttonId);
@@ -73,48 +141,6 @@ export default function Register() {
     return valid;
   };
 
-  //Handle form submit: validate, collect, navigate to result page with state
-  const handleFormSubmit = (event) => {
-    event.preventDefault(); //Prevent default form submission
-    const form = event.target;
-
-    if (!validateForm(form)) {
-      alert("Please fill in all required fields marked with an asterisk (*). Please check highlighted fields.");
-      return;
-    }
-
-    //Collect form values using FormData
-    const fd = new FormData(form);
-    const entries = {};
-    for (const [key, value] of fd.entries()) {
-      //Handle multiple entries with same name (e.g., checkboxes)
-      if (entries.hasOwnProperty(key)) {
-        if (Array.isArray(entries[key])) entries[key].push(value);
-        else entries[key] = [entries[key], value];
-      } else {
-        entries[key] = value;
-      }
-    }
-
-    //Add generated registration number and date (disabled inputs are not included in FormData)
-    entries.regNumber = generateRegistrationNumber();
-    entries.regDate = getTodayDate();
-
-    //Include selected file names (do not try to serialize file objects)
-    entries.proofIdentityName = identityRef.current?.files?.[0]?.name || '';
-    entries.proofDisabilityName = disabilityRef.current?.files?.[0]?.name || '';
-
-    //Use sessionStorage so the result page can be refreshed
-    try {
-      sessionStorage.setItem('lastRegistration', JSON.stringify(entries));
-    } catch (e) {
-      //ignore storage errors
-    }
-
-    //Navigate to result page with state
-    navigate('/register/result', { state: { formData: entries } });
-  };
-
   //Generate random 12-digit registration number
   const generateRegistrationNumber = () => {
     let result = '';
@@ -152,14 +178,15 @@ export default function Register() {
         </div>
       </div>
 
+      {/* Submit Message */}
+      {submitMessage && (
+        <div className={`alert ${submitMessage.includes('successfully') ? 'alert-success' : 'alert-danger'} mt-3`}>
+          {submitMessage}
+        </div>
+      )}
+
       {/* Registration Form */}
-      <form
-        action="submit.php"
-        method="post"
-        encType="multipart/form-data"
-        aria-labelledby="form-title"
-        onSubmit={handleFormSubmit}
-      >
+      <form onSubmit={handleFormSubmit}>
         <span id="form-title" className="visually-hidden">
           PWD Registration Form
         </span>
@@ -936,9 +963,22 @@ export default function Register() {
 
           {/* Buttons Group */}
           <div className="d-flex justify-content-center gap-3">
-          <button type="submit" className="btn btn-success btn-lg px-5">
-            <i className="fas fa-paper-plane me-2" aria-hidden="true"></i>
-            Submit Application
+          <button 
+            type="submit" 
+            className="btn btn-success btn-lg px-5"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Submitting...
+              </>
+            ) : (
+              <>
+                <i className="fas fa-paper-plane me-2" aria-hidden="true"></i>
+                Submit Application
+              </>
+            )}
           </button>
 
           <button type="button" className="btn btn-outline-secondary btn-lg px-5">
@@ -952,6 +992,7 @@ export default function Register() {
           </p>
         </section>
       </form>
+
       {/* Temporary navigation to a basic result template */}
       <div className="mt-4">
         <Link className="btn btn-success" to="/register/result">View Registration Result (Template)</Link>
@@ -959,3 +1000,6 @@ export default function Register() {
     </main>
   );
 }
+
+//TODO: No Password & Username(Email) yet
+// https://docs.google.com/spreadsheets/d/1aNvr3hZd3vZSQHB46XwVLMuusiUzbDM-ENYNqjya-aA/edit?gid=0#gid=0 I hate going back and forth
