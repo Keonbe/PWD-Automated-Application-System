@@ -51,6 +51,7 @@ import Contact from './pages/homepage/contact';
 import Consent from './pages/homepage/consent';
 import Register from './pages/homepage/register';
 import Login from './pages/login';
+import RegisterResult from './pages/homepage/register-result';
 import Testuser from './pages/userpage/userpage';
 import Testadmin from './pages/adminpage/adminpage';
 import './App.css';
@@ -69,6 +70,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/consent" element={<Consent />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/register/result" element={<RegisterResult />} />
             <Route path="/login" element={<Login />} />
             {/* Add more routes as needed */}
             {/* test pages for user/admin after login */}

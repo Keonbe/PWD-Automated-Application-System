@@ -2,12 +2,14 @@ import React, { useRef } from "react";
 import "../../assets/styles/register-styles.css";
 import id from "../../assets/images/sample-id.png";
 import medCert from "../../assets/images/sample-medcert.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Register() {
 
 
   /*Above Code: After API(API Integration not yet done) - Below Code: Before API*/
+  
+  const navigate = useNavigate();
 
   //File input function
   const identityRef = useRef(null);
@@ -32,26 +34,85 @@ export default function Register() {
     }
   };
 
-  //Form validation
-  const handleSubmit = (event) => {
-    const form = event.target;
+  //Validate a form and return boolean (valid or invalid)
+  const validateForm = (form) => {
     const requiredFields = form.querySelectorAll("[required]");
     let valid = true;
 
     requiredFields.forEach((field) => {
-      if (!field.value.trim()) {
-        valid = false;
-        field.classList.add("is-invalid");
+      //For checkboxes/radios, check checked status
+      if ((field.type === 'checkbox' || field.type === 'radio')) {
+        if (field.type === 'radio') {
+          const group = form.querySelectorAll(`input[name="${field.name}"]`);
+          const anyChecked = Array.from(group).some(g => g.checked);
+          if (!anyChecked) {
+            valid = false;
+            group.forEach(g => g.classList.add('is-invalid'));
+          } else {
+            group.forEach(g => g.classList.remove('is-invalid'));
+          }
+        } else if (field.type === 'checkbox') {
+          if (!field.checked) {
+            valid = false;
+            field.classList.add('is-invalid');
+          } else {
+            field.classList.remove('is-invalid');
+          }
+        }
       } else {
-        field.classList.remove("is-invalid");
-        field.classList.add("is-valid");
+        if (!field.value || !field.value.toString().trim()) {
+          valid = false;
+          field.classList.add("is-invalid");
+        } else {
+          field.classList.remove("is-invalid");
+          field.classList.add("is-valid");
+        }
       }
     });
 
-    if (!valid) {
-      event.preventDefault();
-      alert("Please fill in all required fields marked with an asterisk (*).");
+    return valid;
+  };
+
+  //Handle form submit: validate, collect, navigate to result page with state
+  const handleFormSubmit = (event) => {
+    event.preventDefault(); //Prevent default form submission
+    const form = event.target;
+
+    if (!validateForm(form)) {
+      alert("Please fill in all required fields marked with an asterisk (*). Please check highlighted fields.");
+      return;
     }
+
+    //Collect form values using FormData
+    const fd = new FormData(form);
+    const entries = {};
+    for (const [key, value] of fd.entries()) {
+      //Handle multiple entries with same name (e.g., checkboxes)
+      if (entries.hasOwnProperty(key)) {
+        if (Array.isArray(entries[key])) entries[key].push(value);
+        else entries[key] = [entries[key], value];
+      } else {
+        entries[key] = value;
+      }
+    }
+
+    //Add generated registration number and date (disabled inputs are not included in FormData)
+    entries.regNumber = generateRegistrationNumber();
+    entries.regDate = getTodayDate();
+
+    //Include selected file names (do not try to serialize file objects)
+    entries.proofIdentityName = identityRef.current?.files?.[0]?.name || '';
+    entries.proofDisabilityName = disabilityRef.current?.files?.[0]?.name || '';
+
+    //Use sessionStorage so the result page can be refreshed
+    try {
+      sessionStorage.setItem('lastRegistration', JSON.stringify(entries));
+    } catch (e) {
+      //ignore storage errors
+    }
+
+    //Navigate to result page with state
+    navigate('/register/result', { state: { formData: entries } });
   };
 
   //Generate random 12-digit registration number
@@ -97,7 +158,7 @@ export default function Register() {
         method="post"
         encType="multipart/form-data"
         aria-labelledby="form-title"
-        onSubmit={handleSubmit}
+        onSubmit={handleFormSubmit}
       >
         <span id="form-title" className="visually-hidden">
           PWD Registration Form
@@ -891,6 +952,10 @@ export default function Register() {
           </p>
         </section>
       </form>
+      {/* Temporary navigation to a basic result template */}
+      <div className="mt-4">
+        <Link className="btn btn-success" to="/register/result">View Registration Result (Template)</Link>
+      </div>
     </main>
   );
 }
