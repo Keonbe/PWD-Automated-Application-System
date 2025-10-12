@@ -16,6 +16,7 @@ This document provides comprehensive documentation for all custom JavaScript fun
 2. [Post-React Migration Functions](#post-react-migration-functions)
    - [Login Page Functions](#post-react-login-page-functions)
    - [Registration Form Functions](#post-react-registration-form-functions)
+    - [Registration Result Functions](#post-react-registration-result-functions)
    - [Consent Page Functions](#post-react-consent-page-functions)
    - [Navigation Functions](#post-react-navigation-functions)
 
@@ -724,58 +725,83 @@ const validateForm = (form) => {
 
 ---
 
-#### Function: handleFormSubmit
+#### Function: handleFormSubmit (with API Integration)
 
-**Purpose:** Process form submission, collect form data, and navigate to result page.
+**Purpose:** Process form submission, validate data, submit to SheetDB API, and navigate to result page upon success.
 
-**Type:** Event Handler Function
+**Type:** Async Event Handler Function
 
 **Parameters:**
 - `event` (Event) - Form submission event
 
-**Returns:** `void`
+**Returns:** `Promise<void>`
 
 **Implementation:**
 ```javascript
-const handleFormSubmit = (event) => {
+const handleFormSubmit = async (event) => {
     event.preventDefault();
     const form = event.target;
 
     if (!validateForm(form)) {
-        alert("Please fill in all required fields marked with an asterisk (*). Please check highlighted fields.");
+        setSubmitMessage("Please fill in all required fields marked with an asterisk (*). Please check highlighted fields.");
         return;
     }
 
-    // Collect form values using FormData
-    const fd = new FormData(form);
-    const entries = {};
-    for (const [key, value] of fd.entries()) {
-        // Handle multiple entries with same name (e.g., checkboxes)
-        if (entries.hasOwnProperty(key)) {
-            if (Array.isArray(entries[key])) entries[key].push(value);
-            else entries[key] = [entries[key], value];
-        } else {
-            entries[key] = value;
-        }
-    }
+    setIsSubmitting(true);
+    setSubmitMessage('');
 
-    // Add generated registration number and date
-    entries.regNumber = generateRegistrationNumber();
-    entries.regDate = getTodayDate();
-
-    // Include selected file names
-    entries.proofIdentityName = identityRef.current?.files?.[0]?.name || '';
-    entries.proofDisabilityName = disabilityRef.current?.files?.[0]?.name || '';
-
-    // Persist temporarily
     try {
-        sessionStorage.setItem('lastRegistration', JSON.stringify(entries));
-    } catch (e) {
-        // ignore storage errors
-    }
+        // Collect form values using FormData
+        const fd = new FormData(form);
+        const formData = {};
+        
+        for (const [key, value] of fd.entries()) {
+            // Handle multiple entries with same name
+            if (formData.hasOwnProperty(key)) {
+                if (Array.isArray(formData[key])) {
+                    formData[key].push(value);
+                } else {
+                    formData[key] = [formData[key], value];
+                }
+            } else {
+                formData[key] = value;
+            }
+        }
 
-    // Navigate to result page with state
-    navigate('/register/result', { state: { formData: entries } });
+        // Add generated registration number and date
+        formData.regNumber = generateRegistrationNumber();
+        formData.regDate = getTodayDate();
+
+        // Include selected file names
+        formData.proofIdentityName = identityRef.current?.files?.[0]?.name || '';
+        formData.proofDisabilityName = disabilityRef.current?.files?.[0]?.name || '';
+
+        // Submit to API
+        const result = await submitRegistration(formData);
+
+        if (result.success) {
+            setSubmitMessage(result.message);
+            
+            // Store in sessionStorage for result page
+            try {
+                sessionStorage.setItem('lastRegistration', JSON.stringify(formData));
+            } catch (e) {
+                console.warn('Could not save to sessionStorage:', e);
+            }
+
+            // Navigate to result page after a short delay
+            setTimeout(() => {
+                navigate('/register/result', { state: { formData } });
+            }, 2000);
+        } else {
+            setSubmitMessage(result.message);
+        }
+    } catch (error) {
+        console.error('Form submission error:', error);
+        setSubmitMessage('Something went wrong. Please try again.');
+    } finally {
+        setIsSubmitting(false);
+    }
 };
 ```
 
@@ -783,35 +809,67 @@ const handleFormSubmit = (event) => {
 1. Prevent default form submission
 2. Validate form using `validateForm` function
 3. If validation fails:
-   - Show alert message
+   - Set error message
    - Exit function
-4. Create FormData object from form
-5. Convert FormData to plain object:
-   - Handle multiple values for same key (checkboxes)
-   - Store as array if multiple values
-6. Add generated data:
+4. Set loading state to true
+5. Clear any previous messages
+6. Create FormData object from form
+7. Convert FormData to plain object:
+   - Handle multiple values for same key (checkboxes/radios)
+   - Store as array if multiple values exist
+8. Add generated data:
    - Registration number (12 random digits)
-   - Current date
-   - Uploaded file names
-7. Save to sessionStorage for persistence
-8. Navigate to result page passing data via router state
+   - Current date (YYYY-MM-DD)
+   - Uploaded file names (from refs)
+9. **Submit to API:**
+   - Call `submitRegistration(formData)` API function
+   - Wait for response
+10. If submission successful:
+    - Display success message
+    - Save data to sessionStorage
+    - Navigate to result page after 2-second delay
+11. If submission failed:
+    - Display error message from API
+12. If network/API error:
+    - Log error to console
+    - Display generic error message
+13. Finally: Reset loading state
 
 **State Management:**
+- `isSubmitting` - Controls loading spinner and button disabled state
+- `submitMessage` - Controls success/error message display
 - Uses FormData API for form data collection
 - Stores in sessionStorage as JSON string
 - Passes data via React Router location state
 
 **Side Effects:**
+- Updates component state (loading, message)
 - Writes to sessionStorage
-- Triggers navigation
-- May show alert dialog
+- Makes async API call
+- Triggers navigation (on success)
+- Shows success/error messages
 
 **Dependencies:**
 - `validateForm` function
 - `generateRegistrationNumber` function
 - `getTodayDate` function
+- `submitRegistration` from `../../api/registrationApi`
 - `navigate` from react-router-dom
 - `identityRef` and `disabilityRef` refs
+- State hooks: `setIsSubmitting`, `setSubmitMessage`
+
+**API Integration:**
+- Endpoint: `https://sheetdb.io/api/v1/wgjit0nprbfxe`
+- Method: POST (via `submitRegistration`)
+- Response handling:
+  - `{ success: true, message: "..." }` - Success
+  - `{ success: false, message: "..." }` - Failure (duplicate regNumber, network error, etc.)
+
+**Error Handling:**
+- Validation errors: Display inline message, prevent submission
+- Duplicate registration number: Display API error message
+- Network errors: Display generic error message
+- All errors: Reset loading state in `finally` block
 
 ---
 
@@ -1181,6 +1239,182 @@ useEffect(() => {
 ### Session Management
 - ⚠️ Storing sensitive data in sessionStorage
 - ⚠️ No session timeout implementation
+
+---
+
+## Registration Result Page Functions
+
+### File Location
+```
+Post-React-Migration/pwd-application-system/src/pages/homepage/register-result.jsx
+```
+
+---
+
+#### Function: useEffect - Load Registration Data
+
+**Purpose:** Load registration data from router state or sessionStorage fallback on component mount.
+
+**Type:** React Hook Effect
+
+**Dependencies:** `[location]`
+
+**Implementation:**
+```javascript
+useEffect(() => {
+    // Try location.state first (navigation), then sessionStorage fallback
+    const fromState = location?.state?.formData;
+    if (fromState) {
+        setData(fromState);
+        try { 
+            sessionStorage.setItem('lastRegistration', JSON.stringify(fromState)); 
+        } catch(e) {}
+        return;
+    }
+
+    try {
+        const stored = sessionStorage.getItem('lastRegistration');
+        if (stored) setData(JSON.parse(stored));
+    } catch (e) {
+        // ignore parse errors
+    }
+}, [location]);
+```
+
+**Flow:**
+1. Check if formData exists in router location.state
+2. If found:
+   - Set data state with formData
+   - Backup to sessionStorage for page refresh
+   - Exit early
+3. If not found:
+   - Try to retrieve from sessionStorage
+   - Parse JSON string
+   - Set data state if valid
+4. Ignore any JSON parse errors (fail silently)
+
+**State Updates:**
+- `setData(formData)` - Sets the registration data object
+
+**Side Effects:**
+- Writes to sessionStorage (if data from router state)
+- Reads from sessionStorage (as fallback)
+
+**Use Cases:**
+- User navigates from registration form (has location.state)
+- User refreshes the page (uses sessionStorage fallback)
+
+**Error Handling:**
+- Silently catches JSON parse errors
+- Silently catches sessionStorage errors
+
+---
+
+#### Function: display
+
+**Purpose:** Safely display form field values with fallback for missing/empty data.
+
+**Parameters:**
+- `key` (string) - The field name to display
+- `fallback` (string) - Default value if field is missing (default: `''`)
+
+**Returns:** `string` - The field value or fallback
+
+**Implementation:**
+```javascript
+const display = (key, fallback = '') => {
+    if (!data) return fallback;
+    const val = data[key];
+    if (Array.isArray(val)) return val.join(', ');
+    return val ?? fallback;
+};
+```
+
+**Flow:**
+1. Check if data object exists
+2. If no data, return fallback
+3. Get value for specified key
+4. If value is array (e.g., multiple disabilities):
+   - Join array elements with comma-space
+5. If value is null/undefined:
+   - Return fallback using nullish coalescing
+6. Otherwise return the value
+
+**Usage Examples:**
+```jsx
+// Simple field
+<p><strong>Email:</strong> {display('email', '—')}</p>
+
+// Array field (multiple checkboxes)
+<p><strong>Disability:</strong> {display('disability', 'Not specified')}</p>
+
+// Conditional display
+<p><strong>Name:</strong> {`${display('lastName','')} ${display('firstName','')}`}</p>
+```
+
+**Edge Cases Handled:**
+- Missing data object (returns fallback)
+- Missing field (returns fallback via nullish coalescing)
+- Array values (joins with comma)
+- Empty strings (treated as valid, not replaced with fallback)
+- null/undefined values (returns fallback)
+
+**Return Type:** `string`
+
+---
+
+### Summary of Register-Result Functions
+
+**Component Purpose:**
+Display a formatted summary of submitted PWD registration data.
+
+**Data Flow:**
+1. Receive data from registration form via router state
+2. Backup data to sessionStorage for page refresh support
+3. Display all fields using the `display` helper function
+4. Provide navigation back to home or new registration
+
+**Key Features:**
+- Handles array fields (multiple disabilities)
+- Safe null/undefined handling
+- Page refresh persistence via sessionStorage
+- Fallback values for missing data
+- Formatted display with Bootstrap styling
+
+**State Management:**
+- `data` - Stores the complete registration object
+- Updated via `useEffect` on component mount/location change
+
+**Component Structure:**
+```
+RegisterResult
+├── useEffect (Load data)
+├── display (Helper function)
+└── JSX (Render formatted summary)
+    ├── Applicant Info
+    ├── Contact Info
+    ├── Disability Info
+    ├── Documents Info
+    └── Additional Details
+```
+
+---
+
+## Conclusion
+
+This function documentation provides comprehensive coverage of all custom JavaScript/JSX functions that handle user interactions in the PWD Automated Application System. The documentation includes both Pre-React (Vanilla JS) and Post-React (React) implementations with detailed explanations of parameters, return values, flow, side effects, and dependencies.
+
+**Key Takeaways:**
+- Pre-React uses event listeners and direct DOM manipulation
+- Post-React uses hooks, state management, and React Router
+- API integration uses fetch with async/await patterns
+- Form validation handles multiple input types including checkbox/radio groups
+- Registration data persists using sessionStorage for result page display
+- All functions include proper error handling and user feedback
+
+**Last Updated:** October 12, 2025
+**Version:** 1.1
+**Maintainer:** Development Team
 - ⚠️ No logout functionality documented
 
 ---

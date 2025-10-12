@@ -10,8 +10,11 @@ This document provides comprehensive documentation for all API integrations in t
 2. [Authentication APIs](#authentication-apis)
 3. [Pre-React Migration API Implementation](#pre-react-migration-api-implementation)
 4. [Post-React Migration API Implementation](#post-react-migration-api-implementation)
-5. [API Error Handling](#api-error-handling)
-6. [API Security Considerations](#api-security-considerations)
+5. [Registration Submission API](#registration-submission-api)
+    - [submitRegistration(formData)](#function-submitregistration)
+    - [checkEmailExists(email)](#function-checkemailexists)
+6. [API Error Handling](#api-error-handling)
+7. [API Security Considerations](#api-security-considerations)
 
 ---
 
@@ -631,13 +634,285 @@ curl -X POST "https://sheetdb.io/api/v1/duayfvx2u7zh9" \
 
 ---
 
+## Registration Submission API
+
+### File Location
+```
+Post-React-Migration/pwd-application-system/src/api/registrationApi.js
+```
+
+### Overview
+The Registration API handles PWD application form submissions to SheetDB, including duplicate registration number checks and data validation.
+
+---
+
+### Function: submitRegistration
+
+#### Purpose
+Submit a completed PWD registration form to SheetDB database after validating the registration number is unique.
+
+#### Endpoint
+```
+POST https://sheetdb.io/api/v1/wgjit0nprbfxe
+GET  https://sheetdb.io/api/v1/wgjit0nprbfxe/search?regNumber={regNumber}
+```
+
+#### Parameters
+- `formData` (Object) - Registration form data object containing all applicant information
+
+**Required Fields:**
+```javascript
+{
+  regNumber: string,        // 12-digit registration number
+  regDate: string,          // Registration date (YYYY-MM-DD)
+  lastName: string,         // Applicant's last name
+  firstName: string,        // Applicant's first name
+  middleName: string,       // Applicant's middle name (optional)
+  disability: string|Array, // Type(s) of disability
+  street: string,           // Street address
+  barangay: string,         // Barangay
+  municipality: string,     // Municipality/City
+  province: string,         // Province
+  region: string,           // Region
+  tel: string,              // Telephone (optional)
+  mobile: string,           // Mobile number
+  email: string,            // Email address
+  dob: string,              // Date of birth
+  sex: string,              // Gender
+  nationality: string,      // Nationality
+  blood: string,            // Blood type (optional)
+  civil: string,            // Civil status
+  emergencyName: string,    // Emergency contact name
+  emergencyPhone: string,   // Emergency contact phone
+  emergencyRelationship: string, // Relationship to applicant
+  proofIdentityName: string,     // ID document filename (optional)
+  proofDisabilityName: string    // Medical cert filename (optional)
+}
+```
+
+#### Returns
+`Promise<Object>` - Response object with success status and message
+
+**Success Response:**
+```javascript
+{
+  success: true,
+  message: "Registration submitted successfully!"
+}
+```
+
+**Error Responses:**
+```javascript
+// Duplicate registration number
+{
+  success: false,
+  message: "Registration number already exists. Please try again."
+}
+
+// Submission failure
+{
+  success: false,
+  message: "Registration failed. Please try again."
+}
+
+// Network/server error
+{
+  success: false,
+  message: "Something went wrong. Please try again later."
+}
+```
+
+#### Implementation
+```javascript
+const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
+
+export const submitRegistration = async (formData) => {
+    try {
+        // Check if registration number already exists
+        const checkResponse = await fetch(`${sheetdbUrl}/search?regNumber=${formData.regNumber}`);
+        const existingRegistrations = await checkResponse.json();
+
+        if (existingRegistrations.length > 0) {
+            return {
+                success: false,
+                message: "Registration number already exists. Please try again."
+            };
+        }
+
+        // Prepare data for SheetDB to match its expected format
+        const registrationData = {
+            data: [
+                {
+                    regNumber: formData.regNumber,
+                    regDate: formData.regDate,
+                    lastName: formData.lastName,
+                    firstName: formData.firstName,
+                    middleName: formData.middleName || '',
+                    disability: formData.disability,
+                    street: formData.street,
+                    barangay: formData.barangay,
+                    municipality: formData.municipality,
+                    province: formData.province,
+                    region: formData.region,
+                    tel: formData.tel || '',
+                    mobile: formData.mobile,
+                    email: formData.email,
+                    dob: formData.dob,
+                    sex: formData.sex,
+                    nationality: formData.nationality,
+                    blood: formData.blood || '',
+                    civil: formData.civil,
+                    emergencyName: formData.emergencyName,
+                    emergencyPhone: formData.emergencyPhone,
+                    emergencyRelationship: formData.emergencyRelationship,
+                    proofIdentityName: formData.proofIdentityName || '',
+                    proofDisabilityName: formData.proofDisabilityName || '',
+                    submissionDate: new Date().toISOString()
+                }
+            ]
+        };
+
+        // Submit registration data
+        const addResponse = await fetch(sheetdbUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(registrationData)
+        });
+
+        if (addResponse.ok) {
+            return {
+                success: true,
+                message: "Registration submitted successfully!"
+            };
+        } else {
+            return {
+                success: false,
+                message: "Registration failed. Please try again."
+            };
+        }
+    } catch (error) {
+        console.error("Registration error:", error);
+        return {
+            success: false,
+            message: "Something went wrong. Please try again later."
+        };
+    }
+};
+```
+
+#### Flow Diagram
+```
+1. Receive formData from registration form
+2. Check if regNumber exists in database
+   ├─ If exists → Return error (duplicate)
+   └─ If not exists → Continue
+3. Format data for SheetDB API
+4. Send POST request with registration data
+5. Check response status
+   ├─ If OK → Return success message
+   └─ If error → Return failure message
+6. Handle any network/API errors
+```
+
+#### Usage Example (React Component)
+```javascript
+import { submitRegistration } from '../../api/registrationApi';
+
+const handleFormSubmit = async (event) => {
+    event.preventDefault();
+    const form = event.target;
+    
+    // Validate form
+    if (!validateForm(form)) {
+        setSubmitMessage("Please fill in all required fields.");
+        return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+        // Collect form data
+        const formData = {
+            regNumber: generateRegistrationNumber(),
+            regDate: getTodayDate(),
+            // ... other form fields
+        };
+
+        // Submit to API
+        const result = await submitRegistration(formData);
+
+        if (result.success) {
+            setSubmitMessage(result.message);
+            // Navigate to result page
+            navigate('/register/result', { state: { formData } });
+        } else {
+            setSubmitMessage(result.message);
+        }
+    } catch (error) {
+        console.error(error);
+        setSubmitMessage("An error occurred while submitting the form.");
+    } finally {
+        setIsSubmitting(false);
+    }
+};
+```
+
+---
+
+### Function: checkEmailExists
+
+#### Purpose
+Check if an email address already exists in the registration database.
+
+#### Endpoint
+```
+GET https://sheetdb.io/api/v1/wgjit0nprbfxe/search?email={email}
+```
+
+#### Parameters
+- `email` (string) - Email address to check
+
+#### Returns
+`Promise<boolean>` - `true` if email exists, `false` otherwise
+
+#### Implementation
+```javascript
+export const checkEmailExists = async (email) => {
+    try {
+        const response = await fetch(`${sheetdbUrl}/search?email=${email}`);
+        const existingUsers = await response.json();
+        return existingUsers.length > 0;
+    } catch (error) {
+        console.error("Error checking email:", error);
+        return false;
+    }
+};
+```
+
+#### Usage Example
+```javascript
+import { checkEmailExists } from '../../api/registrationApi';
+
+const validateEmail = async (email) => {
+    const exists = await checkEmailExists(email);
+    if (exists) {
+        alert("This email is already registered.");
+        return false;
+    }
+    return true;
+};
+```
+
+---
+
 ## Future API Enhancements
 
 ### Planned Features
-1. **Registration Form Submission API**
-   - Store PWD application data
-   - File upload support
-   - Email notifications
+1. **File Upload API**
+   - Upload actual files to cloud storage
+   - Store file URLs in database
 
 2. **Application Status API**
    - Check application status by registration number
@@ -652,12 +927,16 @@ curl -X POST "https://sheetdb.io/api/v1/duayfvx2u7zh9" \
    - Forgot password functionality
    - Email verification
 
+5. **Email Notification API**
+   - Send confirmation emails
+   - Application status updates
+
 ---
 
 ## Conclusion
 
-This API documentation covers all current implementations of SheetDB API in both Pre-React and Post-React versions of the PWD Automated Application System. The documentation will be updated as new APIs are implemented.
+This API documentation covers all current implementations of SheetDB API in both Pre-React and Post-React versions of the PWD Automated Application System, including the newly implemented Registration Submission API. The documentation will be updated as new APIs are implemented.
 
 **Last Updated:** October 12, 2025
-**Version:** 1.0
+**Version:** 1.1
 **Maintainer:** Development Team

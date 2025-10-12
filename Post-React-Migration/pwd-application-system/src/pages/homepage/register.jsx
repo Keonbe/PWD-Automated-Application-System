@@ -992,11 +992,6 @@ export default function Register() {
           </p>
         </section>
       </form>
-
-      {/* Temporary navigation to a basic result template */}
-      <div className="mt-4">
-        <Link className="btn btn-success" to="/register/result">View Registration Result (Template)</Link>
-      </div>
     </main>
   );
 }
