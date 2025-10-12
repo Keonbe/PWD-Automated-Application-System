@@ -490,6 +490,9 @@ npm install react-router-hash-link
 
 # Font Awesome Icons and Fonts
 npm install @fortawesome/fontawesome-free --save # Defunct Command: npm install @fortawesome/fontawesome-free; Doesn't save to package.json
+
+# Recharts
+npm install recharts
 ```
 
 ---
