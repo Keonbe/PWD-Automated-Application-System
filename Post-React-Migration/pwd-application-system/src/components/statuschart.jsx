@@ -7,27 +7,48 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
+
+const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
 
 export default function StatusChart() {
   const [data, setData] = useState([]);
 
+  // Define bar colors (keys are lowercase)
+  const barColors = {
+    approved: "#198754", // green
+    pending: "#ffc107", // yellow
+    rejected: "#dc3545", // red
+    unknown: "#6c757d", // grey
+  };
+
   useEffect(() => {
-    fetch("https://sheetdb.io/api/v1/wgjit0nprbfxe")
-      .then((res) => res.json())
-      .then((rows) => {
-        const counts = { Denied: 0, Accepted: 0, Pending: 0 };
+    const fetchData = async () => {
+      try {
+        const res = await fetch(SHEETDB_URL);
+        const rows = await res.json();
+
+        // Count statuses
+        const counts = { approved: 0, pending: 0, rejected: 0, unknown: 0 };
         rows.forEach((row) => {
-          const status = (row.status || "").trim();
-          if (counts[status] !== undefined) counts[status]++;
+          const status = (row.status || "unknown").trim().toLowerCase();
+          counts[status] = (counts[status] || 0) + 1;
         });
+
+        // Convert counts to array for chart
         const chartData = Object.entries(counts).map(([name, value]) => ({
-          name,
+          name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize for display
           value,
         }));
+
         setData(chartData);
-      })
-      .catch((err) => console.error("Error fetching data:", err));
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
@@ -40,38 +61,45 @@ export default function StatusChart() {
         padding: "1.5em",
       }}>
       <h6 className="mb-3 text-center">Application Status Overview</h6>
-      <ResponsiveContainer width="100%" height={250}>
-        <BarChart
-          data={data}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-          <XAxis dataKey="name" />
-          <YAxis allowDecimals={false} />
-          <Tooltip />
-          <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-            {data.map((entry, index) => {
-              const colors = {
-                Denied: "#dc3545",
-                Accepted: "#0d6efd",
-                Pending: "#ffc107",
-              };
+      {data.length > 0 ? (
+        <>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart
+              data={data}
+              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+              <XAxis dataKey="name" />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                {data.map((entry, index) => {
+                  const key = entry.name.toLowerCase();
+                  return (
+                    <Cell key={index} fill={barColors[key] || "#6c757d"} />
+                  );
+                })}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+
+          <div
+            className="d-flex justify-content-center mt-2"
+            style={{ gap: "1.5em", fontSize: "0.9em" }}>
+            {data.map((entry) => {
+              const key = entry.name.toLowerCase();
               return (
-                <cell
-                  key={`cell-${index}`}
-                  fill={colors[entry.name] || "#6c757d"}
-                />
+                <span
+                  key={entry.name}
+                  style={{ color: barColors[key] || "#6c757d" }}>
+                  ● {entry.name}
+                </span>
               );
             })}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-      <div
-        className="d-flex justify-content-center mt-2"
-        style={{ gap: "1.5em", fontSize: "0.9em" }}>
-        <span style={{ color: "#dc3545" }}>● Denied</span>
-        <span style={{ color: "#0d6efd" }}>● Accepted</span>
-        <span style={{ color: "#ffc107" }}>● Pending</span>
-      </div>
+          </div>
+        </>
+      ) : (
+        <p className="text-center text-muted">Loading chart data...</p>
+      )}
     </div>
   );
 }

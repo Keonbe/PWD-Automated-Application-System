@@ -1,17 +1,16 @@
 /* ===== ADMIN DASHBOARD STYLES ===== */
-
 .admin-page {
   display: flex;
   flex-direction: row;
   min-height: 100vh;
-  background-color: #f8f9fc;
+  background-color: #f1f3f7;
   font-family: "Poppins", sans-serif;
 }
 
 /* ===== SIDEBAR ===== */
 .admin-sidebar {
   width: 250px;
-  background: linear-gradient(180deg, #0d6efd 0%, #0046b3 100%);
+  background: linear-gradient(180deg, #0d6efd 0%, #0a58ca 100%);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -20,19 +19,20 @@
   position: sticky;
   top: 0;
   height: 100vh;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+  border-radius: 0 1rem 1rem 0;
 }
 
 .admin-sidebar h4 {
   text-align: center;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.5px;
+  margin-bottom: 2rem;
 }
 
 .sidebar-nav {
   list-style: none;
   padding: 0;
-  margin-top: 2rem;
 }
 
 .sidebar-nav li {
@@ -42,17 +42,24 @@
 .sidebar-nav a {
   text-decoration: none;
   color: #e4e9f7;
-  display: block;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  border-radius: 0.5rem;
   font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.sidebar-nav a i {
+  font-size: 1.1rem;
 }
 
 .sidebar-nav a:hover,
 .sidebar-nav a.active {
-  background-color: #fff;
-  color: #0d6efd;
+  background: linear-gradient(90deg, #ffffff33, #ffffff55);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 /* Sidebar Footer */
@@ -60,6 +67,7 @@
   text-align: center;
   font-size: 0.85rem;
   opacity: 0.85;
+  margin-top: 2rem;
 }
 
 /* ===== MAIN CONTENT ===== */
@@ -85,28 +93,29 @@
 /* ===== SUMMARY CARDS ===== */
 .summary-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
 .summary-card {
   background: #fff;
-  border: none;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   text-align: center;
   padding: 1.5rem 1rem;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .summary-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .summary-card i {
-  font-size: 1.8rem;
+  font-size: 2rem;
   margin-bottom: 0.5rem;
+  color: #0d6efd;
 }
 
 .summary-card h6 {
@@ -115,7 +124,7 @@
 }
 
 .summary-card p {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
 }
@@ -123,8 +132,8 @@
 /* ===== CHART SECTION ===== */
 .chart-card {
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -136,11 +145,18 @@
   margin-bottom: 1rem;
 }
 
+/* Chart legend circles */
+.chart-legend span {
+  font-weight: 600;
+  margin-right: 1rem;
+  font-size: 0.9rem;
+}
+
 /* ===== TABLE ===== */
 .table-card {
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 1.5rem;
 }
 
@@ -153,10 +169,14 @@
   vertical-align: middle;
 }
 
+.table tbody tr:hover {
+  background-color: #f8f9fc;
+}
+
 .badge {
   font-size: 0.85rem;
   padding: 0.5em 0.75em;
-  border-radius: 8px;
+  border-radius: 0.75rem;
   text-transform: capitalize;
 }
 
@@ -174,6 +194,7 @@
     align-items: center;
     padding: 1rem;
     position: relative;
+    border-radius: 0;
   }
 
   .sidebar-nav {
