@@ -46,6 +46,7 @@ export default function RegisterResult() {
                     <h2 className="h6 text-muted">Applicant</h2>
                     <p className="mb-1"><strong>Full Name:</strong> {`${display('lastName','')}${display('firstName','') ? ', ' + display('firstName') : ''}${display('middleName') ? ' ' + display('middleName') : ''}`.trim() || '—'}</p>
                     <p className="mb-1"><strong>Registration #:</strong> {display('regNumber','—')}</p>
+                    <p className="mb-1"><strong>Temporary Password:</strong> {display('password', display('generatedPassword','—') )}</p>
                     <p className="mb-0"><strong>Date:</strong> {display('regDate','—')}</p>
                   </div>
                 </div>
@@ -73,6 +74,7 @@ export default function RegisterResult() {
                   <div className="border rounded p-3">
                     <h2 className="h6 text-muted">Documents</h2>
                     <p className="mb-1"><strong>ID Document:</strong> {display('proofIdentityName', 'No file')}</p>
+                    <p className="mb-1"><strong>Uploaded Files:</strong> {display('uploadedFilenames', display('proofIdentityName','No file'))}</p>
                     <p className="mb-0"><strong>Blood Type:</strong> {display('blood','—')}</p>
                   </div>
                 </div>

@@ -45,13 +45,26 @@ export default function Register() {
         }
       }
 
-      // Add generated registration number and date
+      //Add generated registration number and date
       formData.regNumber = generateRegistrationNumber();
       formData.regDate = getTodayDate();
+
+      //Generate an 8-digit numeric temporary password and include it
+      formData.generatedPassword = generatePassword8();
 
       // Include selected file names
       formData.proofIdentityName = identityRef.current?.files?.[0]?.name || '';
       formData.proofDisabilityName = disabilityRef.current?.files?.[0]?.name || '';
+
+      //Mirror file name fields to match SheetDB column names
+      formData.proofIdentity = formData.proofIdentityName;
+      formData.proofDisability = formData.proofDisabilityName;
+
+      //Ensure a default status of Denied
+      formData.status = 'Denied';
+
+      //Also mirror generated password to 'password' (sheet column expected)
+      formData.password = formData.generatedPassword;
 
       // Submit to API
       const result = await submitRegistration(formData);
@@ -148,6 +161,15 @@ export default function Register() {
       result += Math.floor(Math.random() * 10); //Random number 0-9
     }
     return result;
+  };
+
+  // Generate an 8-digit numeric password (characters 0-9)
+  const generatePassword8 = () => {
+    let p = '';
+    for (let i = 0; i < 8; i++) {
+      p += Math.floor(Math.random() * 10);
+    }
+    return p;
   };
 
   //Get today's date in YYYY-MM-DD format

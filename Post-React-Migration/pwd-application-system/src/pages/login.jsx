@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 /** TODO: JS CODE*/ 
 export default function Login() {
     const navigate = useNavigate();
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [adminEmail, setAdminEmail] = useState('');
     const [adminPassword, setAdminPassword] = useState('');
@@ -27,7 +27,7 @@ export default function Login() {
             return;
         }
         if (sessionStorage.getItem("adminLoggedIn") || localStorage.getItem("adminLoggedIn")) {
-            navigate('/testadmin', { replace: true });
+            navigate('/adminpage', { replace: true });
             return;
         }
     }, [navigate]);
@@ -37,25 +37,28 @@ export default function Login() {
         setIsLoading(true);
         setLoginMessage('');
 
-        if (!username || !password) {
+        if (!email || !password) {
             setLoginMessage('<div class="alert alert-danger">Please enter both username and password.</div>');
             setIsLoading(false);
             return;
         }
 
         try {
-            const response = await fetch(`${sheetdbUrl}/search?username=${username}&password=${password}`);
+            // Use the 'email' and 'password' columns from the sheet
+            const qEmail = encodeURIComponent(email.trim().toLowerCase());
+            const qPassword = encodeURIComponent(password);
+            const response = await fetch(`${sheetdbUrl}/search?email=${qEmail}&password=${qPassword}`);
             const data = await response.json();
-            
-            if (data.length > 0) {
-                sessionStorage.setItem("loggedInUser", username);
+
+            if (data && data.length > 0) {
+                // Store minimal info in session
+                sessionStorage.setItem("loggedInUser", qEmail);
                 setLoginMessage('<div class="alert alert-success">Login successful! Redirecting...</div>');
                 setTimeout(() => {
-                    // navigate within the SPA; replace so back doesn't return to login
-                    navigate('/UserPage', { replace: true });
+                    navigate('/userpage', { replace: true });
                 }, 1000);
             } else {
-                setLoginMessage('<div class="alert alert-danger">Invalid username or password. Please try again.</div>');
+                setLoginMessage('<div class="alert alert-danger">Invalid email or password. Please try again.</div>');
             }
         } catch (error) {
             console.error("Error:", error);
@@ -77,10 +80,12 @@ export default function Login() {
         }
 
         try {
-            const response = await fetch(`${adminSheetdbUrl}/search?username=${adminEmail}&password=${adminPassword}`);
+            const qAdminEmail = encodeURIComponent(adminEmail.trim().toLowerCase());
+            const qAdminPassword = encodeURIComponent(adminPassword);
+            const response = await fetch(`${adminSheetdbUrl}/search?email=${qAdminEmail}&password=${qAdminPassword}`);
             const data = await response.json();
             
-            if (data.length > 0) {
+            if (data && data.length > 0) {
                 if (adminRemember) {
                     localStorage.setItem("adminLoggedIn", adminEmail);
                 } else {
@@ -89,7 +94,7 @@ export default function Login() {
                 
                 setAdminLoginMessage('<div class="alert alert-success m-3 p-3">Admin login successful! Redirecting...</div>');
                 setTimeout(() => {
-                    navigate('/testadmin', { replace: true });
+                    navigate('/adminpage', { replace: true });
                 }, 1000);
             } else {
                 setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Invalid admin credentials. Please try again.</div>');
@@ -138,8 +143,8 @@ export default function Login() {
                                             aria-describedby="username-addon"
                                             autoComplete="username"
                                             required
-                                            value={username}
-                                            onChange={(e) => setUsername(e.target.value)}
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
                                         />
                                     </div>
                                 </div>
