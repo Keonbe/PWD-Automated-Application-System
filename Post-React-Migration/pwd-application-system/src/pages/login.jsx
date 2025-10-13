@@ -17,13 +17,14 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [adminIsLoading, setAdminIsLoading] = useState(false);
 
-    const sheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9";
-    const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9";
+    const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe"; //user
+    const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; //admin
 
     useEffect(() => { // Check if already logged in
-        if (sessionStorage.getItem("loggedInUser")) {
+        // Support either legacy key 'loggedInUser' (email) or new key 'userId' (regNumber)
+        if (sessionStorage.getItem("userId") || sessionStorage.getItem("loggedInUser")) {
             // SPA navigation (avoid full page reload)
-            navigate('/UserPage', { replace: true });
+            navigate('/userpage', { replace: true });
             return;
         }
         if (sessionStorage.getItem("adminLoggedIn") || localStorage.getItem("adminLoggedIn")) {
@@ -51,8 +52,22 @@ export default function Login() {
             const data = await response.json();
 
             if (data && data.length > 0) {
-                // Store minimal info in session
+                //Prefer storing the user's regNumber as userId so other APIs can find the record
+                const userRecord = data[0];
+                try {
+                    if (userRecord.regNumber) {
+                        sessionStorage.setItem('userId', userRecord.regNumber);
+                    }
+                } catch (e) {
+                    console.warn('Could not store userId in sessionStorage', e);
+                }
+
+                //Keep legacy email key for backward compatibility
                 sessionStorage.setItem("loggedInUser", qEmail);
+
+                //Also store the fetched user data for immediate use if desired
+                try { sessionStorage.setItem('userData', JSON.stringify(userRecord)); } catch (e) {}
+
                 setLoginMessage('<div class="alert alert-success">Login successful! Redirecting...</div>');
                 setTimeout(() => {
                     navigate('/userpage', { replace: true });

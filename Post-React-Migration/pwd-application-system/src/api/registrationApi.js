@@ -1,8 +1,8 @@
 // Api for handling registration submissions from register.jsx to SheetDB
 // Modified Signup.js 
 
-//const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe"; //Orig API (Marqus)
-const sheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; //Test API (Kean)
+const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe"; //Orig API (Marqus) User
+//const sheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; //Test API (Kean) Admin
 
 export const submitRegistration = async (formData) => {
     try {
@@ -49,9 +49,8 @@ export const submitRegistration = async (formData) => {
                     // Store password under 'password' column
                     password: formData.password || formData.generatedPassword || '',
                     // Default status column (set in formData to 'Denied' by default)
-                    status: formData.status || 'Denied',
+                    status: formData.status || 'Denied'
                     //Note: As we are only SheetDB, to compromise we are only storing file names temporarily for midterm.
-                    submissionDate: new Date().toISOString()
                 }
             ]
         };

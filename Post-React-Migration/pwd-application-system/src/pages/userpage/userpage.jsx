@@ -1,23 +1,9 @@
 import '../../assets/styles/userpage-styles.css';
-import { useState } from 'react';
+import { useState,  useEffect  } from 'react';
+import { getCurrentUserData } from "../../api/userApi";
 
 export default function UserPage() {
-  const [isSidebarActive, setSidebarActive] = useState(false);
-  const [activeNav, setActiveNav] = useState(0);
-
-  const handleNavClick = (index) => {
-    setActiveNav(index);
-    if (isSidebarActive) {
-      setSidebarActive(false);
-    }
-  };
-
-  const navItems = [
-    { icon: 'fas fa-home', text: 'Dashboard' },
-    { icon: 'fas fa-user', text: 'Profile' },
-    { icon: 'fas fa-question-circle', text: 'Help' },
-    { icon: 'fas fa-sign-out-alt', text: 'Logout' }
-  ];
+  
 
   return (
     <div className="user-dashboard-wrapper">
@@ -36,6 +22,16 @@ export default function UserPage() {
         </div>
       </header>
 
+      {/* Dev debug: show raw API response if available */}
+      {process.env.NODE_ENV !== 'production' && userData && userData._raw && (
+        <div className="container px-4 mt-2">
+          <div className="alert alert-secondary small">
+            <strong>Dev debug - raw API response:</strong>
+            <pre style={{whiteSpace: 'pre-wrap', maxHeight: 200, overflow: 'auto'}}>{JSON.stringify(userData._raw, null, 2)}</pre>
+          </div>
+        </div>
+      )}
+
       {/* Overlay for mobile */}
       <div 
         className={`user-overlay ${isSidebarActive ? 'user-overlay-active' : ''}`}
@@ -49,24 +45,22 @@ export default function UserPage() {
             <div className="user-avatar">
               <i className="fas fa-user"></i>
             </div>
-            <div className="user-name">Juan Dela Cruz</div>
-            <span className="user-status">Pending</span>
+            <div className="user-name">{userData.firstName} {userData.lastName}</div>
+            <span className="user-status">{userData.status}</span>
           </div>
 
           <ul className="user-nav-menu">
             {navItems.map((item, index) => (
               <li key={index} className="user-nav-item">
-                <a 
-                  href="#" 
+                <button
+                  type="button"
                   className={`user-nav-link ${activeNav === index ? 'user-nav-link-active' : ''}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavClick(index);
-                  }}
+                  onClick={() => handleNavClick(index)}
+                  aria-pressed={activeNav === index}
                 >
-                  <i className={item.icon}></i>
+                  <i className={item.icon} aria-hidden="true"></i>
                   <span>{item.text}</span>
-                </a>
+                </button>
               </li>
             ))}
           </ul>
@@ -82,7 +76,7 @@ export default function UserPage() {
             <div className="d-flex justify-content-between align-items-start flex-wrap gap-3">
               <div>
                 <h3 className="user-card-title">PWD ID Application</h3>
-                <p className="mb-2"><strong>Registration No:</strong> PWD-2024-001234</p>
+                <p className="mb-2"><strong>Registration No:</strong> {userData.regNumber}</p>
                 <span className="user-status-badge">
                   <i className="fas fa-clock"></i>
                   Under Review
@@ -90,7 +84,7 @@ export default function UserPage() {
               </div>
               <div className="text-end">
                 <div className="user-info-label">Date Submitted</div>
-                <div className="user-info-value">March 15, 2024</div>
+                <div className="user-info-value">{userData.regDate}</div>
               </div>
             </div>
           </div>
@@ -110,31 +104,84 @@ export default function UserPage() {
                 <span>Issuance</span>
               </div>
             </div>
-            <p className="text-muted mb-0">Expected completion: <strong>March 25, 2024</strong></p>
           </div>
 
           {/* Application Details */}
           <div className="user-card">
-            <h3 className="user-card-title">Application Details</h3>
+            <h3 className="user-card-title">Personal Information</h3>
             <div className="user-info-row">
               <span className="user-info-label">Full Name</span>
-              <span className="user-info-value">Juan M. Dela Cruz</span>
+              <span className="user-info-value">{userData.firstName} {userData.middleName} {userData.lastName}</span>
             </div>
             <div className="user-info-row">
               <span className="user-info-label">Date of Birth</span>
-              <span className="user-info-value">January 15, 1985</span>
+              <span className="user-info-value">{userData.dob}</span>
             </div>
             <div className="user-info-row">
-              <span className="user-info-label">Disability Type</span>
-              <span className="user-info-value">Physical Disability</span>
+              <span className="user-info-label">Sex</span>
+              <span className="user-info-value">{userData.sex}</span>
+            </div>
+            <div className="user-info-row">
+              <span className="user-info-label">Civil Status</span>
+              <span className="user-info-value">{userData.civil}</span>
+            </div>
+            <div className="user-info-row">
+              <span className="user-info-label">Nationality</span>
+              <span className="user-info-value">{userData.nationality}</span>
+            </div>
+            <div className="user-info-row">
+              <span className="user-info-label">Blood Type</span>
+              <span className="user-info-value">{userData.blood}</span>
+            </div>
+          </div>
+
+          <div className="user-card">
+            <h3 className="user-card-title">Contact Information</h3>
+            <div className="user-info-row">
+              <span className="user-info-label">Address</span>
+              <span className="user-info-value">
+                {userData.street}, {userData.barangay}, {userData.municipality}, {userData.province}, {userData.region}
+              </span>
+            </div>
+            {userData.mobile && (
+              <div className="user-info-row">
+                <span className="user-info-label">Mobile Number</span>
+                <span className="user-info-value">{userData.mobile}</span>
+              </div>
+            )}
+            {userData.tel && (
+              <div className="user-info-row">
+                <span className="user-info-label">Telephone</span>
+                <span className="user-info-value">{userData.tel}</span>
+              </div>
+            )}
+            <div className="user-info-row">
+              <span className="user-info-label">Email</span>
+              <span className="user-info-value">{userData.email}</span>
+            </div>
+          </div>
+
+          <div className="user-card">
+            <h3 className="user-card-title">Emergency Contact</h3>
+            <div className="user-info-row">
+              <span className="user-info-label">Name</span>
+              <span className="user-info-value">{userData.emergencyName}</span>
             </div>
             <div className="user-info-row">
               <span className="user-info-label">Contact Number</span>
-              <span className="user-info-value">0917-123-4567</span>
+              <span className="user-info-value">{userData.emergencyPhone}</span>
             </div>
             <div className="user-info-row">
-              <span className="user-info-label">Assigned Officer</span>
-              <span className="user-info-value">Maria Santos</span>
+              <span className="user-info-label">Relationship</span>
+              <span className="user-info-value">{userData.emergencyRelationship}</span>
+            </div>
+          </div>
+
+          <div className="user-card">
+            <h3 className="user-card-title">Disability Information</h3>
+            <div className="user-info-row">
+              <span className="user-info-label">Type of Disability</span>
+              <span className="user-info-value">{userData.disability}</span>
             </div>
           </div>
 

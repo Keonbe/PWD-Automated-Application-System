@@ -49,6 +49,12 @@ export default function Register() {
       formData.regNumber = generateRegistrationNumber();
       formData.regDate = getTodayDate();
 
+  //Ensure disabled location inputs are included since disabled inputs are not
+  //serialized by FormData. Use the fixed values to match the readOnly inputs.
+  formData.municipality = formData.municipality || "Dasmariñas";
+  formData.province = formData.province || "Cavite";
+  formData.region = formData.region || "IV-A";
+
       //Generate an 8-digit numeric temporary password and include it
       formData.generatedPassword = generatePassword8();
 
@@ -478,6 +484,9 @@ export default function Register() {
                   placeholder="Municipality/City"
                   aria-label="Municipality or City"
                   required
+                  value="Dasmariñas"
+                  readOnly
+                  disabled
                 />
               </div>
               <div className="col-md-6">
@@ -489,6 +498,9 @@ export default function Register() {
                   placeholder="Province"
                   aria-label="Province"
                   required
+                  value="Cavite"
+                  readOnly
+                  disabled
                 />
               </div>
               <div className="col-md-6">
@@ -500,6 +512,9 @@ export default function Register() {
                   placeholder="Region"
                   aria-label="Region"
                   required
+                  value="IV-A"
+                  readOnly
+                  disabled
                 />
               </div>
             </div>
