@@ -1,9 +1,168 @@
 import '../../assets/styles/userpage-styles.css';
-import { useState,  useEffect  } from 'react';
-import { getCurrentUserData } from "../../api/userApi";
+import { useState, useEffect } from 'react';
+import { getCurrentUserData, logoutUser } from "../../api/userApi";
+import { useNavigate } from 'react-router-dom';
 
 export default function UserPage() {
-  
+  const navigate = useNavigate();
+  const [isSidebarActive, setSidebarActive] = useState(false);
+  const [activeNav, setActiveNav] = useState(0);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch user data on mount
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        console.log('� [UserPage] Starting to fetch user data...');
+        
+        // Check if user is logged in
+        const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+        if (!userId) {
+          console.warn('⚠️ [UserPage] No userId found, redirecting to login');
+          navigate('/login', { replace: true });
+          return;
+        }
+        
+        console.log('✅ [UserPage] Found userId:', userId);
+        
+        // Fetch user data from API
+        const data = await getCurrentUserData();
+        console.log('📦 [UserPage] User data loaded successfully:', data);
+        
+        setUserData(data);
+        setError(null);
+        
+      } catch (err) {
+        console.error('❌ [UserPage] Failed to load user data:', err.message);
+        setError(err.message);
+        
+        // If API fails, use demo data for development
+        console.log('🔄 [UserPage] Using demo data as fallback');
+        setUserData(getDemoUserData());
+        
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, [navigate]);
+
+  const getDemoUserData = () => {
+    return {
+      // Use same formats as register.jsx: 12-digit numeric regNumber and YYYY-MM-DD dates
+      regNumber: '252175464394',
+      regDate: '2025-10-13',
+      lastName: 'Dela Cruz',
+      firstName: 'Juan',
+      middleName: 'M',
+      disability: 'Physical Disability',
+      street: '123 Main St',
+  barangay: 'Sample Barangay',
+  // Match register.jsx defaults (disabled inputs)
+  municipality: 'Dasmariñas',
+      province: 'Cavite',
+      region: 'IV-A',
+      tel: '(02) 8123-4567',
+      mobile: '0917-123-4567',
+      email: 'juan.delacruz@email.com',
+      dob: '1985-01-15',
+      sex: 'Male',
+      nationality: 'Filipino',
+      blood: 'O+',
+      civil: 'Single',
+      emergencyName: 'Maria Dela Cruz',
+      emergencyPhone: '0918-765-4321',
+      emergencyRelationship: 'Mother',
+      // Match upload fields: filenames are stored in proofIdentity/proofDisability
+      proofIdentityName: 'sample-id.png',
+      proofDisabilityName: 'sample-medcert.png',
+      proofIdentity: 'sample-id.png',
+      proofDisability: 'sample-medcert.png',
+      // Registration flow fields
+      generatedPassword: '12345678',
+      password: '12345678',
+      // Default status used by the registration form
+      status: 'Denied'
+    };
+  };
+
+  const handleNavClick = (index) => {
+    setActiveNav(index);
+    if (isSidebarActive) {
+      setSidebarActive(false);
+    }
+
+    // Handle navigation actions
+    switch(index) {
+      case 1: // Help
+        showHelp();
+        break;
+      case 2: // Logout
+        handleLogout();
+        break;
+      default:
+        // no-op for other indices (e.g., 0 = Dashboard)
+        break;
+    }
+  };
+
+  const showHelp = () => {
+    // Show help modal or page
+    alert('Help information will be displayed here.');
+  };
+
+  const handleLogout = async () => {
+    try {
+      console.log('🚪 [UserPage] Logging out...');
+      logoutUser();
+      navigate('/login', { replace: true });
+    } catch (err) {
+      console.error('❌ [UserPage] Logout error:', err);
+      // Force redirect even if error
+      navigate('/login', { replace: true });
+    }
+  };
+
+  const navItems = [
+    { icon: 'fas fa-home', text: 'Dashboard' },
+    { icon: 'fas fa-question-circle', text: 'Help' },
+    { icon: 'fas fa-sign-out-alt', text: 'Logout' }
+  ];
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="user-dashboard-wrapper">
+        <div className="d-flex justify-content-center align-items-center" style={{height: '100vh'}}>
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if no user data
+  if (!userData) {
+    return (
+      <div className="user-dashboard-wrapper">
+        <div className="d-flex justify-content-center align-items-center" style={{height: '100vh'}}>
+          <div className="text-center">
+            <h3>Error loading user data</h3>
+            <button 
+              className="btn btn-primary mt-3"
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="user-dashboard-wrapper">
@@ -22,7 +181,17 @@ export default function UserPage() {
         </div>
       </header>
 
-      {/* Dev debug: show raw API response if available */}
+      {/* Error banner if API failed */}
+      {error && (
+        <div className="container px-4 mt-2">
+          <div className="alert alert-warning">
+            <i className="fas fa-exclamation-triangle me-2"></i>
+            <strong>Note:</strong> Could not load live data ({error}). Showing demo data.
+          </div>
+        </div>
+      )}
+
+      {/* Dev debug: show raw API response if available 
       {process.env.NODE_ENV !== 'production' && userData && userData._raw && (
         <div className="container px-4 mt-2">
           <div className="alert alert-secondary small">
@@ -30,7 +199,7 @@ export default function UserPage() {
             <pre style={{whiteSpace: 'pre-wrap', maxHeight: 200, overflow: 'auto'}}>{JSON.stringify(userData._raw, null, 2)}</pre>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Overlay for mobile */}
       <div 

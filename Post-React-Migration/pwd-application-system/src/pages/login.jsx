@@ -52,21 +52,27 @@ export default function Login() {
             const data = await response.json();
 
             if (data && data.length > 0) {
-                //Prefer storing the user's regNumber as userId so other APIs can find the record
                 const userRecord = data[0];
-                try {
-                    if (userRecord.regNumber) {
-                        sessionStorage.setItem('userId', userRecord.regNumber);
-                    }
-                } catch (e) {
-                    console.warn('Could not store userId in sessionStorage', e);
+                console.log('[Login] User found:', userRecord);
+                
+                // Store the regNumber as userId - THIS IS CRITICAL for userApi to work
+                if (userRecord.regNumber) {
+                    sessionStorage.setItem('userId', userRecord.regNumber);
+                    console.log('[Login] Stored userId in sessionStorage:', userRecord.regNumber);
+                } else {
+                    console.error('[Login] User record missing regNumber!', userRecord);
                 }
 
-                //Keep legacy email key for backward compatibility
+                // Keep legacy email key for backward compatibility
                 sessionStorage.setItem("loggedInUser", qEmail);
 
-                //Also store the fetched user data for immediate use if desired
-                try { sessionStorage.setItem('userData', JSON.stringify(userRecord)); } catch (e) {}
+                // Also store the full user data for immediate use
+                try { 
+                    sessionStorage.setItem('userData', JSON.stringify(userRecord)); 
+                    console.log('[Login] Stored full user data in sessionStorage');
+                } catch (e) {
+                    console.warn('[Login] Could not store userData:', e);
+                }
 
                 setLoginMessage('<div class="alert alert-success">Login successful! Redirecting...</div>');
                 setTimeout(() => {

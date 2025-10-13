@@ -49,7 +49,7 @@ export const submitRegistration = async (formData) => {
                     // Store password under 'password' column
                     password: formData.password || formData.generatedPassword || '',
                     // Default status column (set in formData to 'Denied' by default)
-                    status: formData.status || 'Denied'
+                    status: formData.status || 'Pending'
                     //Note: As we are only SheetDB, to compromise we are only storing file names temporarily for midterm.
                 }
             ]
