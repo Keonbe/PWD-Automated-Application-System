@@ -1,8 +1,4 @@
-// Api for handling registration submissions from register.jsx to SheetDB
-// Modified Signup.js 
-
 const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe"; //Orig API (Marqus) User
-//const sheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; //Test API (Kean) Admin
 
 export const submitRegistration = async (formData) => {
     try {
@@ -43,19 +39,18 @@ export const submitRegistration = async (formData) => {
                     emergencyName: formData.emergencyName,
                     emergencyPhone: formData.emergencyPhone,
                     emergencyRelationship: formData.emergencyRelationship,
-                    // Sheet column names expected by the spreadsheet
                     proofIdentity: formData.proofIdentity || formData.proofIdentityName || '',
                     proofDisability: formData.proofDisability || formData.proofDisabilityName || '',
-                    // Store password under 'password' column
+                    //Store password under 'password' column
                     password: formData.password || formData.generatedPassword || '',
-                    // Default status column (set in formData to 'Denied' by default)
+                    //Default status column (set in formData to 'Pending' by default)
                     status: formData.status || 'Pending'
                     //Note: As we are only SheetDB, to compromise we are only storing file names temporarily for midterm.
                 }
             ]
         };
 
-        // Submit registration data
+        //Submit registration data
         const addResponse = await fetch(sheetdbUrl, {
             method: "POST",
             headers: {
@@ -95,5 +90,3 @@ export const checkEmailExists = async (email) => {
         return false;
     }
 };
-
-//TODO: PASSWORD GENERATE AND USER LOGIN

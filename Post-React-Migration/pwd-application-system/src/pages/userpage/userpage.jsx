@@ -11,35 +11,52 @@ export default function UserPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  //Compute display label, progress percent and css class based on stored status
+  const getStatusInfo = (status) => {
+    //Only accept the three canonical statuses: pending, approved, denied
+    const s = (status || '').toString().trim().toLowerCase();
+    if (s === 'pending' || s === 'under review') {
+      return { label: 'Under Review', percent: 60, badgeClass: 'status-warning', fillClass: 'fill-warning' };
+    }
+    if (s === 'approved') {
+      return { label: 'Approved', percent: 100, badgeClass: 'status-success', fillClass: 'fill-success' };
+    }
+    if (s === 'denied' || s === 'rejected') {
+      return { label: 'Denied', percent: 100, badgeClass: 'status-danger', fillClass: 'fill-danger' };
+    }
+    // Fallback for any other value: show Unknown with 0% and neutral styling
+    return { label: status || 'Unknown', percent: 0, badgeClass: 'status-neutral', fillClass: 'fill-neutral' };
+  };
+
   // Fetch user data on mount
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        console.log('� [UserPage] Starting to fetch user data...');
+        console.log('[UserPage] Starting to fetch user data...');
         
-        // Check if user is logged in
+        //Check if user is logged in
         const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
         if (!userId) {
-          console.warn('⚠️ [UserPage] No userId found, redirecting to login');
+          console.warn(' [UserPage] No userId found, redirecting to login');
           navigate('/login', { replace: true });
           return;
         }
         
-        console.log('✅ [UserPage] Found userId:', userId);
+        console.log('[UserPage] Found userId:', userId);
         
         // Fetch user data from API
         const data = await getCurrentUserData();
-        console.log('📦 [UserPage] User data loaded successfully:', data);
+        console.log('[UserPage] User data loaded successfully:', data);
         
         setUserData(data);
         setError(null);
         
       } catch (err) {
-        console.error('❌ [UserPage] Failed to load user data:', err.message);
+        console.error('[UserPage] Failed to load user data:', err.message);
         setError(err.message);
         
         // If API fails, use demo data for development
-        console.log('🔄 [UserPage] Using demo data as fallback');
+        console.log('[UserPage] Using demo data as fallback');
         setUserData(getDemoUserData());
         
       } finally {
@@ -246,10 +263,18 @@ export default function UserPage() {
               <div>
                 <h3 className="user-card-title">PWD ID Application</h3>
                 <p className="mb-2"><strong>Registration No:</strong> {userData.regNumber}</p>
-                <span className="user-status-badge">
-                  <i className="fas fa-clock"></i>
-                  Under Review
-                </span>
+                {/* Dynamic status badge */}
+                {(() => {
+                  const info = getStatusInfo(userData.status);
+                  return (
+                    <span className={`user-status-badge ${info.badgeClass}`}>
+                      {info.label === 'Under Review' ? <i className="fas fa-clock"></i> : null}
+                      {info.label === 'Approved' ? <i className="fas fa-check-circle"></i> : null}
+                      {info.label === 'Denied' ? <i className="fas fa-times-circle"></i> : null}
+                      {' '}{info.label}
+                    </span>
+                  );
+                })()}
               </div>
               <div className="text-end">
                 <div className="user-info-label">Date Submitted</div>
@@ -263,14 +288,18 @@ export default function UserPage() {
             <h3 className="user-card-title">Application Progress</h3>
             <div className="user-progress-container">
               <div className="user-progress-bar-wrapper">
-                <div className="user-progress-fill" style={{width: '60%'}}></div>
+                {(() => {
+                  const info = getStatusInfo(userData.status);
+                  return (
+                    <div className={`user-progress-fill ${info.fillClass}`} style={{width: `${info.percent}%`}} />
+                  );
+                })()}
               </div>
               <div className="user-progress-steps">
                 <span>Submitted</span>
                 <span>Verification</span>
                 <span>Review</span>
                 <span>Approval</span>
-                <span>Issuance</span>
               </div>
             </div>
           </div>

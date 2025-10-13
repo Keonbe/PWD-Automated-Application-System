@@ -1,15 +1,10 @@
-// SheetDB API endpoint for user data
-const SHEETDB_URL = 'https://sheetdb.io/api/v1/wgjit0nprbfxe';
+const SHEETDB_URL = 'https://sheetdb.io/api/v1/wgjit0nprbfxe'; // SheetDB API for user 
 
-/**
- * Fetch current user data from SheetDB using stored userId (regNumber)
- * @returns {Promise<Object>} User data object with all fields
- */
 export const getCurrentUserData = async () => {
     try {
         console.log('[userApi] Starting getCurrentUserData');
         
-        // Try to get userId from both sessionStorage and localStorage
+        //Try to get userId from both sessionStorage and localStorage
         const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
         
         console.log('[userApi] Retrieved userId:', userId);
@@ -18,11 +13,11 @@ export const getCurrentUserData = async () => {
             throw new Error('No user ID found. Please log in again.');
         }
 
-        // Build API URL to search by regNumber
+        //Build API URL to search by regNumber
         const searchUrl = `${SHEETDB_URL}/search?regNumber=${encodeURIComponent(userId)}`;
         console.log('[userApi] Fetching from:', searchUrl);
         
-        // Fetch data from SheetDB
+        //Fetch data from SheetDB
         const response = await fetch(searchUrl);
         
         if (!response.ok) {
@@ -32,15 +27,15 @@ export const getCurrentUserData = async () => {
         const data = await response.json();
         console.log('[userApi] Raw API response:', data);
         
-        // SheetDB returns an array of matching rows
+        //SheetDB returns an array of matching rows
         if (!Array.isArray(data) || data.length === 0) {
             throw new Error(`No user found with registration number: ${userId}`);
         }
         
-        // Get the first matching user
+        //Get the first matching user
         const userData = data[0];
         
-        // Map and normalize the data structure
+        //Map and normalize the data structure
         const normalizedData = {
             regNumber: userData.regNumber || '',
             regDate: userData.regDate || '',
