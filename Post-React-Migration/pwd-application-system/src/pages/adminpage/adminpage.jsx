@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Testadmin() {
+export default function AdminPage() {
     return ( /* placeholder content,to be replace with actual login form and logic */
         <div className="container my-5">
             <h1 className="display-3">Admin Login</h1>

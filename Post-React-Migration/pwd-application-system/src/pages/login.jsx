@@ -23,7 +23,7 @@ export default function Login() {
     useEffect(() => { // Check if already logged in
         if (sessionStorage.getItem("loggedInUser")) {
             // SPA navigation (avoid full page reload)
-            navigate('/testuser', { replace: true });
+            navigate('/UserPage', { replace: true });
             return;
         }
         if (sessionStorage.getItem("adminLoggedIn") || localStorage.getItem("adminLoggedIn")) {
@@ -52,7 +52,7 @@ export default function Login() {
                 setLoginMessage('<div class="alert alert-success">Login successful! Redirecting...</div>');
                 setTimeout(() => {
                     // navigate within the SPA; replace so back doesn't return to login
-                    navigate('/testuser', { replace: true });
+                    navigate('/UserPage', { replace: true });
                 }, 1000);
             } else {
                 setLoginMessage('<div class="alert alert-danger">Invalid username or password. Please try again.</div>');
@@ -197,10 +197,12 @@ export default function Login() {
                                 <div id="register-admin-links" className="d-flex align-items-center justify-content-between">
                                     <div>
                                         <span className="small text-black m-2">Not registered?</span>
-                                        <a href="/Pre-React-Migration/pages/homepage/consent.html" className="small text-primary fw-semibold order-2">Create an account</a>
+                                        <Link to="/consent" className="small text-primary fw-semibold order-2">Create an account</Link>
+
                                     </div>
                                     <div>
                                         <span className="small text-black m-2">Are you an Admin?</span>
+                                        {/* href here is a old code */}
                                         <a  href="admin-login.html"  className="small text-danger fw-semibold order-1"  data-bs-toggle="modal"  data-bs-target="#adminloginModal">Admin login</a>
                                     </div>
                                 </div>

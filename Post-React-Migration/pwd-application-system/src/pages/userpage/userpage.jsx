@@ -1,6 +1,6 @@
-import React from 'react';
+import '../../assets/styles/userpage-styles.css';
 
-export default function Testuser() {
+export default function UserPage() {
     return ( /* placeholder content,to be replace with actual login form and logic */
         <div className="container my-5">
             <h1 className="display-3">User Login</h1>

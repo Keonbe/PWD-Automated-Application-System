@@ -165,7 +165,7 @@ export default function Register() {
       <div className="row mb-4">
         <div className="col-12">
           <h1 className="h2 mb-2 text-success">PWD Registration Form</h1>
-          <p className="lead text-muted">
+          <p className="blockquote text-black-30">
             Complete this form to apply for Persons with Disabilities services
             and benefits.
           </p>
@@ -986,7 +986,7 @@ export default function Register() {
           </button>
           </div>
 
-          <p className="text-muted mt-3 small">
+          <p className="text-secondary mt-3 small">
             By submitting this form, you agree to our
             <Link to="/faq" className="p-1 text-decoration-none">Privacy Policy</Link>
           </p>
