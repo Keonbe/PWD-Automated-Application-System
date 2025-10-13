@@ -43,7 +43,7 @@ export default function RegisterResult() {
               <div className="row g-3">
                 <div className="col-md-6">
                   <div className="border rounded p-3">
-                    <h2 className="h6 text-muted">Applicant</h2>
+                    <h2 className="h6 text-black">Applicant</h2>
                     <p className="mb-1"><strong>Full Name:</strong> {`${display('lastName','')}${display('firstName','') ? ', ' + display('firstName') : ''}${display('middleName') ? ' ' + display('middleName') : ''}`.trim() || '—'}</p>
                     <p className="mb-1"><strong>Registration #:</strong> {display('regNumber','—')}</p>
                     <p className="mb-1"><strong>Temporary Password:</strong> {display('password', display('generatedPassword','—') )}</p>
@@ -52,7 +52,7 @@ export default function RegisterResult() {
                 </div>
                 <div className="col-md-6">
                   <div className="border rounded p-3">
-                    <h2 className="h6 text-muted">Contact</h2>
+                    <h2 className="h6 text-black">Contact</h2>
                     <p className="mb-1"><strong>Mobile:</strong> {display('mobile','—')}</p>
                     <p className="mb-1"><strong>Email:</strong> {display('email','—')}</p>
                     <p className="mb-0"><strong>Address:</strong> {`${display('street','')}${display('barangay','') ? ', ' + display('barangay') : ''}${display('municipality') ? ', ' + display('municipality') : ''}${display('province') ? ', ' + display('province') : ''}${display('region') ? ', ' + display('region') : ''}` || '—'}</p>
@@ -65,16 +65,16 @@ export default function RegisterResult() {
               <div className="row g-3">
                 <div className="col-md-6">
                   <div className="border rounded p-3">
-                    <h2 className="h6 text-muted">Disability</h2>
+                    <h2 className="h6 text-black">Disability</h2>
                     <p className="mb-1"><strong>Type:</strong> {display('disability','—')}</p>
                     <p className="mb-0"><strong>Medical Certificate:</strong> {display('proofDisabilityName', 'No file')}</p>
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="border rounded p-3">
-                    <h2 className="h6 text-muted">Documents</h2>
+                    <h2 className="h6 text-black">Documents</h2>
                     <p className="mb-1"><strong>ID Document:</strong> {display('proofIdentityName', 'No file')}</p>
-                    <p className="mb-1"><strong>Uploaded Files:</strong> {display('uploadedFilenames', display('proofIdentityName','No file'))}</p>
+                    <p className="mb-1"><strong>Uploaded Files:</strong> {display('uploadedFilenames', display('proofIdentityName','No file'))} {display('proofDisabilityName', 'No file')}</p>
                     <p className="mb-0"><strong>Blood Type:</strong> {display('blood','—')}</p>
                   </div>
                 </div>
@@ -85,7 +85,7 @@ export default function RegisterResult() {
               <div className="row g-3">
                 <div className="col-12">
                   <div className="border rounded p-3">
-                    <h2 className="h6 text-muted">Additional Details</h2>
+                    <h2 className="h6 text-black">Additional Details</h2>
                     <p className="mb-1"><strong>Sex:</strong> {display('sex','—')}</p>
                     <p className="mb-1"><strong>Date of Birth:</strong> {display('dob','—')}</p>
                     <p className="mb-1"><strong>Emergency Contact:</strong> {display('emergencyName','—')} — {display('emergencyPhone','—')} ({display('emergencyRelationship','—')})</p>
