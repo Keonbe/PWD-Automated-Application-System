@@ -53,6 +53,7 @@ import Register from "./pages/homepage/register";
 import Login from "./pages/login";
 import Testuser from "./pages/userpage/userpage";
 import Testadmin from "./pages/adminpage/adminpage";
+import AdminVerify from "./pages/adminpage/adminverify";
 import "./App.css";
 
 // Wrapper component to handle footer visibility based on route
@@ -78,6 +79,8 @@ const AppWrapper = () => {
           {/* test pages for user/admin after login */}
           <Route path="/testuser" element={<Testuser />} />
           <Route path="/testadmin" element={<Testadmin />} />
+          <Route path="/admin/adminverify" element={<AdminVerify />} />
+
           {/* Catch-all 404 must be last */}
           <Route path="*" element={<h1>404 - Page Not Found</h1>} />
         </Routes>

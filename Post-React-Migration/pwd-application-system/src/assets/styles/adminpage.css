@@ -1,4 +1,14 @@
-/* ===== ADMIN DASHBOARD STYLES ===== */
+/* ===== ADMIN DASHBOARD STYLES (DASMARIÑAS THEME) ===== */
+:root {
+  --dasma-green: #3a9e3d;
+  --dasma-dark-green: #2d7c2f;
+  --dasma-gold: #ffc107;
+  --dasma-dark-gold: #e6ac00;
+  --dasma-light: #f8f9fa;
+  --dasma-dark: #333;
+}
+
+/* ===== STRUCTURE ===== */
 .admin-page {
   display: flex;
   flex-direction: row;
@@ -10,7 +20,11 @@
 /* ===== SIDEBAR ===== */
 .admin-sidebar {
   width: 250px;
-  background: linear-gradient(180deg, #0d6efd 0%, #0a58ca 100%);
+  background: linear-gradient(
+    180deg,
+    var(--dasma-green) 0%,
+    var(--dasma-dark-green) 100%
+  );
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -62,7 +76,6 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Sidebar Footer */
 .sidebar-footer {
   text-align: center;
   font-size: 0.85rem;
@@ -83,7 +96,7 @@
 
 .admin-header h2 {
   font-weight: 700;
-  color: #0d6efd;
+  color: var(--dasma-green);
 }
 
 .admin-header p {
@@ -115,7 +128,7 @@
 .summary-card i {
   font-size: 2rem;
   margin-bottom: 0.5rem;
-  color: #0d6efd;
+  color: var(--dasma-green);
 }
 
 .summary-card h6 {
@@ -127,6 +140,7 @@
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
+  color: var(--dasma-dark-green);
 }
 
 /* ===== CHART SECTION ===== */
@@ -140,12 +154,11 @@
 
 .chart-card h5 {
   font-weight: 600;
-  color: #0d6efd;
+  color: var(--dasma-green);
   text-align: center;
   margin-bottom: 1rem;
 }
 
-/* Chart legend circles */
 .chart-legend span {
   font-weight: 600;
   margin-right: 1rem;
@@ -161,7 +174,7 @@
 }
 
 .table th {
-  color: #0d6efd;
+  color: var(--dasma-green);
   font-weight: 600;
 }
 

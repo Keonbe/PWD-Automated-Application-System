@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import AdminSidebar from "../../components/adminsidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../assets/styles/adminpage.css";
 import {
@@ -20,13 +21,22 @@ const AdminPage = () => {
   const [statusData, setStatusData] = useState([]);
 
   const barColors = {
-    approved: "#198754", // green
+    accepted: "#198754", // green
     pending: "#ffc107", // yellow
     rejected: "#dc3545", // red
     unknown: "#6c757d", // gray
   };
 
-  const getColor = (status) => barColors[status] || barColors["unknown"];
+  const normalizeStatus = (status) => {
+    if (!status) return "unknown";
+    const s = status.trim().toLowerCase();
+    if (s.includes("accept")) return "accepted";
+    if (s.includes("pending") || s.includes("wait")) return "pending";
+    if (s.includes("reject") || s.includes("denied")) return "rejected";
+    return "unknown";
+  };
+
+  const getColor = (status) => barColors[normalizeStatus(status)];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,13 +44,17 @@ const AdminPage = () => {
         const response = await fetch(SHEETDB_URL);
         const data = await response.json();
 
-        const formattedData = data.map((row) => ({
-          ...row,
-          fullName: `${row.lastName || ""}, ${row.firstName || ""} ${
-            row.middleName || ""
-          }`.trim(),
-          status: (row.status || "Unknown").trim().toLowerCase(),
-        }));
+        const formattedData = data.map((row) => {
+          const normalizedStatus = normalizeStatus(row.status);
+          return {
+            ...row,
+            fullName: `${row.lastName || ""}, ${row.firstName || ""} ${
+              row.middleName || ""
+            }`.trim(),
+            status: normalizedStatus,
+          };
+        });
+
         setApplications(formattedData);
 
         const counts = formattedData.reduce((acc, row) => {
@@ -52,6 +66,7 @@ const AdminPage = () => {
           name: status.charAt(0).toUpperCase() + status.slice(1),
           Applications: count,
         }));
+
         setStatusData(chartData);
       } catch (error) {
         console.error("Error fetching data from SheetDB:", error);
@@ -65,14 +80,16 @@ const AdminPage = () => {
     (sum, s) => sum + s.Applications,
     0
   );
-  const approvedCount =
-    statusData.find((s) => s.name === "Approved")?.Applications || 0;
+  const acceptedCount =
+    statusData.find((s) => s.name.toLowerCase() === "accepted")?.Applications ||
+    0;
   const pendingCount =
-    statusData.find((s) => s.name === "Pending")?.Applications || 0;
+    statusData.find((s) => s.name.toLowerCase() === "pending")?.Applications ||
+    0;
   const rejectedCount =
-    statusData.find((s) => s.name === "Rejected")?.Applications || 0;
+    statusData.find((s) => s.name.toLowerCase() === "rejected")?.Applications ||
+    0;
 
-  // Generate dynamic legend items
   const legendItems = Object.keys(barColors).map((key) => ({
     label: key.charAt(0).toUpperCase() + key.slice(1),
     color: barColors[key],
@@ -80,35 +97,8 @@ const AdminPage = () => {
 
   return (
     <div className="admin-page">
-      {/* ===== SIDEBAR ===== */}
-      <aside className="admin-sidebar">
-        <h4>PWD Admin</h4>
-        <ul className="sidebar-nav">
-          <li>
-            <a href="#" className="active">
-              <i className="fas fa-tachometer-alt me-2"></i> Dashboard
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i className="fas fa-users me-2"></i> Applicants
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i className="fas fa-file-alt me-2"></i> Reports
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i className="fas fa-cog me-2"></i> Settings
-            </a>
-          </li>
-        </ul>
-        <div className="sidebar-footer">© 2025 PWD System</div>
-      </aside>
+      <AdminSidebar />
 
-      {/* ===== MAIN CONTENT ===== */}
       <main className="admin-content">
         <header className="admin-header">
           <h2>Admin Dashboard</h2>
@@ -117,7 +107,6 @@ const AdminPage = () => {
           </p>
         </header>
 
-        {/* ===== SUMMARY CARDS ===== */}
         <section className="summary-cards">
           <div className="summary-card">
             <i className="fas fa-users text-success"></i>
@@ -126,8 +115,8 @@ const AdminPage = () => {
           </div>
           <div className="summary-card">
             <i className="fas fa-check-circle text-success"></i>
-            <h6>Approved</h6>
-            <p>{approvedCount}</p>
+            <h6>Accepted</h6>
+            <p>{acceptedCount}</p>
           </div>
           <div className="summary-card">
             <i className="fas fa-hourglass-half text-warning"></i>
@@ -141,7 +130,6 @@ const AdminPage = () => {
           </div>
         </section>
 
-        {/* ===== CHART ===== */}
         <section className="chart-card">
           <h5>Application Status Overview</h5>
           {statusData.length > 0 ? (
@@ -158,7 +146,7 @@ const AdminPage = () => {
                   {statusData.map((entry, index) => (
                     <Cell
                       key={index}
-                      fill={barColors[entry.name.toLowerCase()] || "#6c757d"}
+                      fill={barColors[normalizeStatus(entry.name)] || "#6c757d"}
                     />
                   ))}
                 </Bar>
@@ -167,7 +155,6 @@ const AdminPage = () => {
           ) : (
             <p className="text-center text-muted">Loading chart data...</p>
           )}
-          {/* Dynamic Legend */}
           <div
             className="chart-legend d-flex justify-content-center mt-2"
             style={{ gap: "1.5rem" }}>
@@ -179,7 +166,6 @@ const AdminPage = () => {
           </div>
         </section>
 
-        {/* ===== APPLICATIONS TABLE ===== */}
         <section className="table-card">
           <h5 className="text-center mb-3">Recent Applications</h5>
           <div className="table-responsive">
@@ -208,9 +194,12 @@ const AdminPage = () => {
                             style={{
                               backgroundColor: getColor(app.status),
                               color:
-                                app.status === "pending" ? "#212529" : "#fff",
+                                normalizeStatus(app.status) === "pending"
+                                  ? "#212529"
+                                  : "#fff",
+                              textTransform: "capitalize",
                             }}>
-                            {app.status || "Unknown"}
+                            {normalizeStatus(app.status)}
                           </span>
                         </td>
                       </tr>
