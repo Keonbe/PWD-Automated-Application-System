@@ -225,7 +225,13 @@
 }
 
 /* Improve button styles inside userpage to match project look */
-.user-nav-link, .user-mobile-menu-btn, .btn {
+.user-nav-link, .user-mobile-menu-btn {
+  border: none;
+  outline: none;
+}
+
+/* Only apply button styles within user dashboard context */
+.user-dashboard-wrapper .btn {
   border: none;
   outline: none;
 }
