@@ -193,14 +193,16 @@ export default function UserPage() {
 
   return (
     <div className="user-dashboard-wrapper">
-      {/* Header */} {/* TODO:FLEX/ Grid-3 FOR CONSISTENT ALIGNMENT */}
+      {/* Header */}
       <header className="user-dashboard-header">
         <div className="container-fluid px-4">
           <div className="d-flex justify-content-between align-items-center">
-            <img src={logo} alt="City of Dasmariñas Logo" className="user-header-logo" />
-            <h1>PWD Application Dashboard</h1>
-            <button 
-              className="user-mobile-menu-btn" 
+            <div className="d-flex align-items-center">
+              <img src={logo} alt="City of Dasmariñas Logo" className="user-header-logo align-self-center" />
+              <h1>PWD Application Dashboard</h1>
+            </div>
+            <button
+              className="user-mobile-menu-btn"
               onClick={() => setSidebarActive(!isSidebarActive)}
             >
               <i className="fas fa-bars"></i>

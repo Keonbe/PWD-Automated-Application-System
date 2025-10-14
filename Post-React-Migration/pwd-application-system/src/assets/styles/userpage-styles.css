@@ -117,8 +117,12 @@
 .user-header-logo {
   width: 60px;
   height: 60px;
-  margin-bottom: 0.5rem;
   border-radius: 5px;
+}
+
+/* Align logo and title */
+.user-dashboard-header h1 {
+  margin-left: 1rem;
 }
 
 /* Main Content */
