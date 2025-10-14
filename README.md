@@ -25,10 +25,14 @@ This system is designed to:
 * Separate user views for Admin/Employees and User
 
 ## Tech Stack
-* **Frontend:** `ReactJS`, `Bootstrap`, `HTML`/`CSS`/`JS`
+* **Frontend:** `ReactJS`, `Bootstrap`, `HTML`/`CSS`/`JS` 
+  * [![Frontend](https://skillicons.dev/icons?i=react,bootstrap,html,css,js)](https://skillicons.dev)
 * **Backend:** `Laravel` (Not yet implemented)
+  * [![Backend](https://skillicons.dev/icons?i=laravel,php)](https://skillicons.dev)
 * **Database:** (Not yet implemented)
-* **Tools:** `Visual Studio Code`, `Chrome DevTools`, `SheetDB` for Database API, `Postman` for API Testing
+  * [![Database](https://skillicons.dev/icons?i=mysql)](https://skillicons.dev)
+* **Tools:** `Visual Studio Code`, `Chrome DevTools`, `Markdown` for Documentation `SheetDB` for Database API, `Postman` for API Testing
+  * [![Tools](https://skillicons.dev/icons?i=vscode,md,postman)](https://skillicons.dev)
 
 
 ## Prerequisites
