@@ -27,7 +27,7 @@ A **PWD Automated Application System** built using **React**, **HTML, CSS, & Jav
     - [Phase 3: State Management](#phase-3-state-management)
     - [Phase 4: Backend Integration](#phase-4-backend-integration)
   - [Dependencies Installed](#dependencies-installed)
-  - [Development Documentation](#development-documentation)
+  - [Development Life Cycle Documentation](#development-life-cycle-documentation)
     - [All Team Members involved](#all-team-members-involved)
     - [Background](#background)
     - [Midterm](#midterm)
@@ -111,25 +111,19 @@ PWD-AUTOMATED-APPLICATION/
 ├── Post-React-Migration/          # React Application (Current)
 │   ├── node_modules/
 │   ├── public/
-│   │   ├── dasma-logo-only.png
+│   │   ├── dasma-logo-only.png   # Favicon
 │   │   ├── index.html
 │   │   ├── manifest.json
 │   │   └── robots.txt
 │   ├── src/
 │   │   ├── components/            # Reusable React components
-│   │   │   ├── common/
-│   │   │   │   ├── Header.js
-│   │   │   │   ├── Footer.js
-│   │   │   │   └── Navigation.js
-│   │   │   ├── forms/
-│   │   │   │   ├── LoginForm.js
-│   │   │   │   └── RegistrationForm.js
-│   │   │   └── ui/
-│   │   │       ├── Card.js
-│   │   │       └── Button.js
+│   │   │   └── common/
+│   │   │       ├── public-header.jsx
+│   │   │       ├── public-footer.jsx
+│   │   │       └── user-sidebar.jsx
 │   │   ├── pages/                 # Page components
 │   │   │   ├── adminpage/
-│   │   │   │   └── dashboard.jsx
+│   │   │   │   └── adminpage.jsx
 │   │   │   ├── homepage/
 │   │   │   │   ├── consent.jsx
 │   │   │   │   ├── contact.jsx
@@ -137,8 +131,10 @@ PWD-AUTOMATED-APPLICATION/
 │   │   │   │   ├── news.jsx
 │   │   │   │   ├── register.jsx
 │   │   │   │   └── resources.jsx
-│   │   │   └── userpage/
-│   │   │       └── userLogin.jsx
+│   │   │   ├── userpage/
+│   │   │   │   └── userpage.jsx
+│   │   │   ├── homepage.jsx
+│   │   │   └── login.jsx
 │   │   ├── assets/                # Assets
 │   │   │   ├── images/             # Media (Images/Videos)
 │   │   │   │   ├── dasma-logo-only.png
@@ -151,7 +147,7 @@ PWD-AUTOMATED-APPLICATION/
 │   │   │   │   ├── index-styles.css
 │   │   │   │   ├── news-styles.css
 │   │   │   │   ├── resources-styles.css
-│   │   │   │   └── userlogin-styles.css
+│   │   │   │   └── userpage-styles.css
 │   │   ├── utils/                 # Helper functions
 │   │   │   ├── api.js
 │   │   │   └── validation.js
@@ -187,8 +183,10 @@ PWD-AUTOMATED-APPLICATION/
 │   │   ├── styles.css
 │   │   └── template.html
 ├── documentation/
-│   ├── developer-documentation # Documentation for Developers and development
-│   ├──init-documentation.md # This Document
+│   ├── api-documentation # Documentation for API
+│   ├── function-documentation # Documentation for Function
+│   ├── init-documentation.md # Documentation for Developers and development
+│   └── README.md # Documentation for `documentation/` folder
 ├── README.md     # Github Readme.md
 └── .gitignore    # Project Git Ignore
 ```
@@ -285,46 +283,79 @@ Kindly refer to [Dependencies Installed](#dependencies-installed) for specific d
 #### src/App.js
 ```jsx
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // ,js
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // .js
 import 'bootstrap/dist/css/bootstrap.min.css'; // .jsx
 import './App.css';
 
 // Import components
-import Header from './components/common/Header';
-import Footer from './components/common/Footer';
-import Homepage from './pages/Homepage';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import News from './pages/News';
-import FAQ from './pages/FAQ';
-import Contact from './pages/Contact';
-import Consent from './pages/Consent';
-import Resources from './pages/Resources';
+import UserHeader from './components/public-header';
+import UserFooter from './components/public-footer';
+import HomePage from './pages/homepage';
+import News from './pages/homepage/news';
+import FAQ from './pages/homepage/faq';
+import Resources from './pages/homepage/resources';
+import Contact from './pages/homepage/contact';
+import Consent from './pages/homepage/consent';
+import Register from './pages/homepage/register';
+import Login from './pages/login';
+import RegisterResult from './pages/homepage/register-result';
+import UserPage from './pages/userpage/userpage';
+import AdminPage from './pages/adminpage/adminpage';
+import './App.css';
 
-function App() {
+function App() { 
   return (
-    <Router>
-      <div className="App">
-        <Header />
-        <main>
-          <Routes>
-            <Route path="/" element={<Homepage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+    <BrowserRouter>
+      <div className="app">
+        <Routes>
+          {/* Public routes with public header and footer */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<HomePage />} />
             <Route path="/news" element={<News />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/resources" element={<Resources />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/consent" element={<Consent />} />
-            <Route path="/resources" element={<Resources />} />
-          </Routes>
-        </main>
-        <Footer />
+            <Route path="/register" element={<Register />} />
+            <Route path="/register/result" element={<RegisterResult />} />
+            <Route path="/login" element={<Login />} />
+          </Route>
+
+          {/* Authenticated user routes (no public header/footer) */}
+          {/* Kean: User, Marqus: Admin */}
+          <Route element={<AuthenticatedLayout />}>
+            <Route path="/userpage" element={<UserPage />} />
+            <Route path="/user" element={<UserPage />} />
+            <Route path="/user/*" element={<UserPage />} />
+            <Route path="/adminpage" element={<AdminPage />} />
+          </Route>
+
+          {/* Catch-all 404 must be last */}
+          <Route path="*" element={<h1>404 - Page Not Found</h1>} />
+        </Routes>
       </div>
-    </Router>
+    </BrowserRouter>
   );
 }
 
-export default App;
+//Layout for public pages (public header and footer)
+function PublicLayout() {
+  return (
+    <>
+      <UserHeader />
+      <main className="main-content">
+        <Outlet />
+      </main>
+      <UserFooter />
+    </>
+  );
+}
+
+//Layout for authenticated user pages (specialized header/footer if needed)
+function AuthenticatedLayout() {
+  return <Outlet />;
+}
+
 ```
 
 #### src/components/common/Header.js
@@ -493,9 +524,8 @@ npm install @fortawesome/fontawesome-free --save # Defunct Command: npm install 
 ```
 
 ---
----
 
-## Development Documentation
+## Development Life Cycle Documentation
 
 ### All Team Members involved
 <!-- Grid of all contributors -->
@@ -510,6 +540,8 @@ npm install @fortawesome/fontawesome-free --save # Defunct Command: npm install 
 
 ### Final Term
 
+---
+
 ## Legacy (HTML/CSS/JS) to React JS ⚛️
 
 ### Complete React Migration Guide
@@ -520,7 +552,6 @@ This comprehensive guide covers the complete process of migrating legacy HTML/CS
 
 #### Phase 1: Routing & Navigation Setup
 
-**Date:** 2025-10-05  
 **Branch:** react-migration
 
 ##### 1.1 Initial Route Configuration
@@ -2057,12 +2088,3 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 - Create issues in project repository
 - Request code review for major changes
 - Document solutions for future reference
-
----
-
-**Migration Status:** ✅ Phase 1-3 Complete | ⚠️ Phase 4-5 In Progress
-
-**Last Updated:** 2025-10-08  
-**Next Review:** After second react migration stage
-
----

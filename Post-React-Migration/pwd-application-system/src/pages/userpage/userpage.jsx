@@ -77,9 +77,9 @@ export default function UserPage() {
       middleName: 'M',
       disability: 'Physical Disability',
       street: '123 Main St',
-  barangay: 'Sample Barangay',
-  // Match register.jsx defaults (disabled inputs)
-  municipality: 'Dasmariñas',
+      barangay: 'Sample Barangay',
+      // Match register.jsx defaults (disabled inputs)
+      municipality: 'Dasmariñas',
       province: 'Cavite',
       region: 'IV-A',
       tel: '(02) 8123-4567',
@@ -133,11 +133,11 @@ export default function UserPage() {
 
   const handleLogout = async () => {
     try {
-      console.log('🚪 [UserPage] Logging out...');
+      console.log('[UserPage] Logging out...');
       logoutUser();
       navigate('/login', { replace: true });
     } catch (err) {
-      console.error('❌ [UserPage] Logout error:', err);
+      console.error('[UserPage] Logout error:', err);
       // Force redirect even if error
       navigate('/login', { replace: true });
     }

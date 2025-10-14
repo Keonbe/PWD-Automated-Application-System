@@ -25,7 +25,8 @@ The application uses SheetDB as a backend-as-a-service (BaaS) to store and retri
 
 **API Endpoint:**
 ```
-https://sheetdb.io/api/v1/duayfvx2u7zh9
+https://sheetdb.io/api/v1/duayfvx2u7zh9 (Admin)
+https://sheetdb.io/api/v1/wgjit0nprbfxe (User)
 ```
 
 ### Supported Operations
@@ -555,12 +556,11 @@ if (existingUsers.length > 0) {
 1. **Plain Text Passwords**
    - Passwords are transmitted and stored in plain text
    - No encryption or hashing
-   - **Recommendation:** Implement bcrypt or similar hashing on backend
+   - **Recommendation:** Implement hashing on backend
 
 2. **Client-Side Authentication**
    - Authentication logic runs entirely on client
    - Credentials exposed in URL parameters
-   - **Recommendation:** Move to server-side authentication with JWT tokens
 
 3. **No HTTPS Enforcement**
    - API calls may be made over HTTP
@@ -573,7 +573,7 @@ if (existingUsers.length > 0) {
 
 5. **API Key Exposure**
    - SheetDB API key visible in client code
-   - **Recommendation:** Use environment variables and proxy server
+   - **Recommendation:** Use environment variables(env) and proxy server
 
 ### Recommended Security Improvements
 
@@ -687,6 +687,8 @@ GET  https://sheetdb.io/api/v1/wgjit0nprbfxe/search?regNumber={regNumber}
   emergencyRelationship: string, // Relationship to applicant
   proofIdentityName: string,     // ID document filename (optional)
   proofDisabilityName: string    // Medical cert filename (optional)
+  password: string, // Password in 8 Character Numeric form (Planned: Alphanumeric password soon)
+  status: string // Statuses: Pending, Denied, Approved/Accepted
 }
 ```
 
@@ -767,7 +769,8 @@ export const submitRegistration = async (formData) => {
                     emergencyRelationship: formData.emergencyRelationship,
                     proofIdentityName: formData.proofIdentityName || '',
                     proofDisabilityName: formData.proofDisabilityName || '',
-                    submissionDate: new Date().toISOString()
+                    password: formData.password || formData.generatedPassword || '',
+                    status: formData.status || 'Pending'
                 }
             ]
         };
@@ -907,6 +910,282 @@ const validateEmail = async (email) => {
 
 ---
 
+---
+
+## User Data APIs
+
+### Function: getCurrentUserData
+
+#### Purpose
+Retrieve the current logged-in user's complete registration data from SheetDB.
+
+#### Endpoint
+```
+GET https://sheetdb.io/api/v1/wgjit0nprbfxe/search?regNumber={userId}
+```
+
+#### Parameters
+- None (reads `userId` from sessionStorage or localStorage internally)
+
+#### Returns
+`Promise<Object>` - Complete user data object with normalized field names
+
+#### Response Structure
+```javascript
+{
+  regNumber: string,        // 12-digit registration number
+  regDate: string,          // Registration date (YYYY-MM-DD)
+  lastName: string,         // User's last name
+  firstName: string,        // User's first name
+  middleName: string,       // User's middle name
+  disability: string,       // Type of disability
+  street: string,           // Street address
+  barangay: string,         // Barangay
+  municipality: string,     // Municipality
+  province: string,         // Province
+  region: string,           // Region
+  tel: string,             // Telephone number
+  mobile: string,          // Mobile number
+  email: string,           // Email address
+  dob: string,             // Date of birth (YYYY-MM-DD)
+  sex: string,             // Sex/gender
+  nationality: string,     // Nationality
+  blood: string,           // Blood type
+  civil: string,           // Civil status
+  emergencyName: string,   // Emergency contact name
+  emergencyPhone: string,  // Emergency contact phone
+  emergencyRelationship: string, // Emergency contact relationship
+  proofIdentity: string,   // Identity document filename
+  proofDisability: string, // Disability certificate filename
+  password: string,        // User password
+  status: string,          // Application status (Pending/Approved/Denied)
+  _raw: Object            // Original API response for debugging
+}
+```
+
+#### Implementation
+```javascript
+const SHEETDB_URL = 'https://sheetdb.io/api/v1/wgjit0nprbfxe';
+
+export const getCurrentUserData = async () => {
+    try {
+        console.log('[userApi] Starting getCurrentUserData');
+        
+        // Try to get userId from both sessionStorage and localStorage
+        const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+        
+        console.log('[userApi] Retrieved userId:', userId);
+        
+        // If no userId found, throw error
+        if (!userId) {
+            throw new Error('No user ID found. Please log in again.');
+        }
+
+        // Build API URL to search by regNumber
+        const searchUrl = `${SHEETDB_URL}/search?regNumber=${encodeURIComponent(userId)}`;
+        console.log('[userApi] Fetching from:', searchUrl);
+        
+        // Fetch data from SheetDB
+        const response = await fetch(searchUrl);
+        
+        // Check if response is ok
+        if (!response.ok) {
+            throw new Error(`API responded with status ${response.status}`);
+        }
+        
+        // Parse JSON response
+        const data = await response.json();
+        console.log('[userApi] Raw API response:', data);
+        
+        // SheetDB returns an array of matching rows
+        if (!Array.isArray(data) || data.length === 0) {
+            throw new Error(`No user found with registration number: ${userId}`);
+        }
+        
+        // Get the first matching user
+        const userData = data[0];
+        
+        // Map and normalize the data structure
+        const normalizedData = {
+            regNumber: userData.regNumber || '',
+            regDate: userData.regDate || '',
+            lastName: userData.lastName || '',
+            firstName: userData.firstName || '',
+            middleName: userData.middleName || '',
+            disability: userData.disability || '',
+            street: userData.street || '',
+            barangay: userData.barangay || '',
+            municipality: userData.municipality || '',
+            province: userData.province || '',
+            region: userData.region || '',
+            tel: userData.tel || '',
+            mobile: userData.mobile || '',
+            email: userData.email || '',
+            dob: userData.dob || '',
+            sex: userData.sex || '',
+            nationality: userData.nationality || '',
+            blood: userData.blood || '',
+            civil: userData.civil || '',
+            emergencyName: userData.emergencyName || '',
+            emergencyPhone: userData.emergencyPhone || '',
+            emergencyRelationship: userData.emergencyRelationship || '',
+            proofIdentity: userData.proofIdentity || '',
+            proofDisability: userData.proofDisability || '',
+            proofIdentityName: userData.proofIdentityName || '',
+            proofDisabilityName: userData.proofDisabilityName || '',
+            password: userData.password || '',
+            generatedPassword: userData.generatedPassword || '',
+            status: userData.status || 'Pending',
+            _raw: userData // Keep original for debugging
+        };
+        
+        console.log('[userApi] Normalized user data:', normalizedData);
+        return normalizedData;
+        
+    } catch (error) {
+        console.error('[userApi] Error in getCurrentUserData:', error.message);
+        console.error('[userApi] Storage check:', {
+            sessionUserId: sessionStorage.getItem('userId'),
+            localUserId: localStorage.getItem('userId')
+        });
+        throw error;
+    }
+};
+```
+
+#### Flow Diagram
+```
+1. Read userId from sessionStorage or localStorage
+   ├─ If not found → Throw error "No user ID found"
+   └─ If found → Continue
+2. Encode userId for URL safety
+3. Build search URL with regNumber parameter
+4. Send GET request to SheetDB API
+5. Check response status
+   ├─ If not ok → Throw error with status code
+   └─ If ok → Continue
+6. Parse JSON response
+7. Validate response is array with data
+   ├─ If empty/invalid → Throw error "No user found"
+   └─ If valid → Continue
+8. Extract first matching user from array
+9. Normalize all fields with fallback to empty strings
+10. Add _raw field with original data for debugging
+11. Return normalized user object
+```
+
+#### Usage Example
+```javascript
+import { getCurrentUserData } from '../../api/userApi';
+
+const UserPage = () => {
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        // Fetch current user data
+        const data = await getCurrentUserData();
+        setUserData(data);
+      } catch (error) {
+        console.error('Failed to load user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadUserData();
+  }, []);
+  
+  return (
+    <div>
+      {loading ? 'Loading...' : (
+        <div>
+          <h1>{userData.firstName} {userData.lastName}</h1>
+          <p>Status: {userData.status}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+```
+
+#### Error Handling
+- **No userId**: Throws `"No user ID found. Please log in again."`
+- **API Error**: Throws `"API responded with status {statusCode}"`
+- **No Match**: Throws `"No user found with registration number: {userId}"`
+- **Network Error**: Caught by try-catch, re-thrown with error details
+
+---
+
+### Function: logoutUser
+
+#### Purpose
+Clear all stored user authentication data from browser storage.
+
+#### Endpoint
+None (client-side only)
+
+#### Parameters
+None
+
+#### Returns
+`void`
+
+#### Implementation
+```javascript
+/**
+ * Logout user by clearing all stored data
+ */
+export const logoutUser = () => {
+    console.log('[userApi] Logging out user');
+    // Remove userId from localStorage
+    localStorage.removeItem('userId');
+    // Remove userId from sessionStorage
+    sessionStorage.removeItem('userId');
+    // Remove cached userData from sessionStorage
+    sessionStorage.removeItem('userData');
+    // Clear all sessionStorage (if needed)
+    sessionStorage.clear();
+};
+```
+
+#### Flow Diagram
+```
+1. Log logout action to console
+2. Remove 'userId' from localStorage
+3. Remove 'userId' from sessionStorage
+4. Remove 'userData' from sessionStorage
+5. Clear all remaining sessionStorage data
+```
+
+#### Usage Example
+```javascript
+import { logoutUser } from '../../api/userApi';
+import { useNavigate } from 'react-router-dom';
+
+const handleLogout = async () => {
+  try {
+    // Clear user session
+    logoutUser();
+    // Redirect to login page
+    navigate('/login', { replace: true });
+  } catch (error) {
+    console.error('Logout error:', error);
+    // Force redirect even if error occurs
+    navigate('/login', { replace: true });
+  }
+};
+```
+
+#### Side Effects
+- Removes data from `localStorage`
+- Clears all data from `sessionStorage`
+- User must log in again to access protected pages
+
+---
+
 ## Future API Enhancements
 
 ### Planned Features
@@ -914,29 +1193,15 @@ const validateEmail = async (email) => {
    - Upload actual files to cloud storage
    - Store file URLs in database
 
-2. **Application Status API**
-   - Check application status by registration number
+2. **Application Status Update API**
+   - Admin can update application status
    - Track approval workflow
 
 3. **Admin Dashboard API**
    - Retrieve all applications
-   - Update application status
+   - Filter by status, date, etc.
    - Generate reports
 
 4. **Password Reset API**
    - Forgot password functionality
    - Email verification
-
-5. **Email Notification API**
-   - Send confirmation emails
-   - Application status updates
-
----
-
-## Conclusion
-
-This API documentation covers all current implementations of SheetDB API in both Pre-React and Post-React versions of the PWD Automated Application System, including the newly implemented Registration Submission API. The documentation will be updated as new APIs are implemented.
-
-**Last Updated:** October 12, 2025
-**Version:** 1.1
-**Maintainer:** Development Team

@@ -86,7 +86,7 @@ export const getCurrentUserData = async () => {
  * Logout user by clearing all stored data
  */
 export const logoutUser = () => {
-    console.log('🚪 [userApi] Logging out user');
+    console.log('[userApi] Logging out user');
     localStorage.removeItem('userId');
     sessionStorage.removeItem('userId');
     sessionStorage.removeItem('userData');

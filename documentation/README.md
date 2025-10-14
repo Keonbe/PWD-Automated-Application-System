@@ -68,22 +68,6 @@ Complete migration guide and development setup.
 
 ---
 
-### 4. **NPM Scripts** (`npm-script.md`)
-Guide to package.json scripts and commands.
-
-**Contains:**
-- Development server commands
-- Build commands
-- Test commands
-- Deployment scripts
-
-**When to use:**
-- Running the project locally
-- Building for production
-- Running tests
-
----
-
 ## 🎯 Quick Start Guide
 
 ### For New Developers
@@ -116,7 +100,7 @@ Guide to package.json scripts and commands.
   - Post-React: `function-documentation.md` → Post-React Login Page Functions
 
 ### Registration Form
-- **API:** `api-documentation.md` → User Registration API (planned)
+- **API:** `api-documentation.md` → User Registration API
 - **Functions:**
   - Pre-React: `function-documentation.md` → Pre-React Registration Form Functions
   - Post-React: `function-documentation.md` → Post-React Registration Form Functions
@@ -126,7 +110,7 @@ Guide to package.json scripts and commands.
   - Pre-React: `function-documentation.md` → Form Validation on Submit
   - Post-React: `function-documentation.md` → validateForm function
 
-### File Upload
+### File Upload (Soon)
 - **Functions:**
   - Pre-React: `function-documentation.md` → updateFileName (Pre-React)
   - Post-React: `function-documentation.md` → updateFileName (Post-React)
@@ -183,8 +167,9 @@ PWD-Automated-Application-System/
             │       ├── register.jsx    ← Registration (React)
             │       └── register-result.jsx
             └── components/
-                ├── user-header.jsx
-                └── user-footer.jsx
+                ├── user-sidebar.jsx
+                ├── public-header.jsx
+                └── public-footer.jsx
 ```
 
 ---
@@ -192,18 +177,18 @@ PWD-Automated-Application-System/
 ## 🔧 Technology Stack
 
 ### Pre-React Migration
-- **Frontend:** HTML5, CSS3, Vanilla JavaScript
-- **Styling:** Bootstrap 5
-- **Icons:** Font Awesome
-- **API:** SheetDB REST API
+- **Frontend:** `HTML5`, `CSS3`, `Vanilla JavaScript`
+- **Styling:** `Bootstrap 5`
+- **Icons:** `Font Awesome`
+- **API:** `SheetDB REST API`
 
 ### Post-React Migration
-- **Frontend Framework:** React 18
-- **Routing:** React Router DOM
-- **Styling:** Bootstrap 5 (imported)
-- **State Management:** React Hooks (useState, useEffect)
-- **API Calls:** Fetch API with async/await
-- **Build Tool:** Create React App
+- **Frontend Framework:** `React 18`
+- **Routing:** R`eact Router DOM`
+- **Styling:**` Bootstrap 5 (imported)`
+- **State Management:** `React Hooks (useState, useEffect)`
+- **API Calls:** `Fetch API with async/await`
+- **Build Tool:** `Create-React-App`
 
 ---
 
@@ -233,18 +218,6 @@ Each API endpoint includes:
 - **Request:** Parameters, headers, body
 - **Response:** Success and error responses
 - **Usage Examples:** Both Pre-React and Post-React
-
----
-
-## Recent Updates
-
-### October 12, 2025
-- ✅ Created comprehensive API documentation
-- ✅ Created detailed function documentation
-- ✅ Documented Pre-React implementations
-- ✅ Documented Post-React implementations
-- ✅ Added comparison tables
-- ✅ Included security considerations
 
 ---
 

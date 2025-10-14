@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../assets/styles/index-styles.css';
 import placeholderImage from '../assets/images/dasmarinas-holder.jpg';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom'; //For the defunct modal function
 
 export default function Home() {
     /* Modal Function: 

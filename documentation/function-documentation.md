@@ -1400,6 +1400,415 @@ RegisterResult
 
 ---
 
+## User Dashboard Functions
+
+### File Location
+```
+Post-React-Migration/pwd-application-system/src/pages/userpage/userpage.jsx
+```
+
+---
+
+#### Function: getStatusInfo
+
+**Purpose:** Compute display information (label, progress percentage, CSS classes) based on application status.
+
+**Type:** Pure Function
+
+**Parameters:**
+- `status` (string) - Application status from database
+
+**Returns:** `Object` with properties:
+- `label` (string) - Display-friendly status text
+- `percent` (number) - Progress bar percentage (0-100)
+- `badgeClass` (string) - CSS class for status badge styling
+- `fillClass` (string) - CSS class for progress bar color
+
+**Implementation:**
+```javascript
+const getStatusInfo = (status) => {
+    // Only accept the three canonical statuses: pending, approved, denied
+    // Normalize status to lowercase and trim whitespace
+    const s = (status || '').toString().trim().toLowerCase();
+    
+    // Check if status is 'pending' or 'under review'
+    if (s === 'pending' || s === 'under review') {
+      // Return warning styling with 60% progress
+      return { label: 'Under Review', percent: 60, badgeClass: 'status-warning', fillClass: 'fill-warning' };
+    }
+    
+    // Check if status is 'approved'
+    if (s === 'approved') {
+      // Return success styling with 100% progress
+      return { label: 'Approved', percent: 100, badgeClass: 'status-success', fillClass: 'fill-success' };
+    }
+    
+    // Check if status is 'denied' or 'rejected'
+    if (s === 'denied' || s === 'rejected') {
+      // Return danger styling with 100% progress
+      return { label: 'Denied', percent: 100, badgeClass: 'status-danger', fillClass: 'fill-danger' };
+    }
+    
+    // Fallback for any other value: show Unknown with 0% and neutral styling
+    return { label: status || 'Unknown', percent: 0, badgeClass: 'status-neutral', fillClass: 'fill-neutral' };
+};
+```
+
+**Status Mapping Table:**
+| Input Status | Output Label | Progress % | Badge Class | Fill Class |
+|--------------|--------------|------------|-------------|------------|
+| "pending" | "Under Review" | 60 | status-warning | fill-warning |
+| "under review" | "Under Review" | 60 | status-warning | fill-warning |
+| "approved" | "Approved" | 100 | status-success | fill-success |
+| "denied" | "Denied" | 100 | status-danger | fill-danger |
+| "rejected" | "Denied" | 100 | status-danger | fill-danger |
+| null/other | original or "Unknown" | 0 | status-neutral | fill-neutral |
+
+**Usage Example:**
+```jsx
+// Get status info for current user
+const info = getStatusInfo(userData.status);
+
+// Render progress bar with dynamic color
+<div className={`user-progress-fill ${info.fillClass}`} 
+     style={{width: `${info.percent}%`}} />
+
+// Render status badge with dynamic styling
+<span className={`user-status-badge ${info.badgeClass}`}>
+  {info.label}
+</span>
+```
+
+**Edge Cases:**
+- `null` or `undefined` → Returns "Unknown" with neutral styling
+- Empty string → Returns "Unknown" with neutral styling
+- Unrecognized status → Returns original status text with neutral styling
+- Case-insensitive matching (handles "PENDING", "Pending", "pending")
+
+---
+
+#### Function: useEffect - loadUserData
+
+**Purpose:** Fetch user data from API on component mount and handle authentication.
+
+**Type:** React Hook Effect
+
+**Dependencies:** `[navigate]`
+
+**Implementation:**
+```javascript
+useEffect(() => {
+    // Define async function to load user data
+    const loadUserData = async () => {
+      try {
+        console.log('[UserPage] Starting to fetch user data...');
+        
+        // Check if user is logged in by checking userId in storage
+        const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+        
+        // If no userId found, user is not logged in
+        if (!userId) {
+          console.warn('[UserPage] No userId found, redirecting to login');
+          // Redirect to login page and replace history
+          navigate('/login', { replace: true });
+          return;
+        }
+        
+        console.log('[UserPage] Found userId:', userId);
+        
+        // Fetch user data from API using userApi
+        const data = await getCurrentUserData();
+        console.log('[UserPage] User data loaded successfully:', data);
+        
+        // Update state with fetched data
+        setUserData(data);
+        // Clear any previous errors
+        setError(null);
+        
+      } catch (err) {
+        console.error('[UserPage] Failed to load user data:', err.message);
+        // Set error message for display
+        setError(err.message);
+        
+        // If API fails, use demo data for development
+        console.log('[UserPage] Using demo data as fallback');
+        setUserData(getDemoUserData());
+        
+      } finally {
+        // Always set loading to false when done
+        setLoading(false);
+      }
+    };
+
+    // Execute the async function
+    loadUserData();
+}, [navigate]);
+```
+
+**Flow Diagram:**
+```
+1. Component mounts
+2. Check for userId in sessionStorage or localStorage
+   ├─ If not found → Navigate to /login (replace history)
+   └─ If found → Continue
+3. Call getCurrentUserData() API
+4. Wait for API response
+5. Check API result
+   ├─ Success → Update userData state, clear error
+   └─ Error → Set error state, load demo data as fallback
+6. Finally → Set loading to false
+```
+
+**State Updates:**
+- `setUserData(data)` - Sets the fetched user data
+- `setError(message)` - Sets error message if API fails
+- `setLoading(false)` - Removes loading spinner
+
+**Side Effects:**
+- May redirect to `/login` if not authenticated
+- Makes network request to SheetDB API
+- Writes console logs for debugging
+- Falls back to demo data if API fails
+
+**Error Handling:**
+- No userId → Redirects to login
+- API error → Shows error banner, uses demo data
+- Network error → Caught and handled gracefully
+
+---
+
+#### Function: getDemoUserData
+
+**Purpose:** Provide fallback demo data for development when API is unavailable.
+
+**Type:** Pure Function
+
+**Parameters:** None
+
+**Returns:** `Object` - Demo user data object
+
+**Implementation:**
+```javascript
+const getDemoUserData = () => {
+    return {
+      // Use same formats as register.jsx: 12-digit numeric regNumber
+      regNumber: '252175464394',
+      // Use YYYY-MM-DD date format
+      regDate: '2025-10-13',
+      // Personal information
+      lastName: 'Dela Cruz',
+      firstName: 'Juan',
+      middleName: 'M',
+      disability: 'Physical Disability',
+      // Address information
+      street: '123 Main St',
+      barangay: 'Sample Barangay',
+      // Match register.jsx defaults (disabled inputs)
+      municipality: 'Dasmariñas',
+      province: 'Cavite',
+      region: 'IV-A',
+      // Contact information
+      tel: '(02) 8123-4567',
+      mobile: '0917-123-4567',
+      email: 'juan.delacruz@email.com',
+      // Personal details
+      dob: '1985-01-15',
+      sex: 'Male',
+      nationality: 'Filipino',
+      blood: 'O+',
+      civil: 'Single',
+      // Emergency contact
+      emergencyName: 'Maria Dela Cruz',
+      emergencyPhone: '0918-765-4321',
+      emergencyRelationship: 'Mother',
+      // Match upload fields: filenames are stored in proofIdentity/proofDisability
+      proofIdentityName: 'sample-id.png',
+      proofDisabilityName: 'sample-medcert.png',
+      proofIdentity: 'sample-id.png',
+      proofDisability: 'sample-medcert.png',
+      // Registration flow fields
+      generatedPassword: '12345678',
+      password: '12345678',
+      // Default status used by the registration form
+      status: 'Pending'
+    };
+};
+```
+
+**Purpose:** Allows testing and development without live API connection.
+
+**Usage:** Called automatically when `getCurrentUserData()` fails.
+
+---
+
+#### Function: handleNavClick
+
+**Purpose:** Handle sidebar navigation clicks and execute corresponding actions.
+
+**Type:** Event Handler
+
+**Parameters:**
+- `index` (number) - Index of clicked navigation item
+
+**Returns:** `void`
+
+**Implementation:**
+```javascript
+const handleNavClick = (index) => {
+    // Update active navigation state
+    setActiveNav(index);
+    
+    // Close sidebar on mobile after navigation
+    if (isSidebarActive) {
+      setSidebarActive(false);
+    }
+
+    // Handle navigation actions based on index
+    switch(index) {
+      case 1: // Help
+        showHelp();
+        break;
+      case 2: // Logout
+        handleLogout();
+        break;
+      default:
+        // no-op for other indices (e.g., 0 = Dashboard)
+        break;
+    }
+};
+```
+
+**Navigation Items:**
+- `0` - Dashboard (default view, no action)
+- `1` - Help (shows help information)
+- `2` - Logout (logs out and redirects)
+
+**Flow:**
+1. Set clicked item as active
+2. Close mobile sidebar if open
+3. Check navigation index
+   - Index 1 → Call `showHelp()`
+   - Index 2 → Call `handleLogout()`
+   - Other → No action
+
+**State Updates:**
+- `setActiveNav(index)` - Updates active navigation item
+- `setSidebarActive(false)` - Closes mobile sidebar
+
+**Side Effects:**
+- Updates UI highlighting
+- May close sidebar
+- May trigger help modal or logout
+
+---
+
+#### Function: showHelp
+
+**Purpose:** Display help information to the user.
+
+**Type:** Event Handler
+
+**Parameters:** None
+
+**Returns:** `void`
+
+**Implementation:**
+```javascript
+const showHelp = () => {
+    // Show help modal or page
+    // Currently displays a simple alert (placeholder)
+    alert('Help information will be displayed here.');
+};
+```
+
+**Status:** Placeholder implementation
+
+**Future Enhancement:** Should open a modal or navigate to help page with:
+- FAQ section
+- Application process guide
+- Contact information
+- Document requirements
+
+---
+
+#### Function: handleLogout
+
+**Purpose:** Log out the current user and redirect to login page.
+
+**Type:** Async Event Handler
+
+**Parameters:** None
+
+**Returns:** `Promise<void>`
+
+**Implementation:**
+```javascript
+const handleLogout = async () => {
+    try {
+      console.log('[UserPage] Logging out...');
+      // Call API function to clear session data
+      logoutUser();
+      // Redirect to login page (replace history to prevent back button)
+      navigate('/login', { replace: true });
+    } catch (err) {
+      console.error('[UserPage] Logout error:', err);
+      // Force redirect even if error occurs
+      navigate('/login', { replace: true });
+    }
+};
+```
+
+**Flow:**
+1. Log logout action
+2. Call `logoutUser()` to clear storage
+3. Navigate to `/login` with replace flag
+4. If error occurs → Still redirect to login
+
+**Side Effects:**
+- Clears localStorage and sessionStorage
+- Redirects to login page
+- Replaces history (prevents back button returning to dashboard)
+
+**Error Handling:**
+- Catches any logout errors
+- Forces redirect even if error occurs
+- Logs error to console
+
+---
+
+### Component Structure
+
+**UserPage Component Overview:**
+
+**State Variables:**
+- `isSidebarActive` (boolean) - Controls mobile sidebar visibility
+- `activeNav` (number) - Currently selected navigation item
+- `userData` (Object|null) - User data from API or demo data
+- `loading` (boolean) - Loading state for initial data fetch
+- `error` (string|null) - Error message if API fails
+
+**Key Features:**
+1. **Authentication Check** - Redirects if not logged in
+2. **API Integration** - Fetches user data from SheetDB
+3. **Fallback Data** - Uses demo data if API fails
+4. **Responsive Design** - Mobile sidebar with overlay
+5. **Status Visualization** - Dynamic progress bars and badges
+6. **Activity Timeline** - Shows recent application updates
+
+**UI Sections:**
+- Header with mobile menu button
+- Sidebar with user info and navigation
+- Main content area with cards:
+  - Application summary
+  - Progress tracker
+  - Personal information
+  - Contact information
+  - Emergency contact
+  - Disability information
+  - Recent activity timeline
+
+---
+
 ## Conclusion
 
 This function documentation provides comprehensive coverage of all custom JavaScript/JSX functions that handle user interactions in the PWD Automated Application System. The documentation includes both Pre-React (Vanilla JS) and Post-React (React) implementations with detailed explanations of parameters, return values, flow, side effects, and dependencies.
@@ -1410,64 +1819,7 @@ This function documentation provides comprehensive coverage of all custom JavaSc
 - API integration uses fetch with async/await patterns
 - Form validation handles multiple input types including checkbox/radio groups
 - Registration data persists using sessionStorage for result page display
+- User dashboard displays real-time application status with fallback data
 - All functions include proper error handling and user feedback
 
-**Last Updated:** October 12, 2025
-**Version:** 1.1
-**Maintainer:** Development Team
-- ⚠️ No logout functionality documented
 
----
-
-## Future Enhancements
-
-### Planned Function Additions
-
-1. **Logout Function**
-   ```javascript
-   const handleLogout = () => {
-       sessionStorage.removeItem("loggedInUser");
-       navigate('/login');
-   };
-   ```
-
-2. **Password Reset Function**
-   ```javascript
-   const handlePasswordReset = async (email) => {
-       // Send reset email
-       // Generate reset token
-       // Update password via API
-   };
-   ```
-
-3. **Form Auto-save Function**
-   ```javascript
-   const autoSaveForm = useCallback(() => {
-       const formData = new FormData(formRef.current);
-       localStorage.setItem('draftApplication', JSON.stringify(formData));
-   }, []);
-   ```
-
-4. **File Upload to Cloud Storage**
-   ```javascript
-   const uploadToCloud = async (file) => {
-       // Upload to cloud storage service
-       // Return file URL
-   };
-   ```
-
----
-
-## Conclusion
-
-This documentation covers all custom JavaScript functions that handle user interactions in both Pre-React and Post-React implementations of the PWD Automated Application System. Functions are organized by feature and implementation phase, with detailed explanations of purpose, flow, parameters, and side effects.
-
-**Key Takeaways:**
-- Pre-React uses vanilla JavaScript with event listeners
-- Post-React uses modern React patterns (hooks, state, async/await)
-- Both implementations provide similar user experiences
-- Post-React offers better maintainability and scalability
-
-**Last Updated:** October 12, 2025
-**Version:** 1.0
-**Maintainer:** Development Team
