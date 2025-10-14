@@ -193,7 +193,7 @@ export default function UserPage() {
 
   return (
     <div className="user-dashboard-wrapper">
-      {/* Header */}
+      {/* Header */} {/* TODO:FLEX/ Grid-3 FOR CONSISTENT ALIGNMENT */}
       <header className="user-dashboard-header">
         <div className="container-fluid px-4">
           <div className="d-flex justify-content-between align-items-center">
@@ -398,18 +398,56 @@ export default function UserPage() {
           <div className="user-card">
             <h3 className="user-card-title">Recent Activity</h3>
             
-            <div className="user-activity-item">
-              <div className="user-activity-header">
-                <span className="user-activity-title">Application Under Review</span>
-                <span className="user-activity-time">Today, 10:30 AM</span>
-              </div>
-              <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
-            </div>
-
+            {/* Dynamic activity based on status: Temporary/Not Complete or Not Final */}
+            {(() => {
+              const status = userData.status?.toLowerCase();
+              if (status === 'pending') {
+                return (
+                  <div className="user-activity-item">
+                    <div className="user-activity-header">
+                      <span className="user-activity-title">Application Under Review</span>
+                      <span className="user-activity-time">Today, 10:30 AM</span>
+                    </div>
+                    <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
+                  </div>
+                );
+              } else if (status === 'accepted') {
+                return (
+                  <div className="user-activity-item">
+                    <div className="user-activity-header">
+                      <span className="user-activity-title">Application Approved</span>
+                      <span className="user-activity-time">Today, 9:15 AM</span>
+                    </div>
+                    <p className="user-activity-desc">Congratulations! Your PWD application has been approved.</p>
+                  </div>
+                );
+              } else if (status === 'denied') {
+                return (
+                  <div className="user-activity-item">
+                    <div className="user-activity-header">
+                      <span className="user-activity-title">Application Status Updated</span>
+                      <span className="user-activity-time">Today, 11:45 AM</span>
+                    </div>
+                    <p className="user-activity-desc">Your application status has been updated. Please contact support for details.</p>
+                  </div>
+                );
+              } else {
+                return (
+                  <div className="user-activity-item">
+                    <div className="user-activity-header">
+                      <span className="user-activity-title">Application Under Review</span>
+                      <span className="user-activity-time">Today, 10:30 AM</span>
+                    </div>
+                    <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
+                  </div>
+                );
+              }
+            })()}
+            
             <div className="user-activity-item">
               <div className="user-activity-header">
                 <span className="user-activity-title">Documents Verified</span>
-                <span className="user-activity-time">March 18, 2024</span>
+                <span className="user-activity-time">{userData.regDate}</span>
               </div>
               <p className="user-activity-desc">All submitted documents have been verified.</p>
             </div>
@@ -417,7 +455,7 @@ export default function UserPage() {
             <div className="user-activity-item">
               <div className="user-activity-header">
                 <span className="user-activity-title">Application Submitted</span>
-                <span className="user-activity-time">March 15, 2024</span>
+                <span className="user-activity-time">{userData.regDate}</span>
               </div>
               <p className="user-activity-desc">Your PWD application has been successfully submitted.</p>
             </div>

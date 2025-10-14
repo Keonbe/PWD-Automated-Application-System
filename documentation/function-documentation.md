@@ -1809,6 +1809,207 @@ const handleLogout = async () => {
 
 ---
 
+## Recent Activity `user` Feature Implementation
+
+### Overview
+The Recent Activity feature displays a dynamic timeline of application-related events that adapts based on the user's current application status. This provides users with contextual, status-aware information about their PWD application progress.
+
+### What It Does
+- **Dynamic Content**: Shows different activities based on application status (pending, accepted, denied)
+- **Real Dates**: Uses actual registration date for "Application Submitted" activity
+- **User Context**: Provides relevant information and next steps based on current status
+- **Timeline Format**: Displays activities in reverse chronological order (most recent first)
+
+### Implementation Using React JS
+
+#### File Location
+```
+Post-React-Migration/pwd-application-system/src/pages/userpage/userpage.jsx
+```
+
+#### React Patterns Used
+1. **Conditional Rendering**: Uses Immediately Invoked Function Expression (IIFE) for status-based rendering
+2. **Data Binding**: Binds user data (`userData.status`, `userData.regDate`) to display real information
+3. **JSX Fragments**: Returns complete JSX elements from conditional logic
+4. **String Manipulation**: Uses optional chaining and toLowerCase() for safe status checking
+
+#### Complete Implementation with Line-by-Line Comments
+
+```jsx
+{/* Recent Activity Section - Main container for activity timeline */}
+<div className="user-card">
+  {/* Section title */}
+  <h3 className="user-card-title">Recent Activity</h3>
+  
+  {/* Dynamic activity based on status: Uses IIFE for conditional rendering */}
+  {(() => {
+    // Get user status and convert to lowercase for case-insensitive comparison
+    const status = userData.status?.toLowerCase();
+    
+    // Conditional rendering based on application status
+    if (status === 'pending') {
+      // Status: Pending - Show "Under Review" activity
+      return (
+        <div className="user-activity-item">
+          <div className="user-activity-header">
+            {/* Activity title for pending applications */}
+            <span className="user-activity-title">Application Under Review</span>
+            {/* Time stamp - hardcoded for now, could be dynamic */}
+            <span className="user-activity-time">Today, 10:30 AM</span>
+          </div>
+          {/* Description explaining current status */}
+          <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
+        </div>
+      );
+    } else if (status === 'accepted') {
+      // Status: Accepted - Show approval activity
+      return (
+        <div className="user-activity-item">
+          <div className="user-activity-header">
+            {/* Activity title for approved applications */}
+            <span className="user-activity-title">Application Approved</span>
+            {/* Time stamp for approval */}
+            <span className="user-activity-time">Today, 9:15 AM</span>
+          </div>
+          {/* Congratulatory message for approved applications */}
+          <p className="user-activity-desc">Congratulations! Your PWD application has been approved.</p>
+        </div>
+      );
+    } else if (status === 'denied') {
+      // Status: Denied - Show status update activity
+      return (
+        <div className="user-activity-item">
+          <div className="user-activity-header">
+            {/* Neutral title for denied applications */}
+            <span className="user-activity-title">Application Status Updated</span>
+            {/* Time stamp for status update */}
+            <span className="user-activity-time">Today, 11:45 AM</span>
+          </div>
+          {/* Instructions to contact support */}
+          <p className="user-activity-desc">Your application status has been updated. Please contact support for details.</p>
+        </div>
+      );
+    } else {
+      // Fallback: Default to "Under Review" for unknown statuses
+      return (
+        <div className="user-activity-item">
+          <div className="user-activity-header">
+            {/* Default activity title */}
+            <span className="user-activity-title">Application Under Review</span>
+            {/* Default time stamp */}
+            <span className="user-activity-time">Today, 10:30 AM</span>
+          </div>
+          {/* Default description */}
+          <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
+        </div>
+      );
+    }
+  })()}
+  
+  {/* Static activity: Documents Verified - Always shown */}
+  <div className="user-activity-item">
+    <div className="user-activity-header">
+      {/* Fixed activity title */}
+      <span className="user-activity-title">Documents Verified</span>
+      {/* Uses registration date for testing - could be dynamic verification date */}
+      <span className="user-activity-time">{userData.regDate}</span>
+    </div>
+    {/* Description of document verification */}
+    <p className="user-activity-desc">All submitted documents have been verified.</p>
+  </div>
+
+  {/* Static activity: Application Submitted - Always shown last */}
+  <div className="user-activity-item">
+    <div className="user-activity-header">
+      {/* Fixed activity title */}
+      <span className="user-activity-title">Application Submitted</span>
+      {/* Uses actual registration date from user data */}
+      <span className="user-activity-time">{userData.regDate}</span>
+    </div>
+    {/* Confirmation message */}
+    <p className="user-activity-desc">Your PWD application has been successfully submitted.</p>
+  </div>
+</div>
+```
+
+### How the React Implementation Works
+
+#### 1. IIFE (Immediately Invoked Function Expression)
+```jsx
+{(() => {
+  // Logic here
+})()}
+```
+- **Purpose**: Allows conditional rendering of different JSX based on user status
+- **Why IIFE**: Enables complex logic and variable declarations within JSX return
+- **Execution**: Runs immediately when component renders, returns appropriate JSX
+
+#### 2. Safe Status Checking
+```jsx
+const status = userData.status?.toLowerCase();
+```
+- **Optional Chaining (`?.`)**: Prevents errors if `userData.status` is null/undefined
+- **toLowerCase()**: Ensures case-insensitive comparison
+- **Fallback**: If status is falsy, conditional checks will fail to else block
+
+#### 3. Conditional Logic Flow
+```
+Check status === 'pending' → Return "Under Review" activity
+Check status === 'accepted' → Return "Approved" activity  
+Check status === 'denied' → Return "Status Updated" activity
+Default (else) → Return "Under Review" activity
+```
+
+#### 4. Data Binding
+- **Dynamic Dates**: `{userData.regDate}` binds actual registration date
+- **Status-Based Content**: Activity title and description change based on status
+- **CSS Classes**: Uses existing `user-activity-*` classes for consistent styling
+
+### Benefits of This Implementation
+
+#### User Experience
+- **Contextual Information**: Users see relevant updates based on their application status
+- **Real Data**: Registration date provides authentic timeline
+- **Clear Next Steps**: Status-appropriate messages guide user actions
+
+#### Developer Experience
+- **Maintainable**: Single location for activity logic
+- **Extensible**: Easy to add new status conditions
+- **Type-Safe**: Uses optional chaining to prevent runtime errors
+- **Reusable**: Pattern can be applied to other dynamic content areas
+
+### Future Enhancements
+
+#### Planned Improvements
+1. **Dynamic Timestamps**: Replace hardcoded times with actual event timestamps from database
+2. **More Status Types**: Add support for "under review", "rejected", etc.
+3. **Activity History**: Store and display complete activity timeline
+4. **Real-time Updates**: Auto-refresh when status changes
+5. **Admin Actions**: Show admin review actions in timeline
+
+#### Technical Enhancements
+1. **Custom Hook**: Extract activity logic into `useActivityTimeline()` hook
+2. **Component**: Create `<ActivityItem>` component for reusability
+3. **Date Formatting**: Use date libraries for better formatting
+4. **Animation**: Add smooth transitions between status changes
+
+### Testing the Implementation
+
+#### Status Scenarios
+- **Pending**: Shows "Application Under Review" with review message
+- **Accepted**: Shows "Application Approved" with congratulations
+- **Denied**: Shows "Application Status Updated" with support contact info
+- **Unknown/Default**: Falls back to "Under Review" status
+
+#### Data Dependencies
+- **userData.status**: Determines which activity to show first
+- **userData.regDate**: Used for "Application Submitted" timestamp
+- **CSS Classes**: Requires `user-activity-*` classes for styling
+
+This implementation provides a dynamic, user-centric activity feed that enhances the user experience by showing relevant, status-appropriate information in a clean timeline format.
+
+---
+
 ## Conclusion
 
 This function documentation provides comprehensive coverage of all custom JavaScript/JSX functions that handle user interactions in the PWD Automated Application System. The documentation includes both Pre-React (Vanilla JS) and Post-React (React) implementations with detailed explanations of parameters, return values, flow, side effects, and dependencies.
@@ -1821,5 +2022,3 @@ This function documentation provides comprehensive coverage of all custom JavaSc
 - Registration data persists using sessionStorage for result page display
 - User dashboard displays real-time application status with fallback data
 - All functions include proper error handling and user feedback
-
-
