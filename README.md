@@ -28,7 +28,7 @@ This system is designed to:
 * **Frontend:** `ReactJS`, `Bootstrap`, `HTML`/`CSS`/`JS`
 * **Backend:** `Laravel` (Not yet implemented)
 * **Database:** (Not yet implemented)
-* **Tools:** `Visual Studio Code`, `Chrome DevTools`, `SheetDB`
+* **Tools:** `Visual Studio Code`, `Chrome DevTools`, `SheetDB` for Database API, `Postman` for API Testing.
 
 
 ## Prerequisites

@@ -134,7 +134,7 @@ const handleUserLogin = async (e) => {
 
 #### Endpoint
 ```
-GET /search?username={adminEmail}&password={adminPassword}
+GET /search?adminEmail={adminEmail}&adminPassword={adminPassword}
 ```
 
 #### Purpose
@@ -143,8 +143,8 @@ Verify administrator credentials and provide elevated access.
 #### Request Parameters
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| username | string | Yes | Admin email address |
-| password | string | Yes | Admin password |
+| adminEmail | string | Yes | Admin email address |
+| adminPassword | string | Yes | Admin password |
 
 #### Success Response
 ```json
@@ -166,7 +166,7 @@ Verify administrator credentials and provide elevated access.
 ```javascript
 const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9";
 
-fetch(`${adminSheetdbUrl}/search?username=${adminEmail}&password=${adminPassword}`)
+fetch(`${adminSheetdbUrl}/search?adminEmail=${adminEmail}&adminPassword=${adminPassword}`)
     .then(res => res.json())
     .then(data => {
         if (data.length > 0) {
@@ -187,7 +187,7 @@ const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9";
 const handleAdminLogin = async (e) => {
     e.preventDefault();
     try {
-        const response = await fetch(`${adminSheetdbUrl}/search?username=${adminEmail}&password=${adminPassword}`);
+        const response = await fetch(`${adminSheetdbUrl}/search?adminEmail=${adminEmail}&adminPassword=${adminPassword}`);
         const data = await response.json();
         
         if (data.length > 0) {

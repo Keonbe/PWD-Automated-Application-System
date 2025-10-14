@@ -188,7 +188,7 @@ document.getElementById("adminLoginForm").addEventListener("submit", function(e)
     adminLoginBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Logging in...';
 
     // Fetch API to verify admin credentials
-    fetch(`${adminSheetdbUrl}/search?username=${adminEmail}&password=${adminPassword}`)
+    fetch(`${adminSheetdbUrl}/search?adminEmail=${adminEmail}&adminPassword=${adminPassword}`)
         .then(res => res.json())
         .then(data => {
             if (data.length > 0) {
@@ -547,7 +547,7 @@ const handleAdminLogin = async (e) => {
     }
 
     try {
-        const response = await fetch(`${adminSheetdbUrl}/search?username=${adminEmail}&password=${adminPassword}`);
+        const response = await fetch(`${adminSheetdbUrl}/search?adminEmail=${adminEmail}&adminPassword=${adminPassword}`);
         const data = await response.json();
         
         if (data.length > 0) {

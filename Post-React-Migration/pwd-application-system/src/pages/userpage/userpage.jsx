@@ -2,6 +2,8 @@ import '../../assets/styles/userpage-styles.css';
 import { useState, useEffect } from 'react';
 import { getCurrentUserData, logoutUser } from "../../api/userApi";
 import { useNavigate } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
+import logo from '../../assets/images/dasma-logo-only.png';
 
 export default function UserPage() {
   const navigate = useNavigate();
@@ -10,6 +12,13 @@ export default function UserPage() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // help modal refer: https://react-bootstrap.netlify.app/docs/components/modal/
+  // help modal useState
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  // modal handlers
+  const handleCloseHelpModal = () => setShowHelpModal(false);
+  const handleShowHelpModal = () => setShowHelpModal(true);
 
   //Compute display label, progress percent and css class based on stored status
   const getStatusInfo = (status) => {
@@ -128,7 +137,8 @@ export default function UserPage() {
 
   const showHelp = () => {
     // Show help modal or page
-    alert('Help information will be displayed here.');
+    handleShowHelpModal();
+    //alert('Help information will be displayed here.');
   };
 
   const handleLogout = async () => {
@@ -187,6 +197,7 @@ export default function UserPage() {
       <header className="user-dashboard-header">
         <div className="container-fluid px-4">
           <div className="d-flex justify-content-between align-items-center">
+            <img src={logo} alt="City of Dasmariñas Logo" className="user-header-logo" />
             <h1>PWD Application Dashboard</h1>
             <button 
               className="user-mobile-menu-btn" 
@@ -412,6 +423,52 @@ export default function UserPage() {
             </div>
           </div>
         </main>
+
+      {/* Help Modal - Tried Using React-Bootstrap Modal */}
+      <Modal show={showHelpModal} onHide={handleCloseHelpModal} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <i className="fas fa-question-circle me-2"></i>
+            PWD Application Help
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="help-content">
+            <h5>Application Status Guide</h5>
+            <ul>
+              <li><strong>Under Review:</strong> Your application is being processed by our team</li>
+              <li><strong>Approved:</strong> Your PWD ID has been approved and will be issued</li>
+              <li><strong>Denied:</strong> Your application was not approved. Please contact support for details</li>
+            </ul>
+
+            <h5>Progress Tracking</h5>
+            <p>The progress bar shows which stage your application is in:</p>
+            <ul>
+              <li><strong>Submitted:</strong> Application received</li>
+              <li><strong>Verification:</strong> Documents are being verified</li>
+              <li><strong>Review:</strong> Under final review</li>
+              <li><strong>Approval:</strong> Final decision stage</li>
+            </ul>
+
+            <h5>Need More Help?</h5>
+            <p>If you have questions about your application:</p>
+            <ul>
+              <li>Visit the local PWD office</li>
+              <li>Call: (02) 1234-5678</li>
+              <li>Email: pwd.support@localgov.ph</li>
+            </ul>
+
+            <div className="alert alert-info mt-3">
+              <i className="fas fa-info-circle me-2"></i>
+              <strong>Note:</strong> Application processing typically takes 7-14 business days.
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleCloseHelpModal}>Okay</Button>
+        </Modal.Footer>
+      </Modal>
+
       </div>
     </div>
   );

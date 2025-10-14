@@ -18,7 +18,9 @@ export default function Login() {
     const [adminIsLoading, setAdminIsLoading] = useState(false);
 
     const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe"; //user
-    const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; //admin
+    const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; //admin (username)
+    //const adminSheetdbTestUrl = "https://sheetdb.io/api/v1/ljqq6umrhu60o"; //admin test (email)
+    
 
     useEffect(() => { // Check if already logged in
         // Support either legacy key 'loggedInUser' (email) or new key 'userId' (regNumber)
@@ -44,7 +46,7 @@ export default function Login() {
             return;
         }
 
-        try {
+        try { // q = query to search
             // Use the 'email' and 'password' columns from the sheet
             const qEmail = encodeURIComponent(email.trim().toLowerCase());
             const qPassword = encodeURIComponent(password);
@@ -55,7 +57,7 @@ export default function Login() {
                 const userRecord = data[0];
                 console.log('[Login] User found:', userRecord);
                 
-                // Store the regNumber as userId - THIS IS CRITICAL for userApi to work
+                // Store the regNumber as userId
                 if (userRecord.regNumber) {
                     sessionStorage.setItem('userId', userRecord.regNumber);
                     console.log('[Login] Stored userId in sessionStorage:', userRecord.regNumber);
@@ -63,10 +65,10 @@ export default function Login() {
                     console.error('[Login] User record missing regNumber!', userRecord);
                 }
 
-                // Keep legacy email key for backward compatibility
+                // Keep legacy email key
                 sessionStorage.setItem("loggedInUser", qEmail);
 
-                // Also store the full user data for immediate use
+                // Store the full user data for immediate use
                 try { 
                     sessionStorage.setItem('userData', JSON.stringify(userRecord)); 
                     console.log('[Login] Stored full user data in sessionStorage');
@@ -100,10 +102,10 @@ export default function Login() {
             return;
         }
 
-        try {
-            const qAdminEmail = encodeURIComponent(adminEmail.trim().toLowerCase());
-            const qAdminPassword = encodeURIComponent(adminPassword);
-            const response = await fetch(`${adminSheetdbUrl}/search?email=${qAdminEmail}&password=${qAdminPassword}`);
+        try { //admin email or username
+            const qadminEmail = encodeURIComponent(adminEmail.trim().toLowerCase());
+            const qadminPassword = encodeURIComponent(adminPassword);
+            const response = await fetch(`${adminSheetdbUrl}/search?adminEmail=${qadminEmail}&adminPassword=${qadminPassword}`);
             const data = await response.json();
             
             if (data && data.length > 0) {
