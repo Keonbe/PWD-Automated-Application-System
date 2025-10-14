@@ -22,13 +22,13 @@ export default function UserPage() {
 
   //Compute display label, progress percent and css class based on stored status
   const getStatusInfo = (status) => {
-    //Only accept the three canonical statuses: pending, approved, denied
+    //Only accept the three canonical statuses: pending, accepted, denied
     const s = (status || '').toString().trim().toLowerCase();
     if (s === 'pending' || s === 'under review') {
       return { label: 'Under Review', percent: 60, badgeClass: 'status-warning', fillClass: 'fill-warning' };
     }
-    if (s === 'approved') {
-      return { label: 'Approved', percent: 100, badgeClass: 'status-success', fillClass: 'fill-success' };
+    if (s === 'accepted') {
+      return { label: 'Accepted', percent: 100, badgeClass: 'status-success', fillClass: 'fill-success' };
     }
     if (s === 'denied' || s === 'rejected') {
       return { label: 'Denied', percent: 100, badgeClass: 'status-danger', fillClass: 'fill-danger' };
@@ -280,7 +280,7 @@ export default function UserPage() {
                   return (
                     <span className={`user-status-badge ${info.badgeClass}`}>
                       {info.label === 'Under Review' ? <i className="fas fa-clock"></i> : null}
-                      {info.label === 'Approved' ? <i className="fas fa-check-circle"></i> : null}
+                      {info.label === 'Accepted' ? <i className="fas fa-check-circle"></i> : null}
                       {info.label === 'Denied' ? <i className="fas fa-times-circle"></i> : null}
                       {' '}{info.label}
                     </span>
@@ -437,8 +437,8 @@ export default function UserPage() {
             <h5>Application Status Guide</h5>
             <ul>
               <li><strong>Under Review:</strong> Your application is being processed by our team</li>
-              <li><strong>Approved:</strong> Your PWD ID has been approved and will be issued</li>
-              <li><strong>Denied:</strong> Your application was not approved. Please contact support for details</li>
+              <li><strong>Accepted:</strong> Your PWD ID has been accepted and will be issued</li>
+              <li><strong>Denied:</strong> Your application was not accepted. Please contact support for details</li>
             </ul>
 
             <h5>Progress Tracking</h5>
