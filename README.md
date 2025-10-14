@@ -3,7 +3,12 @@
 
 A **PWD Automated Application System** built using **React**, **HTML, CSS, & Javascript** for midterm, and later on for the final term **Laravel**, structured for academic purposes. In partial fulfillment to ***ITWB311 “Web Development” subject***
 
-Note: This repository contains a mixed codebase: a legacy static site (Pre-React-Migration/) and an in-progress React migration (Post-React-Migration/pwd-application-system). The React code lives in Post-React-Migration/pwd-application-system — that's the main project to run and work on.
+<p align="center">
+  <img src="https://img.shields.io/github/last-commit/Keonbe/PWD-Automated-Application-System?style=plastic" alt="Last Commit">
+  <img src="https://img.shields.io/github/repo-size/Keonbe/PWD-Automated-Application-System?style=plastic" alt="Repo Size">
+</p>
+
+Note: This repository contains a mixed codebase: *a legacy static site* `(Pre-React-Migration/)` and an in-progress *React migration* `(Post-React-Migration/pwd-application-system)`. The React code lives in `Post-React-Migration/pwd-application-system` — that's the main project to run and  we will work on.
 
 Contents
 - **Overview**
@@ -25,13 +30,23 @@ This system is designed to:
 * Separate user views for Admin/Employees and User
 
 ## Tech Stack
-* **Frontend:** `ReactJS`, `Bootstrap`, `HTML`/`CSS`/`JS` 
+* **Frontend:** 
+  * `ReactJS`
+  * `Bootstrap`
+  * `HTML`/`CSS`/`JS` ***(Legacy)***
   * [![Frontend](https://skillicons.dev/icons?i=react,bootstrap,html,css,js)](https://skillicons.dev)
-* **Backend:** `Laravel` (Not yet implemented)
+* **Backend:** 
+  * `Laravel` ***(Not yet implemented)***
   * [![Backend](https://skillicons.dev/icons?i=laravel,php)](https://skillicons.dev)
-* **Database:** (Not yet implemented)
+* **Database:** 
+  * ***(Not yet implemented)***
   * [![Database](https://skillicons.dev/icons?i=mysql)](https://skillicons.dev)
-* **Tools:** `Visual Studio Code`, `Chrome DevTools`, `Markdown` for Documentation `SheetDB` for Database API, `Postman` for API Testing
+* **Tools:** 
+  * `Visual Studio Code` 
+  * `Chrome DevTools`
+  * `Markdown` for Documentation
+  * `SheetDB` for Database API
+  * `Postman` for API Testing
   * [![Tools](https://skillicons.dev/icons?i=vscode,md,postman)](https://skillicons.dev)
 
 
@@ -47,9 +62,10 @@ git clone https://github.com/Keonbe/PWD-Automated-Application-System.git
 cd PWD-Automated-Application-System/Post-React-Migration/pwd-application-system
 ```
 
-2. Install dependencies:
+1. Install dependencies:
 
 ```bash
+# To install node_modules not present in git repository
 npm install
 ```
 
