@@ -773,7 +773,8 @@ const handleFormSubmit = async (event) => {
             
             // Personal info
             dob: form.dob.value,
-            sex: form.querySelector('input[name="sex"]:checked')?.value || '',
+            // `sex` is a select element in the form; read its value directly
+            sex: form.sex?.value || '',
             nationality: form.nationality?.value?.trim() || 'Filipino',
             blood: form.blood?.value?.trim() || '',
             civil: form.querySelector('input[name="civil"]:checked')?.value || '',

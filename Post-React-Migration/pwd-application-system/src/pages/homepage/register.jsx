@@ -47,10 +47,11 @@ export default function Register() {
         mobile: form.mobile.value.trim(),
         email: form.email.value.trim(),
         
-        // Personal info
-        dob: form.dob.value,
-        sex: form.querySelector('input[name="sex"]:checked')?.value || '',
-        nationality: form.nationality?.value?.trim() || 'Filipino',
+  // Personal info
+  dob: form.dob.value,
+  // `sex` is a <select> element in the form, read its value directly
+  sex: form.sex?.value || '',
+  nationality: form.nationality?.value?.trim() || 'Filipino',
         blood: form.blood?.value?.trim() || '',
         civil: form.querySelector('input[name="civil"]:checked')?.value || '',
         
