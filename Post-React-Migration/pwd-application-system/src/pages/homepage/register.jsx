@@ -28,32 +28,49 @@ export default function Register() {
     setSubmitMessage('');
 
     try {
-      // Collect form values using FormData
-      const fd = new FormData(form);
-      const formData = {};
-      
-      for (const [key, value] of fd.entries()) {
-        // Handle multiple entries with same name
-        if (formData.hasOwnProperty(key)) {
-          if (Array.isArray(formData[key])) {
-            formData[key].push(value);
-          } else {
-            formData[key] = [formData[key], value];
-          }
-        } else {
-          formData[key] = value;
-        }
-      }
+      // Collect form values manually to ensure all fields are captured properly
+      const formData = {
+        // Name fields - collect manually since FormData might miss input-group fields
+        lastName: form.lastName.value.trim(),
+        firstName: form.firstName.value.trim(),
+        middleName: form.middleName.value.trim(),
+        
+        // Disability - get selected radio button
+        disability: form.querySelector('input[name="disability"]:checked')?.value || '',
+        
+        // Address
+        street: form.street.value.trim(),
+        barangay: form.barangay.value.trim(),
+        
+        // Contact
+        tel: form.tel?.value?.trim() || '',
+        mobile: form.mobile.value.trim(),
+        email: form.email.value.trim(),
+        
+        // Personal info
+        dob: form.dob.value,
+        sex: form.querySelector('input[name="sex"]:checked')?.value || '',
+        nationality: form.nationality?.value?.trim() || 'Filipino',
+        blood: form.blood?.value?.trim() || '',
+        civil: form.querySelector('input[name="civil"]:checked')?.value || '',
+        
+        // Emergency contact
+        emergencyName: form.emergencyName.value.trim(),
+        emergencyPhone: form.emergencyPhone.value.trim(),
+        emergencyRelationship: form.emergencyRelationship.value.trim(),
+      };
 
       //Add generated registration number and date
       formData.regNumber = generateRegistrationNumber();
       formData.regDate = getTodayDate();
 
-  //Ensure disabled location inputs are included since disabled inputs are not
-  //serialized by FormData. Use the fixed values to match the readOnly inputs.
-  formData.municipality = formData.municipality || "Dasmariñas";
-  formData.province = formData.province || "Cavite";
-  formData.region = formData.region || "IV-A";
+      // Debug: Log formData before processing
+      console.log('Manually collected formData:', formData);
+
+      // Set fixed location values
+      formData.municipality = "Dasmariñas";
+      formData.province = "Cavite";
+      formData.region = "IV-A";
 
       //Generate an 8-digit numeric temporary password and include it
       formData.generatedPassword = generatePassword8();

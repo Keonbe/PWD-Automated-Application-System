@@ -35,13 +35,13 @@ export const getCurrentUserData = async () => {
         //Get the first matching user
         const userData = data[0];
         
-        //Map and normalize the data structure
+        //Map and normalize the data structure - match spreadsheet EXACT column names
         const normalizedData = {
             regNumber: userData.regNumber || '',
             regDate: userData.regDate || '',
-            lastName: userData.lastName || '',
-            firstName: userData.firstName || '',
-            middleName: userData.middleName || '',
+            lastName: userData.lastName || '',        // Match spreadsheet EXACT casing
+            firstName: userData.firstName || '',      // Match spreadsheet EXACT casing
+            middleName: userData.middleName || '',    // Match spreadsheet EXACT casing
             disability: userData.disability || '',
             street: userData.street || '',
             barangay: userData.barangay || '',
@@ -54,7 +54,7 @@ export const getCurrentUserData = async () => {
             dob: userData.dob || '',
             sex: userData.sex || '',
             nationality: userData.nationality || '',
-            blood: userData.blood || '',
+            blood: userData.blood || '',              // Match spreadsheet "blood" not "bloodtype"
             civil: userData.civil || '',
             emergencyName: userData.emergencyName || '',
             emergencyPhone: userData.emergencyPhone || '',

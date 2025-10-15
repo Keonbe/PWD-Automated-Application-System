@@ -13,15 +13,21 @@ export const submitRegistration = async (formData) => {
             };
         }
 
+        // Debug: First, let's check what the current sheet structure looks like
+        console.log('Checking current sheet structure...');
+        const sheetCheckResponse = await fetch(sheetdbUrl);
+        const sheetData = await sheetCheckResponse.json();
+        console.log('Current sheet data sample:', sheetData.slice(0, 1)); // First row to see column structure
+
         //Prepare data for SheetDB to match its expected format and add new user.
         const registrationData = {
             data: [
                 {
                     regNumber: formData.regNumber,
                     regDate: formData.regDate,
-                    lastName: formData.lastName,
-                    firstName: formData.firstName,
-                    middleName: formData.middleName || '',
+                    lastName: formData.lastName,        // Match spreadsheet EXACT casing
+                    firstName: formData.firstName,      // Match spreadsheet EXACT casing
+                    middleName: formData.middleName || '',  // Match spreadsheet EXACT casing
                     disability: formData.disability,
                     street: formData.street,
                     barangay: formData.barangay,
@@ -33,14 +39,14 @@ export const submitRegistration = async (formData) => {
                     email: formData.email,
                     dob: formData.dob,
                     sex: formData.sex,
-                    nationality: formData.nationality,
-                    blood: formData.blood || '',
+                    nationality: formData.nationality || 'Filipino',
+                    blood: formData.blood || '',        // Match spreadsheet "blood" not "bloodtype"
                     civil: formData.civil,
                     emergencyName: formData.emergencyName,
                     emergencyPhone: formData.emergencyPhone,
                     emergencyRelationship: formData.emergencyRelationship,
-                    proofIdentity: formData.proofIdentity || formData.proofIdentityName || '',
-                    proofDisability: formData.proofDisability || formData.proofDisabilityName || '',
+                    proofIdentity: formData.proofIdentity || '',
+                    proofDisability: formData.proofDisability || '',
                     //Store password under 'password' column
                     password: formData.password || formData.generatedPassword || '',
                     //Default status column (set in formData to 'Pending' by default)
@@ -50,6 +56,9 @@ export const submitRegistration = async (formData) => {
             ]
         };
 
+        // Debug: Log the data being sent to SheetDB
+        console.log('Data being sent to SheetDB:', registrationData);
+
         //Submit registration data
         const addResponse = await fetch(sheetdbUrl, {
             method: "POST",
@@ -58,6 +67,13 @@ export const submitRegistration = async (formData) => {
             },
             body: JSON.stringify(registrationData)
         });
+
+        // Debug: Log the response
+        console.log('SheetDB response status:', addResponse.status);
+        console.log('SheetDB response ok:', addResponse.ok);
+        
+        const responseData = await addResponse.json();
+        console.log('SheetDB response data:', responseData);
 
         if (addResponse.ok) {
             return {
