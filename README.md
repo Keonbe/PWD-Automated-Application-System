@@ -6,6 +6,9 @@ A **PWD Automated Application System** built using **React**, **HTML, CSS, & Jav
 <p align="center">
   <img src="https://img.shields.io/github/last-commit/Keonbe/PWD-Automated-Application-System?style=plastic" alt="Last Commit">
   <img src="https://img.shields.io/github/repo-size/Keonbe/PWD-Automated-Application-System?style=plastic" alt="Repo Size">
+  <img src="https://img.shields.io/github/contributors/Keonbe/PWD-Automated-Application-System?style=plastic" alt="Contributors">
+
+  <img src="/documentation/images/homepage-screenshot.png" alt="Homepage Screenshot" width="600"/>
 </p>
 
 Note: This repository contains a mixed codebase: *a legacy static site* `(Pre-React-Migration/)` and an in-progress *React migration* `(Post-React-Migration/pwd-application-system)`. The React code lives in `Post-React-Migration/pwd-application-system` — that's the main project to run and  we will work on.

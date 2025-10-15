@@ -47,14 +47,26 @@
     background-color: rgba(255, 255, 255, 0.15);
 }
 
+.navbar .navbar-nav,
+.navbar .navbar-nav .nav-item {
+    display: flex;
+    align-items: center; 
+}
+
 .btn-login {
     background-color: var(--dasma-gold);
     color: #333;
     border: none;
     border-radius: 20px;
-    padding: 0.5rem 1.5rem;
+    padding: 0.45rem 1.25rem;   
     font-weight: 600;
-    transition: all 0.3s ease;
+    line-height: 1.4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.18s ease;
+    margin-top: 0;   
 }
 
 .btn-login:hover {
@@ -67,6 +79,18 @@
     color: rgba(255, 255, 255, 0.8);
 }
 
+.navbar .navbar-nav > .nav-item + .nav-item {
+    margin-left: 0.25rem;
+}
+
+@media (max-width: 992px) {
+    .btn-login {
+    padding: 0.35rem 0.9rem;
+    font-size: 0.95rem;
+    transform: none;
+    }
+}
+
 @media (max-width: 768px) {
     .navbar-brand {
         font-size: 0.9rem;
@@ -75,5 +99,16 @@
     .navbar-logo {
         width: 40px;
         height: 40px;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-login {
+        padding: 0.3rem 0.75rem;
+        font-size: 0.92rem;
+    }
+
+    .navbar .navbar-nav {
+        gap: 0.25rem;
     }
 }
