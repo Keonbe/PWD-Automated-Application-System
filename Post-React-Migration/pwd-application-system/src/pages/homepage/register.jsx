@@ -85,7 +85,7 @@ export default function Register() {
       formData.proofDisability = formData.proofDisabilityName;
 
       //Ensure a default status of Denied
-      formData.status = 'Denied';
+      formData.status = 'Pending';
 
       //Also mirror generated password to 'password' (sheet column expected)
       formData.password = formData.generatedPassword;
