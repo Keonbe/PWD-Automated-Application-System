@@ -108,3 +108,22 @@ body {
     gap: 0.5rem;
     color: #6c757d;
 }
+
+/* Print styles */
+@media print {
+    /* Hide header and footer when printing */
+    header, footer, .public-header, .public-footer {
+        display: none !important;
+    }
+    
+    /* Ensure the main content takes full width */
+    .main-content {
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Hide print button itself */
+    .btn-print {
+        display: none !important;
+    }
+}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import "../../assets/styles/register_result-styles.css";
 
 export default function RegisterResult() {
   const location = useLocation();
@@ -94,10 +95,16 @@ export default function RegisterResult() {
                 </div>
               </div>
             </div>
-            <div className="card-footer bg-light">
-              <a href="/" className="btn btn-outline-secondary me-2">Back to Home</a>
-              <a href="/register" className="btn btn-success">New Registration</a>
-            </div>
+              <div className="card-footer bg-light footer-actions">
+                <a href="/" className="btn btn-secondary me-2">Back to Home</a>
+                <a href="/register" className="btn btn-success">New Registration</a>
+                <button 
+                  className="btn btn-success me-2 btn-print" 
+                  onClick={() => window.print()}
+                >
+                  <i className="fas fa-print me-2"></i>Print Results
+                </button>
+              </div>
           </div>
         </div>
       </div>
