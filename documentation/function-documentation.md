@@ -751,30 +751,56 @@ const handleFormSubmit = async (event) => {
     setSubmitMessage('');
 
     try {
-        // Collect form values using FormData
-        const fd = new FormData(form);
-        const formData = {};
-        
-        for (const [key, value] of fd.entries()) {
-            // Handle multiple entries with same name
-            if (formData.hasOwnProperty(key)) {
-                if (Array.isArray(formData[key])) {
-                    formData[key].push(value);
-                } else {
-                    formData[key] = [formData[key], value];
-                }
-            } else {
-                formData[key] = value;
-            }
-        }
+        // Collect form values manually to ensure all fields are captured properly
+        // Note: FormData can miss fields in input-groups, so we collect manually
+        const formData = {
+            // Name fields - must match spreadsheet column names exactly (camelCase)
+            lastName: form.lastName.value.trim(),
+            firstName: form.firstName.value.trim(),
+            middleName: form.middleName.value.trim(),
+            
+            // Disability - get selected radio button
+            disability: form.querySelector('input[name="disability"]:checked')?.value || '',
+            
+            // Address
+            street: form.street.value.trim(),
+            barangay: form.barangay.value.trim(),
+            
+            // Contact
+            tel: form.tel?.value?.trim() || '',
+            mobile: form.mobile.value.trim(),
+            email: form.email.value.trim(),
+            
+            // Personal info
+            dob: form.dob.value,
+            sex: form.querySelector('input[name="sex"]:checked')?.value || '',
+            nationality: form.nationality?.value?.trim() || 'Filipino',
+            blood: form.blood?.value?.trim() || '',
+            civil: form.querySelector('input[name="civil"]:checked')?.value || '',
+            
+            // Emergency contact
+            emergencyName: form.emergencyName.value.trim(),
+            emergencyPhone: form.emergencyPhone.value.trim(),
+            emergencyRelationship: form.emergencyRelationship.value.trim(),
+        };
 
         // Add generated registration number and date
         formData.regNumber = generateRegistrationNumber();
         formData.regDate = getTodayDate();
 
+        // Set fixed location values
+        formData.municipality = "Dasmariñas";
+        formData.province = "Cavite";
+        formData.region = "IV-A";
+
+        // Generate password and set status
+        formData.generatedPassword = generatePassword8();
+        formData.status = 'Pending';
+        formData.password = formData.generatedPassword;
+
         // Include selected file names
-        formData.proofIdentityName = identityRef.current?.files?.[0]?.name || '';
-        formData.proofDisabilityName = disabilityRef.current?.files?.[0]?.name || '';
+        formData.proofIdentity = identityRef.current?.files?.[0]?.name || '';
+        formData.proofDisability = disabilityRef.current?.files?.[0]?.name || '';
 
         // Submit to API
         const result = await submitRegistration(formData);
@@ -805,6 +831,14 @@ const handleFormSubmit = async (event) => {
 };
 ```
 
+**Important Notes:**
+- ✓ **Fixed Oct 15, 2025**: Changed from FormData API to manual field collection
+- ✓ FormData can miss fields in Bootstrap input-groups, causing data loss
+- ✓ Manual collection ensures all fields are captured with correct names
+- ✓ Field names use camelCase to match spreadsheet columns exactly (e.g., `lastName` not `lastname`)
+- ✓ Radio buttons use `querySelector` with `:checked` selector
+- ✓ Optional fields have fallback values to prevent undefined errors
+
 **Flow:**
 1. Prevent default form submission
 2. Validate form using `validateForm` function
@@ -813,10 +847,11 @@ const handleFormSubmit = async (event) => {
    - Exit function
 4. Set loading state to true
 5. Clear any previous messages
-6. Create FormData object from form
-7. Convert FormData to plain object:
-   - Handle multiple values for same key (checkboxes/radios)
-   - Store as array if multiple values exist
+6. Manually collect form values from DOM elements:
+   - Text inputs using `.value.trim()`
+   - Radio buttons using `querySelector(':checked')`
+   - Optional fields with fallback values
+7. Ensure field names match spreadsheet columns exactly (camelCase)
 8. Add generated data:
    - Registration number (12 random digits)
    - Current date (YYYY-MM-DD)

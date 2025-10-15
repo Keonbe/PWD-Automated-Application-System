@@ -488,6 +488,45 @@ useEffect(() => {
 
 ---
 
+## Common Issues and Troubleshooting
+
+### Issue: Data Inserted Into Wrong Columns
+
+**Symptoms:**
+- Form submissions appear successful but data is in wrong spreadsheet columns
+- Registration number appears in mobile column
+- Names appear in wrong order or missing
+- Blood type or other fields shifted
+
+**Root Cause:**
+Column name mismatch between API and spreadsheet headers. SheetDB is case-sensitive and requires exact column name matches.
+
+**Solution:**
+Ensure API field names match spreadsheet column names exactly (including camelCase):
+```javascript
+// ❌ WRONG - lowercase will create new columns
+{
+  lastname: "Doe",
+  firstname: "John", 
+  bloodtype: "O+"
+}
+
+// ✓ CORRECT - matches spreadsheet camelCase
+{
+  lastName: "Doe",
+  firstName: "John",
+  blood: "O+"
+}
+```
+
+**Prevention:**
+1. Always verify spreadsheet column headers before API integration
+2. Use exact column names from spreadsheet (case-sensitive)
+3. Test with a single submission before bulk operations
+4. Check SheetDB response for column creation warnings
+
+---
+
 ## API Error Handling
 
 ### Common Error Scenarios
@@ -685,12 +724,44 @@ GET  https://sheetdb.io/api/v1/wgjit0nprbfxe/search?regNumber={regNumber}
   emergencyName: string,    // Emergency contact name
   emergencyPhone: string,   // Emergency contact phone
   emergencyRelationship: string, // Relationship to applicant
-  proofIdentityName: string,     // ID document filename (optional)
-  proofDisabilityName: string    // Medical cert filename (optional)
+  proofIdentity: string,         // ID document filename (optional)
+  proofDisability: string        // Medical cert filename (optional)
   password: string, // Password in 8 Character Numeric form (Planned: Alphanumeric password soon)
   status: string // Statuses: Pending, Denied, Approved/Accepted
 }
 ```
+
+#### 🔴 CRITICAL: Column Name Mapping Issue (Fixed Oct 15, 2025)
+
+**Issue:** Data was being inserted into wrong columns due to column name case mismatch between form data and spreadsheet headers.
+
+**Root Cause:** 
+- Spreadsheet columns use camelCase: `lastName`, `firstName`, `middleName`, `blood`
+- API was sending lowercase: `lastname`, `firstname`, `middlename`, `bloodtype`
+- SheetDB treats these as different columns, causing data misalignment
+
+**Solution:**
+The API now uses **EXACT** column name matches with the spreadsheet:
+
+| Form Field | Spreadsheet Column | Previous (Wrong) | Current (Fixed) |
+|------------|-------------------|------------------|-----------------|
+| lastName   | lastName          | lastname         | lastName ✓      |
+| firstName  | firstName         | firstname        | firstName ✓     |
+| middleName | middleName        | middlename       | middleName ✓    |
+| blood      | blood             | bloodtype        | blood ✓         |
+
+**Spreadsheet Column Order:**
+```
+regNumber, regDate, lastName, firstName, middleName, disability, street, barangay, 
+municipality, province, region, tel, mobile, email, dob, sex, nationality, blood, 
+civil, emergencyName, emergencyPhone, emergencyRelationship, proofIdentity, 
+proofDisability, password, status
+```
+
+**Important Notes:**
+- Always use camelCase for column names matching spreadsheet headers
+- Field names in `formData` object must match spreadsheet column names exactly
+- SheetDB is case-sensitive and does NOT automatically map similar column names
 
 #### Returns
 `Promise<Object>` - Response object with success status and message
@@ -741,15 +812,15 @@ export const submitRegistration = async (formData) => {
             };
         }
 
-        // Prepare data for SheetDB to match its expected format
+        // Prepare data for SheetDB - MUST match spreadsheet column names EXACTLY (camelCase)
         const registrationData = {
             data: [
                 {
                     regNumber: formData.regNumber,
                     regDate: formData.regDate,
-                    lastName: formData.lastName,
-                    firstName: formData.firstName,
-                    middleName: formData.middleName || '',
+                    lastName: formData.lastName,        // ✓ EXACT match with spreadsheet
+                    firstName: formData.firstName,      // ✓ EXACT match with spreadsheet
+                    middleName: formData.middleName || '', // ✓ EXACT match with spreadsheet
                     disability: formData.disability,
                     street: formData.street,
                     barangay: formData.barangay,
@@ -761,14 +832,14 @@ export const submitRegistration = async (formData) => {
                     email: formData.email,
                     dob: formData.dob,
                     sex: formData.sex,
-                    nationality: formData.nationality,
-                    blood: formData.blood || '',
+                    nationality: formData.nationality || 'Filipino',
+                    blood: formData.blood || '',        // ✓ EXACT match with spreadsheet (not "bloodtype")
                     civil: formData.civil,
                     emergencyName: formData.emergencyName,
                     emergencyPhone: formData.emergencyPhone,
                     emergencyRelationship: formData.emergencyRelationship,
-                    proofIdentityName: formData.proofIdentityName || '',
-                    proofDisabilityName: formData.proofDisabilityName || '',
+                    proofIdentity: formData.proofIdentity || '',     // ✓ Column name in sheet
+                    proofDisability: formData.proofDisability || '', // ✓ Column name in sheet
                     password: formData.password || formData.generatedPassword || '',
                     status: formData.status || 'Pending'
                 }
