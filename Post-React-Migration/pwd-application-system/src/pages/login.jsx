@@ -43,6 +43,13 @@ export default function Login() {
         setIsLoading(true);
         setLoginMessage('');
 
+        // Prevent user login if admin modal is open
+        if (showAdminModal) {
+        console.log('Admin modal is open - ignoring user form submission');
+        return;
+        }
+
+        // Basic validation
         if (!email || !password) {
             setLoginMessage('<div class="alert alert-danger">Please enter both username and password.</div>');
             setIsLoading(false);
@@ -177,7 +184,7 @@ export default function Login() {
                                             name="username"
                                             placeholder="Enter your username"
                                             aria-describedby="username-addon"
-                                            autoComplete="username"
+                                            autoComplete="off"
                                             required
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
@@ -199,7 +206,7 @@ export default function Login() {
                                             name="password"
                                             placeholder="Enter your password"
                                             aria-describedby="password-addon"
-                                            autoComplete="current-password"
+                                            autoComplete="off"
                                             required
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
@@ -235,15 +242,15 @@ export default function Login() {
                                 </div>
 
                                 {/* Links: Register & Admin */}
-                                <div id="register-admin-links" className="d-flex align-items-center justify-content-between">
-                                    <div>
-                                        <span className="small text-black m-2">Not registered?</span>
-                                        <Link to="/consent" className="small text-primary fw-semibold order-2">Create an account</Link>
+                                <div id="register-admin-links">
+                                    <div className="register-section">
+                                        <span className="small text-black">Not registered?</span>
+                                        <Link to="/consent" className="small text-primary fw-semibold">Create an account</Link>
                                     </div>
-                                    <div>
-                                        <span className="small text-black m-2">Are you an Admin?</span>
+                                    <div className="admin-section">
+                                        <span className="small text-black">Are you an Admin?</span>
                                         <button 
-                                            className="small text-danger fw-semibold order-1 border-0 bg-transparent p-0 text-decoration-underline"
+                                            className="small text-danger fw-semibold border-0 bg-transparent p-0"
                                             onClick={handleShowAdminModal}
                                         >
                                             Admin login
@@ -261,79 +268,6 @@ export default function Login() {
                                 dangerouslySetInnerHTML={{ __html: loginMessage }}
                             />
 
-                            {/* React-Bootstrap Admin Login Modal */}
-                            <Modal show={showAdminModal} onHide={handleCloseAdminModal}>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>Admin Login</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <form id="adminLoginForm" onSubmit={handleAdminLogin} noValidate>
-                                        <div className="mb-3">
-                                            <label htmlFor="adminEmail" className="form-label">Email address</label>
-                                            <input 
-                                                type="email" 
-                                                className="form-control" 
-                                                id="adminEmail" 
-                                                required
-                                                value={adminEmail}
-                                                onChange={(e) => setAdminEmail(e.target.value)}
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="adminPassword" className="form-label">Password</label>
-                                            <input 
-                                                type="password" 
-                                                className="form-control" 
-                                                id="adminPassword" 
-                                                required
-                                                value={adminPassword}
-                                                onChange={(e) => setAdminPassword(e.target.value)}
-                                            />
-                                        </div>
-                                        <div className="mb-3 form-check">
-                                            <input 
-                                                type="checkbox" 
-                                                className="form-check-input" 
-                                                id="adminRememberMe"
-                                                checked={adminRemember}
-                                                onChange={(e) => setAdminRemember(e.target.checked)}
-                                            />
-                                            <label className="form-check-label" htmlFor="adminRememberMe">Remember me</label>
-                                        </div>
-                                        <button 
-                                            type="submit" 
-                                            className="btn btn-success" 
-                                            id="adminLoginBtn"
-                                            disabled={adminIsLoading}
-                                        >
-                                            {adminIsLoading ? (
-                                                <>
-                                                    <i className="fa fa-spinner fa-spin me-1" aria-hidden="true"></i> Logging in...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <i className="fa fa-right-to-bracket me-1" aria-hidden="true"></i> Login
-                                                </>
-                                            )}
-                                        </button>
-                                    </form>
-
-                                    {/* Admin message display area */}
-                                    <div 
-                                        id="adminLoginMessage" 
-                                        className="mt-3 p-3" 
-                                        role="status" 
-                                        aria-live="polite"
-                                        dangerouslySetInnerHTML={{ __html: adminLoginMessage }}
-                                    />
-                                </Modal.Body>
-                                <Modal.Footer className="flex-nowrap justify-content-around">
-                                    <Button variant="secondary" onClick={handleCloseAdminModal}>
-                                        Close
-                                    </Button>
-                                </Modal.Footer>
-                            </Modal>
-
                             {/* Footer Quick Links */}
                             <p className="alert alert-warning small text-black fw-semibold mt-3 mb-0">
                                 This portal is for registered users and authorized personnel. Unauthorized use is prohibited.
@@ -348,6 +282,79 @@ export default function Login() {
                     </div>
                 </div>
             </div>
+
+            {/* React-Bootstrap Admin Login Modal */}
+            <Modal show={showAdminModal} onHide={handleCloseAdminModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Admin Login</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form id="adminLoginForm" onSubmit={handleAdminLogin} noValidate>
+                        <div className="mb-3">
+                            <label htmlFor="adminEmail" className="form-label">Email address</label>
+                            <input 
+                                type="email" 
+                                className="form-control" 
+                                id="adminEmail" 
+                                required
+                                value={adminEmail}
+                                onChange={(e) => setAdminEmail(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="adminPassword" className="form-label">Password</label>
+                            <input 
+                                type="password" 
+                                className="form-control" 
+                                id="adminPassword" 
+                                required
+                                value={adminPassword}
+                                onChange={(e) => setAdminPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3 form-check">
+                            <input 
+                                type="checkbox" 
+                                className="form-check-input" 
+                                id="adminRememberMe"
+                                checked={adminRemember}
+                                onChange={(e) => setAdminRemember(e.target.checked)}
+                            />
+                            <label className="form-check-label" htmlFor="adminRememberMe">Remember me</label>
+                        </div>
+                        <button 
+                            type="submit" 
+                            className="btn btn-success" 
+                            id="adminLoginBtn"
+                            disabled={adminIsLoading}
+                        >
+                            {adminIsLoading ? (
+                                <>
+                                    <i className="fa fa-spinner fa-spin me-1" aria-hidden="true"></i> Logging in...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fa fa-right-to-bracket me-1" aria-hidden="true"></i> Login
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    {/* Admin message display area */}
+                    <div 
+                        id="adminLoginMessage" 
+                        className="mt-3 p-3" 
+                        role="status" 
+                        aria-live="polite"
+                        dangerouslySetInnerHTML={{ __html: adminLoginMessage }}
+                    />
+                </Modal.Body>
+                <Modal.Footer className="flex-nowrap justify-content-around">
+                    <Button variant="secondary" onClick={handleCloseAdminModal}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </main>
     );
 };

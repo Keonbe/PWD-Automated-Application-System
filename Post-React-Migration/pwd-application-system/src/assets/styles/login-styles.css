@@ -26,10 +26,92 @@ body {
     color: inherit; 
     font-weight:600; 
 }
-#register-admin-links a {  /* Register & Admin Links Style */
+
+/* Register & Admin Links Style */
+#register-admin-links {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+#register-admin-links a { 
     text-decoration: none; 
 }
+
 #footer-links a {  /* Footer Links Style */
     text-decoration: none; 
     color: inherit; 
+}
+
+/* Desktop/Tablet */
+@media (min-width: 576px) {
+    #register-admin-links {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    #register-admin-links > div {
+        flex: 1;
+        min-width: 200px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 575.98px) {
+    #register-admin-links {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem;
+    }
+    
+    #register-admin-links > div {
+        width: 100%;
+        text-align: left;
+    }
+}
+
+/* Link sections styling */
+#register-admin-links > div {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+#register-admin-links span {
+    white-space: nowrap;
+    margin-right: 0.25rem;
+}
+
+#register-admin-links a,
+#register-admin-links button {
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+#register-admin-links a:hover,
+#register-admin-links button:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 575.98px) {
+    #register-admin-links span {
+        display: block;
+        margin-bottom: 0.25rem;
+        margin-right: 0;
+        font-weight: 500;
+    }
+    
+    #register-admin-links > div {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    
+    #register-admin-links > div:last-child {
+        border-bottom: none;
+    }
 }
