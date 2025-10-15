@@ -76,7 +76,7 @@ const AdminVerify = () => {
           <h4 className="text-muted">No pending applicants found.</h4>
           <button
             className="btn btn-secondary mt-3"
-            onClick={() => navigate("/testadmin")}>
+            onClick={() => navigate("/adminpage")}>
             <i className="fas fa-arrow-left me-2"></i> Back to Dashboard
           </button>
         </main>
@@ -238,7 +238,7 @@ const AdminVerify = () => {
             </button>
             <button
               className="btn btn-secondary"
-              onClick={() => navigate("/testadmin")}>
+              onClick={() => navigate("/adminpage")}>
               <i className="fas fa-arrow-left me-2"></i> Back
             </button>
           </div>

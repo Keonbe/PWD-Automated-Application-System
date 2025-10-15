@@ -10,7 +10,7 @@ const AdminSidebar = () => {
 
   const navItems = [
     {
-      path: "/testadmin",
+      path: "/adminpage",
       iconClass: "fas fa-tachometer-alt me-2",
       label: "Dashboard",
     },
