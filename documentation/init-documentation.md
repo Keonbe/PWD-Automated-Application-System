@@ -524,6 +524,7 @@ npm install @fortawesome/fontawesome-free --save # Defunct Command: npm install 
 
 # Recharts
 npm install recharts
+npm install rechart
 ```
 
 ---
