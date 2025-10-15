@@ -23,7 +23,7 @@ export default function UserFooter() {
             <h5>Quick Links</h5>
             <ul className="list-unstyled">  {/* For Scroll Behavior., Using react-router-hash-link.  Reference: https://dev.to/mindactuate/scroll-to-anchor-element-with-react-router-v6-38op */}
               <li><HashLink to="/#services">PWD Services</HashLink></li>  {/*OLD: <Link to="/#services">PWD Services</Link>*/}
-              <li><Link to="#">Application Status</Link></li> 
+              <li><Link to="/userpage">Application Status</Link></li> 
               <li><Link to="/faq">FAQ</Link></li>
               <li><Link to="/resources">Download Forms</Link></li>
             </ul>

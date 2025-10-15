@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import '../assets/styles/login-styles.css';
 import logo from '../assets/images/dasma-logo-only.png';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { Modal, Button } from 'react-bootstrap';
 
 /** TODO: JS CODE*/ 
 export default function Login() {
     const navigate = useNavigate();
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [adminEmail, setAdminEmail] = useState('');
     const [adminPassword, setAdminPassword] = useState('');
@@ -17,18 +16,24 @@ export default function Login() {
     const [adminLoginMessage, setAdminLoginMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [adminIsLoading, setAdminIsLoading] = useState(false);
+    
+    // Add state for admin modal
+    const [showAdminModal, setShowAdminModal] = useState(false);
 
-    const sheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9";
-    const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9";
+    const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe"; //user
+    const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; //admin (username)
+    //const adminSheetdbTestUrl = "https://sheetdb.io/api/v1/ljqq6umrhu60o"; //admin test (email)
+    
 
     useEffect(() => { // Check if already logged in
-        if (sessionStorage.getItem("loggedInUser")) {
+        // Support either legacy key 'loggedInUser' (email) or new key 'userId' (regNumber)
+        if (sessionStorage.getItem("userId") || sessionStorage.getItem("loggedInUser")) {
             // SPA navigation (avoid full page reload)
-            navigate('/testuser', { replace: true });
+            navigate('/userpage', { replace: true });
             return;
         }
         if (sessionStorage.getItem("adminLoggedIn") || localStorage.getItem("adminLoggedIn")) {
-            navigate('/testadmin', { replace: true });
+            navigate('/adminpage', { replace: true });
             return;
         }
     }, [navigate]);
@@ -38,25 +43,48 @@ export default function Login() {
         setIsLoading(true);
         setLoginMessage('');
 
-        if (!username || !password) {
+        if (!email || !password) {
             setLoginMessage('<div class="alert alert-danger">Please enter both username and password.</div>');
             setIsLoading(false);
             return;
         }
 
-        try {
-            const response = await fetch(`${sheetdbUrl}/search?username=${username}&password=${password}`);
+        try { // q = query to search
+            // Use the 'email' and 'password' columns from the sheet
+            const qEmail = encodeURIComponent(email.trim().toLowerCase());
+            const qPassword = encodeURIComponent(password);
+            const response = await fetch(`${sheetdbUrl}/search?email=${qEmail}&password=${qPassword}`);
             const data = await response.json();
-            
-            if (data.length > 0) {
-                sessionStorage.setItem("loggedInUser", username);
+
+            if (data && data.length > 0) {
+                const userRecord = data[0];
+                console.log('[Login] User found:', userRecord);
+                
+                // Store the regNumber as userId
+                if (userRecord.regNumber) {
+                    sessionStorage.setItem('userId', userRecord.regNumber);
+                    console.log('[Login] Stored userId in sessionStorage:', userRecord.regNumber);
+                } else {
+                    console.error('[Login] User record missing regNumber!', userRecord);
+                }
+
+                // Keep legacy email key
+                sessionStorage.setItem("loggedInUser", qEmail);
+
+                // Store the full user data for immediate use
+                try { 
+                    sessionStorage.setItem('userData', JSON.stringify(userRecord)); 
+                    console.log('[Login] Stored full user data in sessionStorage');
+                } catch (e) {
+                    console.warn('[Login] Could not store userData:', e);
+                }
+
                 setLoginMessage('<div class="alert alert-success">Login successful! Redirecting...</div>');
                 setTimeout(() => {
-                    // navigate within the SPA; replace so back doesn't return to login
-                    navigate('/testuser', { replace: true });
+                    navigate('/userpage', { replace: true });
                 }, 1000);
             } else {
-                setLoginMessage('<div class="alert alert-danger">Invalid username or password. Please try again.</div>');
+                setLoginMessage('<div class="alert alert-danger">Invalid email or password. Please try again.</div>');
             }
         } catch (error) {
             console.error("Error:", error);
@@ -77,11 +105,13 @@ export default function Login() {
             return;
         }
 
-        try {
-            const response = await fetch(`${adminSheetdbUrl}/search?username=${adminEmail}&password=${adminPassword}`);
+        try { //admin email or username
+            const qadminEmail = encodeURIComponent(adminEmail.trim().toLowerCase());
+            const qadminPassword = encodeURIComponent(adminPassword);
+            const response = await fetch(`${adminSheetdbUrl}/search?adminEmail=${qadminEmail}&adminPassword=${qadminPassword}`);
             const data = await response.json();
             
-            if (data.length > 0) {
+            if (data && data.length > 0) {
                 if (adminRemember) {
                     localStorage.setItem("adminLoggedIn", adminEmail);
                 } else {
@@ -90,7 +120,7 @@ export default function Login() {
                 
                 setAdminLoginMessage('<div class="alert alert-success m-3 p-3">Admin login successful! Redirecting...</div>');
                 setTimeout(() => {
-                    navigate('/testadmin', { replace: true });
+                    navigate('/adminpage', { replace: true });
                 }, 1000);
             } else {
                 setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Invalid admin credentials. Please try again.</div>');
@@ -101,6 +131,16 @@ export default function Login() {
         } finally {
             setAdminIsLoading(false);
         }
+    };
+
+    // Admin modal handlers
+    const handleShowAdminModal = () => setShowAdminModal(true);
+    const handleCloseAdminModal = () => {
+        setShowAdminModal(false);
+        // Clear admin form when modal closes
+        setAdminEmail('');
+        setAdminPassword('');
+        setAdminLoginMessage('');
     };
 
     return (
@@ -139,8 +179,8 @@ export default function Login() {
                                             aria-describedby="username-addon"
                                             autoComplete="username"
                                             required
-                                            value={username}
-                                            onChange={(e) => setUsername(e.target.value)}
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -198,11 +238,16 @@ export default function Login() {
                                 <div id="register-admin-links" className="d-flex align-items-center justify-content-between">
                                     <div>
                                         <span className="small text-black m-2">Not registered?</span>
-                                        <a href="/Pre-React-Migration/pages/homepage/consent.html" className="small text-primary fw-semibold order-2">Create an account</a>
+                                        <Link to="/consent" className="small text-primary fw-semibold order-2">Create an account</Link>
                                     </div>
                                     <div>
                                         <span className="small text-black m-2">Are you an Admin?</span>
-                                        <a  href="admin-login.html"  className="small text-danger fw-semibold order-1"  data-bs-toggle="modal"  data-bs-target="#adminloginModal">Admin login</a>
+                                        <button 
+                                            className="small text-danger fw-semibold order-1 border-0 bg-transparent p-0 text-decoration-underline"
+                                            onClick={handleShowAdminModal}
+                                        >
+                                            Admin login
+                                        </button>
                                     </div>
                                 </div>
                             </form>
@@ -216,82 +261,78 @@ export default function Login() {
                                 dangerouslySetInnerHTML={{ __html: loginMessage }}
                             />
 
-                            {/* Admin Login Modal */}
-                            <div className="modal fade" id="adminloginModal" tabIndex="-1" aria-labelledby="adminloginModalLabel" aria-hidden="true">
-                                <div className="modal-dialog">
-                                    <div className="modal-content">
-                                        <div className="modal-header">
-                                            <h5 className="modal-title" id="adminloginModalLabel">Admin Login</h5>
-                                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            {/* React-Bootstrap Admin Login Modal */}
+                            <Modal show={showAdminModal} onHide={handleCloseAdminModal}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Admin Login</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <form id="adminLoginForm" onSubmit={handleAdminLogin} noValidate>
+                                        <div className="mb-3">
+                                            <label htmlFor="adminEmail" className="form-label">Email address</label>
+                                            <input 
+                                                type="email" 
+                                                className="form-control" 
+                                                id="adminEmail" 
+                                                required
+                                                value={adminEmail}
+                                                onChange={(e) => setAdminEmail(e.target.value)}
+                                            />
                                         </div>
-                                        <div className="modal-body">
-                                            <form id="adminLoginForm" onSubmit={handleAdminLogin} noValidate>
-                                                <div className="mb-3">
-                                                    <label htmlFor="adminEmail" className="form-label">Email address</label>
-                                                    <input 
-                                                        type="email" 
-                                                        className="form-control" 
-                                                        id="adminEmail" 
-                                                        required
-                                                        value={adminEmail}
-                                                        onChange={(e) => setAdminEmail(e.target.value)}
-                                                    />
-                                                </div>
-                                                <div className="mb-3">
-                                                    <label htmlFor="adminPassword" className="form-label">Password</label>
-                                                    <input 
-                                                        type="password" 
-                                                        className="form-control" 
-                                                        id="adminPassword" 
-                                                        required
-                                                        value={adminPassword}
-                                                        onChange={(e) => setAdminPassword(e.target.value)}
-                                                    />
-                                                </div>
-                                                <div className="mb-3 form-check">
-                                                    <input 
-                                                        type="checkbox" 
-                                                        className="form-check-input" 
-                                                        id="adminRememberMe"
-                                                        checked={adminRemember}
-                                                        onChange={(e) => setAdminRemember(e.target.checked)}
-                                                    />
-                                                    <label className="form-check-label" htmlFor="adminRememberMe">Remember me</label>
-                                                </div>
-                                                <button 
-                                                    type="submit" 
-                                                    className="btn btn-success" 
-                                                    id="adminLoginBtn"
-                                                    disabled={adminIsLoading}
-                                                >
-                                                    {adminIsLoading ? (
-                                                        <>
-                                                            <i className="fa fa-spinner fa-spin me-1" aria-hidden="true"></i> Logging in...
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <i className="fa fa-right-to-bracket me-1" aria-hidden="true"></i> Login
-                                                        </>
-                                                    )}
-                                                </button>
-                                            </form>
+                                        <div className="mb-3">
+                                            <label htmlFor="adminPassword" className="form-label">Password</label>
+                                            <input 
+                                                type="password" 
+                                                className="form-control" 
+                                                id="adminPassword" 
+                                                required
+                                                value={adminPassword}
+                                                onChange={(e) => setAdminPassword(e.target.value)}
+                                            />
                                         </div>
+                                        <div className="mb-3 form-check">
+                                            <input 
+                                                type="checkbox" 
+                                                className="form-check-input" 
+                                                id="adminRememberMe"
+                                                checked={adminRemember}
+                                                onChange={(e) => setAdminRemember(e.target.checked)}
+                                            />
+                                            <label className="form-check-label" htmlFor="adminRememberMe">Remember me</label>
+                                        </div>
+                                        <button 
+                                            type="submit" 
+                                            className="btn btn-success" 
+                                            id="adminLoginBtn"
+                                            disabled={adminIsLoading}
+                                        >
+                                            {adminIsLoading ? (
+                                                <>
+                                                    <i className="fa fa-spinner fa-spin me-1" aria-hidden="true"></i> Logging in...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <i className="fa fa-right-to-bracket me-1" aria-hidden="true"></i> Login
+                                                </>
+                                            )}
+                                        </button>
+                                    </form>
 
-                                        {/* Admin message display area */}
-                                        <div 
-                                            id="adminLoginMessage" 
-                                            className="mt-3 p-3" 
-                                            role="status" 
-                                            aria-live="polite"
-                                            dangerouslySetInnerHTML={{ __html: adminLoginMessage }}
-                                        />
-
-                                        <div className="modal-footer flex-nowrap justify-content-around">
-                                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                    {/* Admin message display area */}
+                                    <div 
+                                        id="adminLoginMessage" 
+                                        className="mt-3 p-3" 
+                                        role="status" 
+                                        aria-live="polite"
+                                        dangerouslySetInnerHTML={{ __html: adminLoginMessage }}
+                                    />
+                                </Modal.Body>
+                                <Modal.Footer className="flex-nowrap justify-content-around">
+                                    <Button variant="secondary" onClick={handleCloseAdminModal}>
+                                        Close
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
 
                             {/* Footer Quick Links */}
                             <p className="alert alert-warning small text-black fw-semibold mt-3 mb-0">
@@ -310,4 +351,3 @@ export default function Login() {
         </main>
     );
 };
-

@@ -1,11 +1,21 @@
 # PWD-Automated-Application-System
 **A project for whole semester for ITWB311 “Web Development” subject**
 
-This README (README.md) is written for contributors and reviewers who clone the repository and want a quick way to run, test, and contribute to the React migration work.
+A **PWD Automated Application System** built using **React**, **HTML, CSS, & Javascript** for midterm, and later on for the final term **Laravel**, structured for academic purposes. In partial fulfillment to ***ITWB311 “Web Development” subject***
 
-Note: This repository contains a mixed codebase: a legacy static site (Pre-React-Migration/) and an in-progress React migration (Post-React-Migration/pwd-application-system). The React code lives in Post-React-Migration/pwd-application-system — that's the main project to run and work on.
+<p align="center">
+  <img src="https://img.shields.io/github/last-commit/Keonbe/PWD-Automated-Application-System?style=plastic" alt="Last Commit">
+  <img src="https://img.shields.io/github/repo-size/Keonbe/PWD-Automated-Application-System?style=plastic" alt="Repo Size">
+  <img src="https://img.shields.io/github/contributors/Keonbe/PWD-Automated-Application-System?style=plastic" alt="Contributors">
+
+  <img src="/documentation/images/homepage-screenshot.png" alt="Homepage Screenshot" width="600"/>
+</p>
+
+Note: This repository contains a mixed codebase: *a legacy static site* `(Pre-React-Migration/)` and an in-progress *React migration* `(Post-React-Migration/pwd-application-system)`. The React code lives in `Post-React-Migration/pwd-application-system` — that's the main project to run and  we will work on.
 
 Contents
+- **Overview**
+- **Tech Stack**
 - **Prerequisites**
 - **Install**
 - **Run (development)**
@@ -14,7 +24,34 @@ Contents
 - **Project structure & important files**
 - **Migration notes and temporary artifacts**
 - **How to contribute (PR process)**
-- **Useful links and references**
+- **Contributors**
+- **Documentation Guide**
+
+## Overview
+This system is designed to:
+* PWD Accessible website for ease of application process
+* Separate user views for Admin/Employees and User
+
+## Tech Stack
+* **Frontend:** 
+  * `ReactJS`
+  * `Bootstrap`
+  * `HTML`/`CSS`/`JS` ***(Legacy)***
+  * [![Frontend](https://skillicons.dev/icons?i=react,bootstrap,html,css,js)](https://skillicons.dev)
+* **Backend:** 
+  * `Laravel` ***(Not yet implemented)***
+  * [![Backend](https://skillicons.dev/icons?i=laravel,php)](https://skillicons.dev)
+* **Database:** 
+  * ***(Not yet implemented)***
+  * [![Database](https://skillicons.dev/icons?i=mysql)](https://skillicons.dev)
+* **Tools:** 
+  * `Visual Studio Code` 
+  * `Chrome DevTools`
+  * `Markdown` for Documentation
+  * `SheetDB` for Database API
+  * `Postman` for API Testing
+  * [![Tools](https://skillicons.dev/icons?i=vscode,md,postman)](https://skillicons.dev)
+
 
 ## Prerequisites
 - Node.js (>= 16 recommended) and npm
@@ -28,9 +65,10 @@ git clone https://github.com/Keonbe/PWD-Automated-Application-System.git
 cd PWD-Automated-Application-System/Post-React-Migration/pwd-application-system
 ```
 
-2. Install dependencies:
+1. Install dependencies:
 
 ```bash
+# To install node_modules not present in git repository
 npm install
 ```
 
@@ -104,13 +142,8 @@ git push origin feature/<short-descr>
 - Any manual steps to validate
 - Screenshots if UI changed
 
-Notes on coding style and checks
-- The project uses CRA and ESLint. Fix warnings where practical, especially accessibility lint warnings (anchor-is-valid, img alt text).
-- Keep CSS import order consistent: vendor CSS (bootstrap) first, then global app CSS, then component/page-level CSS.
 
-## Miscellaneous
-
-### Contributors
+## Contributors
 
 #### 👥 All Team Members 
 <!-- Grid of all contributors -->
@@ -120,10 +153,10 @@ Notes on coding style and checks
 <!-- Pie chart showing who contributed most -->
 ![Contribution Pie Chart](https://contrib.nn.ci/api?repo=Keonbe/PWD-Automated-Application-System&type=pie)
 
-### Useful links
-- React Router `useNavigate` and `Link`: https://reactrouter.com/
-- CRA docs: https://create-react-app.dev/docs/getting-started/
-- Accessibility checklist: https://www.w3.org/WAI/standards-guidelines/wcag/
+## Documentation Guide
 
-### Contact / Maintainers
-- Repo owner: Keonbe (check repo contributors and open issues for maintainer contact)
+1. **Start Here:** Read `init-documentation.md` to understand the project structure
+2. **Start Here:** Read `README.md` in `/documentation` folder to understand Functions and API's used.
+3. **Set Up:** Follow the setup instructions in `init-documentation.md`
+4. **Learn APIs:** Review `api-documentation.md` to understand backend integration
+5. **Study Functions:** Read `function-documentation.md` to understand code patterns

@@ -2,10 +2,61 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../assets/styles/index-styles.css';
 import placeholderImage from '../assets/images/dasmarinas-holder.jpg';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+//import { useNavigate } from 'react-router-dom'; //For the defunct modal function
 
 export default function Home() {
-  //JS CODE GOES HERE, IDK HOW IT WORKS AT ALL
+    /* Modal Function: 
+      Problem: When you navigate away from a page with an open Bootstrap modal, 
+      the modal backdrop doesn't get properly cleaned up because: 
+      1. The modal is not unmounted from the DOM. (or React's DOM rather)
+      2. Bootstrap's js doesn't handle the cleanup automatically.
+      3. The modal backdrop remains in the DOM even after navigation.
+      
+    const navigate = useNavigate();
+    const handleStartApplication = () => {
+    const modalElement = document.getElementById('learnMoreModal');
+      if (!modalElement) {
+        navigate('/consent'); // fallback: if modal is not in DOM, just navigate
+        return;
+    }
+    // Try to use the Bootstrap Modal API if available on window.bootstrap
+    // (index.js imports bootstrap bundle globally). If not available, fall back
+    // to manual cleanup of classes/backdrop.
+    try {
+    const bootstrapNs = window.bootstrap;
+        if (bootstrapNs && bootstrapNs.Modal) {
+          let modalInstance = bootstrapNs.Modal.getInstance(modalElement);
+          if (!modalInstance) modalInstance = new bootstrapNs.Modal(modalElement);
+
+          const onHidden = () => { // When the modal is fully hidden, navigate. Use once so listener is removed.
+            modalElement.removeEventListener('hidden.bs.modal', onHidden);
+            navigate('/consent');
+          };
+          modalElement.addEventListener('hidden.bs.modal', onHidden, { once: true });
+          modalInstance.hide(); // Add a safety timeout: if for some reason the event doesn't fire, force cleanup and navigate.
+          setTimeout(() => { // If backdrop still exists, remove it and remove body class then navigate
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) backdrop.parentElement && backdrop.parentElement.removeChild(backdrop);
+            document.body.classList.remove('modal-open');
+            if (!modalElement.classList.contains('show')) {
+              navigate('/consent'); // modal already hidden; ensure navigation happened in event above, otherwise navigate now
+            }
+          }, 450);
+          return;
+        }
+      } catch (err) {
+        console.error('Bootstrap modal hide failed, falling back to brute force cleanup', err);
+      }
+
+    // Brute force fallback: remove modal backdrop and navigate
+    modalElement.classList.remove('show');
+    modalElement.style.display = 'none';
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop && backdrop.parentElement) backdrop.parentElement.removeChild(backdrop);
+    document.body.classList.remove('modal-open');
+    navigate('/consent');
+  };
+  */
 
   return (
     <>
@@ -86,8 +137,7 @@ export default function Home() {
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              {/* TODO: Modal dim background error when link to consent.jsx */}
-              <Link className="btn btn-primary" to="/consent">Start Application</Link>
+              {/*<button type="button" className="btn btn-primary" onClick={handleStartApplication}>Start Application</button>*/}
             </div>
           </div>
         </div>

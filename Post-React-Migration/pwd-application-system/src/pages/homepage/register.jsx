@@ -1,13 +1,124 @@
-import React, { useRef } from "react";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import React, { useRef, useState } from "react";
 import "../../assets/styles/register-styles.css";
 import id from "../../assets/images/sample-id.png";
 import medCert from "../../assets/images/sample-medcert.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { submitRegistration } from "../../api/registrationApi";
 
 export default function Register() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
+  const navigate = useNavigate();
+
+  //File input refs
   const identityRef = useRef(null);
   const disabilityRef = useRef(null);
+
+  //Handle form submit with API integration
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+    const form = event.target;
+
+    if (!validateForm(form)) {
+      setSubmitMessage("Please fill in all required fields marked with an asterisk (*). Please check highlighted fields.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitMessage('');
+
+    try {
+      // Collect form values manually to ensure all fields are captured properly
+      const formData = {
+        // Name fields - collect manually since FormData might miss input-group fields
+        lastName: form.lastName.value.trim(),
+        firstName: form.firstName.value.trim(),
+        middleName: form.middleName.value.trim(),
+        
+        // Disability - get selected radio button
+        disability: form.querySelector('input[name="disability"]:checked')?.value || '',
+        
+        // Address
+        street: form.street.value.trim(),
+        barangay: form.barangay.value.trim(),
+        
+        // Contact
+        tel: form.tel?.value?.trim() || '',
+        mobile: form.mobile.value.trim(),
+        email: form.email.value.trim(),
+        
+  // Personal info
+  dob: form.dob.value,
+  // `sex` is a <select> element in the form, read its value directly
+  sex: form.sex?.value || '',
+  nationality: form.nationality?.value?.trim() || 'Filipino',
+        blood: form.blood?.value?.trim() || '',
+        civil: form.querySelector('input[name="civil"]:checked')?.value || '',
+        
+        // Emergency contact
+        emergencyName: form.emergencyName.value.trim(),
+        emergencyPhone: form.emergencyPhone.value.trim(),
+        emergencyRelationship: form.emergencyRelationship.value.trim(),
+      };
+
+      //Add generated registration number and date
+      formData.regNumber = generateRegistrationNumber();
+      formData.regDate = getTodayDate();
+
+      // Debug: Log formData before processing
+      console.log('Manually collected formData:', formData);
+
+      // Set fixed location values
+      formData.municipality = "Dasmariñas";
+      formData.province = "Cavite";
+      formData.region = "IV-A";
+
+      //Generate an 8-digit numeric temporary password and include it
+      formData.generatedPassword = generatePassword8();
+
+      // Include selected file names
+      formData.proofIdentityName = identityRef.current?.files?.[0]?.name || '';
+      formData.proofDisabilityName = disabilityRef.current?.files?.[0]?.name || '';
+
+      //Mirror file name fields to match SheetDB column names
+      formData.proofIdentity = formData.proofIdentityName;
+      formData.proofDisability = formData.proofDisabilityName;
+
+      //Ensure a default status of Denied
+      formData.status = 'Pending';
+
+      //Also mirror generated password to 'password' (sheet column expected)
+      formData.password = formData.generatedPassword;
+
+      // Submit to API
+      const result = await submitRegistration(formData);
+
+      if (result.success) {
+        setSubmitMessage(result.message);
+        
+        // Store in sessionStorage for result page
+        try {
+          sessionStorage.setItem('lastRegistration', JSON.stringify(formData));
+        } catch (e) {
+          console.warn('Could not save to sessionStorage:', e);
+        }
+
+        // Navigate to result page after a short delay
+        setTimeout(() => {
+          navigate('/register/result', { state: { formData } });
+        }, 2000);
+      } else {
+        setSubmitMessage(result.message);
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitMessage('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  //Update file input button text and style based on selected file
   const updateFileName = (inputRef, buttonId) => {
     const fileInput = inputRef.current;
     const button = document.getElementById(buttonId);
@@ -28,25 +139,70 @@ export default function Register() {
     }
   };
 
-  const handleSubmit = (event) => {
-    const form = event.target;
+  //Validate a form and return boolean (valid or invalid)
+  const validateForm = (form) => {
     const requiredFields = form.querySelectorAll("[required]");
     let valid = true;
 
     requiredFields.forEach((field) => {
-      if (!field.value.trim()) {
-        valid = false;
-        field.classList.add("is-invalid");
+      //For checkboxes/radios, check checked status
+      if ((field.type === 'checkbox' || field.type === 'radio')) {
+        if (field.type === 'radio') {
+          const group = form.querySelectorAll(`input[name="${field.name}"]`);
+          const anyChecked = Array.from(group).some(g => g.checked);
+          if (!anyChecked) {
+            valid = false;
+            group.forEach(g => g.classList.add('is-invalid'));
+          } else {
+            group.forEach(g => g.classList.remove('is-invalid'));
+          }
+        } else if (field.type === 'checkbox') {
+          if (!field.checked) {
+            valid = false;
+            field.classList.add('is-invalid');
+          } else {
+            field.classList.remove('is-invalid');
+          }
+        }
       } else {
-        field.classList.remove("is-invalid");
-        field.classList.add("is-valid");
+        if (!field.value || !field.value.toString().trim()) {
+          valid = false;
+          field.classList.add("is-invalid");
+        } else {
+          field.classList.remove("is-invalid");
+          field.classList.add("is-valid");
+        }
       }
     });
 
-    if (!valid) {
-      event.preventDefault();
-      alert("Please fill in all required fields marked with an asterisk (*).");
+    return valid;
+  };
+
+  //Generate random 12-digit registration number
+  const generateRegistrationNumber = () => {
+    let result = '';
+    for (let i = 0; i < 12; i++) {
+      result += Math.floor(Math.random() * 10); //Random number 0-9
     }
+    return result;
+  };
+
+  // Generate an 8-digit numeric password (characters 0-9)
+  const generatePassword8 = () => {
+    let p = '';
+    for (let i = 0; i < 8; i++) {
+      p += Math.floor(Math.random() * 10);
+    }
+    return p;
+  };
+
+  //Get today's date in YYYY-MM-DD format
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   return (
@@ -55,7 +211,7 @@ export default function Register() {
       <div className="row mb-4">
         <div className="col-12">
           <h1 className="h2 mb-2 text-success">PWD Registration Form</h1>
-          <p className="lead text-muted">
+          <p className="blockquote text-black-30">
             Complete this form to apply for Persons with Disabilities services
             and benefits.
           </p>
@@ -68,14 +224,15 @@ export default function Register() {
         </div>
       </div>
 
+      {/* Submit Message */}
+      {submitMessage && (
+        <div className={`alert ${submitMessage.includes('successfully') ? 'alert-success' : 'alert-danger'} mt-3`}>
+          {submitMessage}
+        </div>
+      )}
+
       {/* Registration Form */}
-      <form
-        action="submit.php"
-        method="post"
-        encType="multipart/form-data"
-        aria-labelledby="form-title"
-        onSubmit={handleSubmit}
-      >
+      <form onSubmit={handleFormSubmit}>
         <span id="form-title" className="visually-hidden">
           PWD Registration Form
         </span>
@@ -95,7 +252,9 @@ export default function Register() {
                   name="regNumber"
                   placeholder="Registration Number"
                   aria-describedby="regNumberHelp"
-                  required
+                  disabled
+                  value={generateRegistrationNumber()}
+                  readOnly
                 />
                 <label htmlFor="regNumber" className="required-field">
                   Registration Number
@@ -113,7 +272,9 @@ export default function Register() {
                   id="regDate"
                   name="regDate"
                   aria-describedby="regDateHelp"
-                  required
+                  disabled
+                  value={getTodayDate()}
+                  readOnly
                 />
                 <label htmlFor="regDate" className="required-field">
                   Date of Registration
@@ -341,6 +502,9 @@ export default function Register() {
                   placeholder="Municipality/City"
                   aria-label="Municipality or City"
                   required
+                  value="Dasmariñas"
+                  readOnly
+                  disabled
                 />
               </div>
               <div className="col-md-6">
@@ -352,6 +516,9 @@ export default function Register() {
                   placeholder="Province"
                   aria-label="Province"
                   required
+                  value="Cavite"
+                  readOnly
+                  disabled
                 />
               </div>
               <div className="col-md-6">
@@ -363,6 +530,9 @@ export default function Register() {
                   placeholder="Region"
                   aria-label="Region"
                   required
+                  value="IV-A"
+                  readOnly
+                  disabled
                 />
               </div>
             </div>
@@ -618,7 +788,7 @@ export default function Register() {
                   type="tel"
                   name="emergencyPhone"
                   className="form-control"
-                  placeholder="Contact Number"
+                  placeholder="Contact Number - Format: 09XXXXXXXXX"
                   aria-label="Emergency Contact Phone Number"
                   pattern="09[0-9]{9}"
                   required
@@ -646,7 +816,7 @@ export default function Register() {
           <h2 id="document-upload" className="section-title h4">
             Required Documents
           </h2>
-          <p className="text-muted mb-4">
+          <p className="text-secondary mb-4">
             Please upload clear images or scans of the following required
             documents.
           </p>
@@ -744,6 +914,100 @@ export default function Register() {
           </div>
         </section>
 
+
+        {/* Certification Section */}
+        <section className="form-section" aria-labelledby="certification-info">
+          <h2 id="certification-info" className="section-title h4">
+            Certification
+          </h2>
+          
+          <div className="card border-0 bg-light">
+            <div className="card-body">
+              <p className="fw-bold text-center mb-4">This is to certify that:</p>
+              
+              <div className="certification-list">
+                <div className="form-check mb-3">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="certify1" 
+                    name="certify1" 
+                    required 
+                  />
+                  <label className="form-check-label" htmlFor="certify1">
+                    The information entered above is true and correct.
+                  </label>
+                </div>
+                
+                <div className="form-check mb-3">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="certify2" 
+                    name="certify2" 
+                    required 
+                  />
+                  <label className="form-check-label" htmlFor="certify2">
+                    I have the full knowledge in providing the above information.
+                  </label>
+                </div>
+                
+                <div className="form-check mb-3">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="certify3" 
+                    name="certify3" 
+                    required 
+                  />
+                  <label className="form-check-label" htmlFor="certify3">
+                    I understand the purpose of enrolling myself in the City of Dasmariñas registry of Persons with Disabilities.
+                  </label>
+                </div>
+                
+                <div className="form-check mb-3">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="certify4" 
+                    name="certify4" 
+                    required 
+                  />
+                  <label className="form-check-label" htmlFor="certify4">
+                    I have personally given my consent to allow the use of the information contained in this form.
+                  </label>
+                </div>
+                
+                <div className="form-check mb-3">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="certify5" 
+                    name="certify5" 
+                    required 
+                  />
+                  <label className="form-check-label" htmlFor="certify5">
+                    I understand that this form contains my personal information to be stored in the PWD database.
+                  </label>
+                </div>
+                
+                <div className="form-check mb-4">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="certify6" 
+                    name="certify6" 
+                    required 
+                  />
+                  <label className="form-check-label fw-bold" htmlFor="certify6">
+                    I confirm and agree to all of the above.
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Submit Section */}
         <section className="form-section text-center">
           <div className="alert alert-warning" role="alert">
@@ -752,12 +1016,32 @@ export default function Register() {
             and benefits processing.
           </div>
 
-          <button type="submit" className="btn btn-success btn-lg px-5">
-            <i className="fas fa-paper-plane me-2" aria-hidden="true"></i>
-            Submit Application
+          {/* Buttons Group */}
+          <div className="d-flex justify-content-center gap-3">
+          <button 
+            type="submit" 
+            className="btn btn-success btn-lg px-5"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Submitting...
+              </>
+            ) : (
+              <>
+                <i className="fas fa-paper-plane me-2" aria-hidden="true"></i>
+                Submit Application
+              </>
+            )}
           </button>
 
-          <p className="text-muted mt-3 small">
+          <button type="button" className="btn btn-outline-secondary btn-lg px-5">
+            Cancel
+          </button>
+          </div>
+
+          <p className="text-secondary mt-3 small">
             By submitting this form, you agree to our
             <Link to="/faq" className="p-1 text-decoration-none">Privacy Policy</Link>
           </p>
@@ -766,3 +1050,6 @@ export default function Register() {
     </main>
   );
 }
+
+//TODO: No Password & Username(Email) yet
+// https://docs.google.com/spreadsheets/d/1aNvr3hZd3vZSQHB46XwVLMuusiUzbDM-ENYNqjya-aA/edit?gid=0#gid=0 I hate going back and forth
