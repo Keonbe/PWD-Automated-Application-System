@@ -24,11 +24,11 @@ function App() {
 }
 
 export default App;
-*/ 
+*/
 
 /* NEED DIFFERENT PAGE FOR USER +  ADMIN + LOGIN(No Header & Footer) */
 import React from 'react';
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import UserHeader from './components/public-header';
 import UserFooter from './components/public-footer';
 import HomePage from './pages/homepage';
@@ -42,57 +42,54 @@ import Login from './pages/login';
 import RegisterResult from './pages/homepage/register-result';
 import UserPage from './pages/userpage/userpage';
 import AdminPage from './pages/adminpage/adminpage';
+import AdminVerify from './pages/adminpage/adminverify';
 import './App.css';
 
-//Layout for public pages (public header and footer)
-function PublicLayout() {
+// Wrapper component to handle conditional rendering
+const AppWrapper = () => {
+  const location = useLocation();
+
+  // Define routes where footer should NOT appear
+  const noFooterRoutes = ["/login", "/adminpage", "/userpage", "/user", "/admin/adminverify"];
+
   return (
-    <>
+    <div className="app">
       <UserHeader />
       <main className="main-content">
-        <Outlet />
-      </main>
-      <UserFooter />
-    </>
-  );
-}
-
-//Layout for authenticated user pages (specialized header/footer if needed)
-function AuthenticatedLayout() {
-  return <Outlet />;
-}
-
-function App() { 
-  return (
-    <BrowserRouter>
-      <div className="app">
         <Routes>
           {/* Public routes with public header and footer */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/news" element={<News />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/consent" element={<Consent />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/register/result" element={<RegisterResult />} />
-            <Route path="/login" element={<Login />} />
-          </Route>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/consent" element={<Consent />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/register/result" element={<RegisterResult />} />
+          <Route path="/login" element={<Login />} />
 
           {/* Authenticated user routes (no public header/footer) */}
           {/* Kean: User, Marqus: Admin */}
-          <Route element={<AuthenticatedLayout />}>
-            <Route path="/userpage" element={<UserPage />} />
-            <Route path="/user" element={<UserPage />} />
-            <Route path="/user/*" element={<UserPage />} />
-            <Route path="/adminpage" element={<AdminPage />} />
-          </Route>
+          <Route path="/userpage" element={<UserPage />} />
+          <Route path="/user" element={<UserPage />} />
+          <Route path="/user/*" element={<UserPage />} />
+          <Route path="/adminpage" element={<AdminPage />} />
+          <Route path="/admin/adminverify" element={<AdminVerify />} />
 
           {/* Catch-all 404 must be last */}
           <Route path="*" element={<h1>404 - Page Not Found</h1>} />
         </Routes>
-      </div>
+      </main>
+      {/* Conditionally render footer if current path is NOT in noFooterRoutes */}
+      {!noFooterRoutes.includes(location.pathname) && <UserFooter />}
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppWrapper />
     </BrowserRouter>
   );
 }
