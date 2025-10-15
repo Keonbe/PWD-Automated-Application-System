@@ -20,7 +20,14 @@ This document provides comprehensive documentation for all custom JavaScript fun
    - [Consent Page Functions](#post-react-consent-page-functions)
    - [Navigation Functions](#post-react-navigation-functions)
 
-3. [Shared Utility Functions](#shared-utility-functions)
+3. [Merged Features Function Documentation](#merged-features-function-documentation)
+   - [User Dashboard Functions (userpage.jsx)](#user-dashboard-functions-userpagejsx)
+   - [Admin Dashboard Functions (adminpage.jsx)](#admin-dashboard-functions-adminpagejsx)
+   - [Enhanced Login Functions (login.jsx)](#enhanced-login-functions-loginjsx)
+   - [Session Management Functions](#session-management-functions)
+   - [Branch Merge Impact Summary](#branch-merge-impact-summary)
+
+4. [Shared Utility Functions](#shared-utility-functions)
 
 ---
 
@@ -2043,6 +2050,646 @@ Default (else) → Return "Under Review" activity
 - **CSS Classes**: Requires `user-activity-*` classes for styling
 
 This implementation provides a dynamic, user-centric activity feed that enhances the user experience by showing relevant, status-appropriate information in a clean timeline format.
+
+---
+
+---
+
+## Merged Features (User & Admin) Function Documentation
+
+### Overview
+This section documents the new functions and features merged from the `borromeobranch` into the `react-migration` branch. These functions enhance user authentication, data management, and admin dashboard capabilities.
+
+---
+
+### User Dashboard Functions (userpage.jsx)
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/userpage/userpage.jsx`
+
+---
+
+#### Function: `loadUserData()`
+
+**Purpose:** Asynchronously loads user data from the API and handles authentication redirects.
+
+**Trigger:** `useEffect` hook on component mount
+
+**Parameters:**
+- None (uses `userId` from sessionStorage/localStorage)
+
+**Implementation:**
+```javascript
+const loadUserData = async () => {
+    try {
+        console.log('[UserPage] Starting to fetch user data...');
+        
+        // Check if user is logged in
+        const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+        if (!userId) {
+            console.warn('[UserPage] No userId found, redirecting to login');
+            navigate('/login', { replace: true });
+            return;
+        }
+        
+        console.log('[UserPage] Found userId:', userId);
+        
+        // Fetch user data from API
+        const data = await getCurrentUserData();
+        console.log('[UserPage] User data loaded successfully:', data);
+        
+        setUserData(data);
+        setError(null);
+        
+    } catch (err) {
+        console.error('[UserPage] Failed to load user data:', err.message);
+        setError(err.message);
+        
+        // If API fails, use demo data for development
+        console.log('[UserPage] Using demo data as fallback');
+        setUserData(getDemoUserData());
+        
+    } finally {
+        setLoading(false);
+    }
+};
+```
+
+**Flow:**
+1. Check for `userId` in sessionStorage or localStorage
+2. Redirect to login if not authenticated
+3. Call `getCurrentUserData()` API
+4. Update state with user data
+5. Fallback to demo data if API fails
+6. Set loading to false
+
+**Dependencies:**
+- `getCurrentUserData()` from userApi.js
+- `navigate()` from react-router-dom
+- State: `setUserData`, `setError`, `setLoading`
+
+**Error Handling:**
+- Redirects to login if no userId found
+- Catches API errors and uses demo data as fallback
+- Logs all operations for debugging
+
+---
+
+#### Function: `getStatusInfo(status)`
+
+**Purpose:** Computes display label, progress percentage, and CSS classes based on application status.
+
+**Parameters:**
+- `status` (string) - Application status (pending, accepted, denied, etc.)
+
+**Returns:**
+```javascript
+{
+    label: string,      // Display label for status
+    percent: number,    // Progress percentage (0-100)
+    badgeClass: string, // CSS class for status badge
+    fillClass: string   // CSS class for progress fill
+}
+```
+
+**Implementation:**
+```javascript
+const getStatusInfo = (status) => {
+    const s = (status || '').toString().trim().toLowerCase();
+    
+    if (s === 'pending' || s === 'under review') {
+        return { 
+            label: 'Under Review', 
+            percent: 60, 
+            badgeClass: 'status-warning', 
+            fillClass: 'fill-warning' 
+        };
+    }
+    
+    if (s === 'accepted') {
+        return { 
+            label: 'Accepted', 
+            percent: 100, 
+            badgeClass: 'status-success', 
+            fillClass: 'fill-success' 
+        };
+    }
+    
+    if (s === 'denied' || s === 'rejected') {
+        return { 
+            label: 'Denied', 
+            percent: 100, 
+            badgeClass: 'status-danger', 
+            fillClass: 'fill-danger' 
+        };
+    }
+    
+    // Fallback for unknown status
+    return { 
+        label: status || 'Unknown', 
+        percent: 0, 
+        badgeClass: 'status-neutral', 
+        fillClass: 'fill-neutral' 
+    };
+};
+```
+
+**Status Mapping:**
+
+| Input Status | Label | Progress | Badge Class | Fill Class |
+|-------------|-------|----------|-------------|------------|
+| pending, under review | Under Review | 60% | status-warning | fill-warning |
+| accepted | Accepted | 100% | status-success | fill-success |
+| denied, rejected | Denied | 100% | status-danger | fill-danger |
+| (any other) | {status}/Unknown | 0% | status-neutral | fill-neutral |
+
+**Usage:**
+```javascript
+const statusInfo = getStatusInfo(userData.status);
+// Display: statusInfo.label
+// Progress bar: statusInfo.percent
+// CSS: statusInfo.badgeClass, statusInfo.fillClass
+```
+
+---
+
+#### Function: `handleNavClick(index)`
+
+**Purpose:** Handles navigation menu clicks in the user sidebar.
+
+**Parameters:**
+- `index` (number) - Navigation menu item index
+
+**Implementation:**
+```javascript
+const handleNavClick = (index) => {
+    setActiveNav(index);
+    
+    // Close sidebar on mobile
+    if (isSidebarActive) {
+        setSidebarActive(false);
+    }
+
+    // Handle navigation actions
+    switch(index) {
+        case 1: // Help
+            showHelp();
+            break;
+        case 2: // Logout
+            handleLogout();
+            break;
+        default:
+            // Dashboard or other pages
+            break;
+    }
+};
+```
+
+**Navigation Index Mapping:**
+- `0` - Dashboard
+- `1` - Help (shows modal)
+- `2` - Logout (clears session)
+
+**Side Effects:**
+- Updates active navigation state
+- Closes mobile sidebar
+- Triggers action based on menu item
+
+---
+
+#### Function: `showHelp()`
+
+**Purpose:** Displays the help modal with user guide information.
+
+**Implementation:**
+```javascript
+const showHelp = () => {
+    handleShowHelpModal();
+};
+```
+
+**Dependencies:**
+- `handleShowHelpModal()` - React-Bootstrap modal handler
+
+---
+
+#### Function: `handleLogout()`
+
+**Purpose:** Logs out the user and redirects to login page.
+
+**Implementation:**
+```javascript
+const handleLogout = async () => {
+    try {
+        console.log('[UserPage] Logging out...');
+        logoutUser();
+        navigate('/login', { replace: true });
+    } catch (err) {
+        console.error('[UserPage] Logout error:', err);
+    }
+};
+```
+
+**Flow:**
+1. Call `logoutUser()` API to clear storage
+2. Navigate to login page with replace flag
+3. Handle any errors gracefully
+
+**Dependencies:**
+- `logoutUser()` from userApi.js
+- `navigate()` from react-router-dom
+
+---
+
+#### Function: `getDemoUserData()`
+
+**Purpose:** Provides fallback demo data when API is unavailable.
+
+**Returns:**
+```javascript
+{
+    regNumber: '252175464394',
+    regDate: '2025-10-13',
+    lastName: 'Dela Cruz',
+    firstName: 'Juan',
+    // ... (complete user object with all fields)
+    status: 'Denied'
+}
+```
+
+**Usage:**
+- Fallback when API fails
+- Development/testing purposes
+- Ensures UI remains functional
+
+---
+
+### Admin Dashboard Functions (adminpage.jsx)
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/adminpage/adminpage.jsx`
+
+---
+
+#### Function: `fetchData()`
+
+**Purpose:** Fetches all user applications from SheetDB and computes statistics.
+
+**Trigger:** `useEffect` hook on component mount
+
+**Implementation:**
+```javascript
+const fetchData = async () => {
+    try {
+        const response = await fetch(SHEETDB_URL);
+        const data = await response.json();
+
+        // Format and normalize data
+        const formattedData = data.map((row) => {
+            const normalizedStatus = normalizeStatus(row.status);
+            return {
+                ...row,
+                fullName: `${row.lastName || ""}, ${row.firstName || ""} ${row.middleName || ""}`.trim(),
+                status: normalizedStatus,
+            };
+        });
+
+        setApplications(formattedData);
+
+        // Compute status counts
+        const counts = formattedData.reduce((acc, row) => {
+            acc[row.status] = (acc[row.status] || 0) + 1;
+            return acc;
+        }, {});
+
+        // Format for chart
+        const chartData = Object.entries(counts).map(([status, count]) => ({
+            name: status.charAt(0).toUpperCase() + status.slice(1),
+            Applications: count,
+        }));
+
+        setStatusData(chartData);
+    } catch (error) {
+        console.error("Error fetching data from SheetDB:", error);
+    }
+};
+```
+
+**Flow:**
+1. Fetch all applications from SheetDB
+2. Normalize status values
+3. Format full names
+4. Compute status counts
+5. Format data for Recharts visualization
+6. Update state
+
+**Data Transformations:**
+- Status normalization (accepted, pending, rejected)
+- Full name concatenation
+- Count aggregation by status
+- Chart data formatting
+
+---
+
+#### Function: `normalizeStatus(status)`
+
+**Purpose:** Normalizes various status string formats to standardized values.
+
+**Parameters:**
+- `status` (string) - Raw status value from database
+
+**Returns:**
+- `string` - Normalized status (accepted, pending, rejected, unknown)
+
+**Implementation:**
+```javascript
+const normalizeStatus = (status) => {
+    if (!status) return "unknown";
+    const s = status.trim().toLowerCase();
+    if (s.includes("accept")) return "accepted";
+    if (s.includes("pending") || s.includes("wait")) return "pending";
+    if (s.includes("reject") || s.includes("denied")) return "rejected";
+    return "unknown";
+};
+```
+
+**Status Mapping:**
+
+| Input | Output |
+|-------|--------|
+| "Accepted", "Accept", "ACCEPTED" | "accepted" |
+| "Pending", "Under Review", "Waiting" | "pending" |
+| "Rejected", "Denied", "DENIED" | "rejected" |
+| null, "", "Other" | "unknown" |
+
+**Purpose:**
+- Handles case variations
+- Matches partial strings
+- Provides fallback for unknown statuses
+- Ensures consistent data for visualization
+
+---
+
+#### Function: `getColor(status)`
+
+**Purpose:** Returns the appropriate color code for a given status.
+
+**Parameters:**
+- `status` (string) - Application status
+
+**Returns:**
+- `string` - Hex color code
+
+**Implementation:**
+```javascript
+const barColors = {
+    accepted: "#198754",  // green
+    pending: "#ffc107",   // yellow
+    rejected: "#dc3545",  // red
+    unknown: "#6c757d",   // gray
+};
+
+const getColor = (status) => barColors[normalizeStatus(status)];
+```
+
+**Color Scheme:**
+- Accepted: Green (#198754)
+- Pending: Yellow (#ffc107)
+- Rejected: Red (#dc3545)
+- Unknown: Gray (#6c757d)
+
+---
+
+### Enhanced Login Functions (login.jsx)
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/login.jsx`
+
+---
+
+#### Function: `handleUserLogin(e)`
+
+**Purpose:** Handles user authentication with email and password.
+
+**Parameters:**
+- `e` (Event) - Form submission event
+
+**Implementation:**
+```javascript
+const handleUserLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setLoginMessage('');
+
+    // Validation
+    if (!email || !password) {
+        setLoginMessage('<div class="alert alert-danger">Please enter both username and password.</div>');
+        setIsLoading(false);
+        return;
+    }
+
+    try {
+        // API call with encoded parameters
+        const qEmail = encodeURIComponent(email.trim().toLowerCase());
+        const qPassword = encodeURIComponent(password);
+        const response = await fetch(`${sheetdbUrl}/search?email=${qEmail}&password=${qPassword}`);
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            const userRecord = data[0];
+            
+            // Store session data
+            if (userRecord.regNumber) {
+                sessionStorage.setItem('userId', userRecord.regNumber);
+            }
+            sessionStorage.setItem("loggedInUser", qEmail);
+            sessionStorage.setItem('userData', JSON.stringify(userRecord));
+
+            // Success feedback and redirect
+            setLoginMessage('<div class="alert alert-success">Login successful! Redirecting...</div>');
+            setTimeout(() => {
+                navigate('/userpage', { replace: true });
+            }, 1000);
+        } else {
+            setLoginMessage('<div class="alert alert-danger">Invalid email or password. Please try again.</div>');
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        setLoginMessage('<div class="alert alert-danger">Login service is temporarily unavailable. Please try again later.</div>');
+    } finally {
+        setIsLoading(false);
+    }
+};
+```
+
+**Flow:**
+1. Prevent default form submission
+2. Validate email and password fields
+3. Encode and lowercase email
+4. Make API request to SheetDB
+5. Check if user exists
+6. Store session data (userId, email, userData)
+7. Show success message
+8. Redirect to user dashboard after 1 second
+
+**Session Storage:**
+- `userId` - Registration number (primary key)
+- `loggedInUser` - Email (legacy support)
+- `userData` - Full user object (JSON)
+
+---
+
+#### Function: `handleAdminLogin(e)`
+
+**Purpose:** Handles admin authentication with email and password via modal.
+
+**Parameters:**
+- `e` (Event) - Form submission event
+
+**Implementation:**
+```javascript
+const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    setAdminIsLoading(true);
+    setAdminLoginMessage('');
+
+    // Validation
+    if (!adminEmail || !adminPassword) {
+        setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Please enter both email and password.</div>');
+        setAdminIsLoading(false);
+        return;
+    }
+
+    try {
+        // API call with admin credentials
+        const qadminEmail = encodeURIComponent(adminEmail.trim().toLowerCase());
+        const qadminPassword = encodeURIComponent(adminPassword);
+        const response = await fetch(`${adminSheetdbUrl}/search?adminEmail=${qadminEmail}&adminPassword=${qadminPassword}`);
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+            // Store based on "Remember Me" preference
+            if (adminRemember) {
+                localStorage.setItem("adminLoggedIn", adminEmail);
+            } else {
+                sessionStorage.setItem("adminLoggedIn", adminEmail);
+            }
+            
+            setAdminLoginMessage('<div class="alert alert-success m-3 p-3">Admin login successful! Redirecting...</div>');
+            setTimeout(() => {
+                navigate('/adminpage', { replace: true });
+            }, 1000);
+        } else {
+            setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Invalid admin credentials. Please try again.</div>');
+        }
+    } catch (error) {
+        console.error("Admin login error:", error);
+        setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Admin login service is temporarily unavailable.</div>');
+    } finally {
+        setAdminIsLoading(false);
+    }
+};
+```
+
+**Flow:**
+1. Prevent default form submission
+2. Validate admin credentials
+3. Make API request to admin SheetDB
+4. Check if admin exists
+5. Store in localStorage (remember) or sessionStorage
+6. Show success message
+7. Redirect to admin dashboard
+
+**Storage Strategy:**
+- If "Remember Me" checked: `localStorage.setItem("adminLoggedIn", adminEmail)`
+- Otherwise: `sessionStorage.setItem("adminLoggedIn", adminEmail)`
+
+---
+
+#### Function: `handleShowAdminModal()` & `handleCloseAdminModal()`
+
+**Purpose:** Manages the admin login modal visibility and state cleanup.
+
+**Implementation:**
+```javascript
+const handleShowAdminModal = () => setShowAdminModal(true);
+
+const handleCloseAdminModal = () => {
+    setShowAdminModal(false);
+    // Clear admin form when modal closes
+    setAdminEmail('');
+    setAdminPassword('');
+    setAdminLoginMessage('');
+};
+```
+
+**Features:**
+- Opens/closes React-Bootstrap modal
+- Clears form fields on close
+- Resets error messages
+- Maintains clean state
+
+---
+
+### Session Management Functions
+
+#### useEffect: Authentication Check
+
+**Purpose:** Checks if user is already logged in on page load and redirects accordingly.
+
+**Implementation (login.jsx):**
+```javascript
+useEffect(() => {
+    // Check user login
+    if (sessionStorage.getItem("userId") || sessionStorage.getItem("loggedInUser")) {
+        navigate('/userpage', { replace: true });
+        return;
+    }
+    
+    // Check admin login
+    if (sessionStorage.getItem("adminLoggedIn") || localStorage.getItem("adminLoggedIn")) {
+        navigate('/adminpage', { replace: true });
+        return;
+    }
+}, [navigate]);
+```
+
+**Flow:**
+1. Check for user session keys
+2. Redirect to userpage if user logged in
+3. Check for admin session keys
+4. Redirect to adminpage if admin logged in
+5. Stay on login page if no session found
+
+---
+
+### Branch Merge Impact Summary
+
+**Merged Functions by Feature:**
+
+1. **User Data Management**
+   - `getCurrentUserData()` - API call to fetch user profile
+   - `logoutUser()` - Clear all session data
+   - `loadUserData()` - Load and display user data
+   - `getDemoUserData()` - Fallback demo data
+
+2. **Status Management**
+   - `getStatusInfo()` - Status display formatting
+   - `normalizeStatus()` - Status string normalization
+   - `getColor()` - Status color mapping
+
+3. **Admin Dashboard**
+   - `fetchData()` - Load all applications
+   - Statistics computation functions
+   - Chart data formatting
+
+4. **Authentication**
+   - `handleUserLogin()` - Enhanced user login
+   - `handleAdminLogin()` - Admin modal login
+   - `handleShowAdminModal()` / `handleCloseAdminModal()` - Modal management
+   - Auto-redirect on existing session
+
+5. **Navigation & UI**
+   - `handleNavClick()` - Sidebar navigation
+   - `showHelp()` - Help modal trigger
+   - `handleLogout()` - Logout and redirect
 
 ---
 

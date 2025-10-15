@@ -31,8 +31,9 @@ A **PWD Automated Application System** built using **React**, **HTML, CSS, & Jav
     - [All Team Members involved](#all-team-members-involved)
     - [Background](#background)
     - [Midterm](#midterm)
+      - [Project Setup \& Initial Development (September-October 2025)](#project-setup--initial-development-september-october-2025)
     - [Final Term](#final-term)
-  - [Legacy (HTML/CSS/JS) to React JS ⚛️](#legacy-htmlcssjs-to-react-js-️)
+  - [⚛️ Legacy (HTML/CSS/JS) to React JS Migration Guide](#️-legacy-htmlcssjs-to-react-js-migration-guide)
     - [Complete React Migration Guide](#complete-react-migration-guide)
       - [Phase 1: Routing \& Navigation Setup](#phase-1-routing--navigation-setup)
         - [1.1 Initial Route Configuration](#11-initial-route-configuration)
@@ -539,14 +540,303 @@ npm install rechart
 - ***Marqus Borromeo***
 
 ### Background
+The PWD Automated Application System was chosen out of 3 titles presented to our professor in the subject ITWB311. In theory, Our *PWD Application System App* aims to streamline the application process for Persons with Disabilities (PWD) in Dasmariñas City. The project aims to create an accessible, user-friendly web platform that simplifies the registration and application process while providing administrative tools for efficient management.
 
 ### Midterm
+
+#### Project Setup & Initial Development (September-October 2025)
+
+**1. Repository & Branch Management**
+- Created GitHub repository: `PWD-Automated-Application-System`
+- Established `pre-react-migration` branch for sepertate codebase from when we are about to migrate our code to react
+- Set up project structure with Pre-React-Migration and Post-React-Migration folders
+
+**2. Repository & Branch Management**
+- Established `react-migration` branch for React development
+- Migrate legacy HTML/CSS/JS code to React components
+- Implement routing and navigation with React Router
+- Set up React-Bootstrap for UI components
+- Created reusable components (Header, Footer, Sidebar)
+- Implemented initial pages in `.jsx` (Home, News, FAQ, Resources, Contact, Consent, Register, Login, User Dashboard, Admin Dashboard).
+
+**3. Migration from Legacy HTML/CSS/JS**
+- Successfully migrated from static HTML to React SPA:
+  - Converted all HTML pages to JSX components
+  - Transformed inline onclick handlers to React event handlers
+  - Replaced anchor tags with React Router `<Link>` components
+  - Updated asset paths for React public folder structure
+  - Implemented proper state management patterns
+
+
+**4. React Application Bootstrap**
+- Initialized React project using Create-React-App
+- Configured `package.json` with necessary dependencies:
+  - React & React DOM (v18.3.1)
+  - React Router DOM (v6.28.0) for SPA routing
+  - React Bootstrap & Bootstrap (v2.10.7 / v5.3.3) for UI components
+
+**5. Project Architecture & Routing**
+- Implemented comprehensive routing structure with React Router:
+  - **Public Routes** (with header/footer):
+    - `/` - Homepage
+    - `/news` - News & Updates
+    - `/faq` - Frequently Asked Questions
+    - `/resources` - Resources Page
+    - `/contact` - Contact Information
+    - `/consent` - Consent Form
+    - `/register` - Registration Form
+    - `/register/result` - Registration Result Page
+  - **Authenticated Routes** (without public header/footer):
+    - `/login` - User/Admin Login
+    - `/userpage`, `/user`, `/user/*` - User Dashboard & Sub-routes
+    - `/adminpage` - Admin Dashboard
+    - `/admin/adminverify` - Admin Verification
+  - 404 catch-all route for undefined paths
+
+**6. Component Architecture**
+- Created reusable component structure:
+  - **Common Components:**
+    - `public-header.jsx` - Public-facing header with navigation
+    - `public-footer.jsx` - Footer with contact info and social links
+    - `adminsidebar.jsx` - Admin navigation sidebar
+    - `statuschart.jsx` - Application status visualization
+  - **Page Components:**
+    - Homepage module with multiple sub-pages
+    - User page module for applicant dashboard
+    - Admin page module for management interface
+
+**7. Layout System Implementation**
+- Developed conditional rendering logic for headers/footers:
+  - `AppWrapper` component with location-based rendering
+  - `AuthenticatedLayout` for user/admin pages (no public header/footer)
+  - Dynamic header/footer visibility based on route patterns
+  - Support for nested authenticated routes
+
+**8. API Integration Setup**
+- Created API service layer:
+  - `registrationApi.js` - Registration form submission handlers
+  - `userApi.js` - User authentication and data management
+- Prepared for SheetDB integration as temporary database solution
+
+**9. Asset Management**
+- Organized assets structure:
+  - `/assets/images/` - Logo, banners, and UI images
+  - `/assets/styles/` - Component-specific CSS modules:
+    - `adminpage.css` - Admin interface styles
+    - `contact-styles.css` - Contact page styles
+    - `faq-styles.css` - FAQ page styles
+    - `footer.css` - Footer component styles
+    - `header.css` - Header component styles
+    - `index-styles.css` - Homepage styles
+    - `login-styles.css` - Login page styles
+    - `news-styles.css` - News page styles
+    - `register-styles.css` - Registration form styles
+    - `register_result-styles.css` - Registration result styles
+    - `resources-styles.css` - Resources page styles
+    - `userpage-styles.css` - User dashboard styles
+
+**10. Documentation**
+- Created comprehensive documentation:
+  - `api-documentation.md` - API endpoints and usage
+  - `function-documentation.md` - Function references
+  - `init-documentation.md` - Setup and migration guide
+  - `README.md` - Project overview
+
+**11. Responsive Design & Accessibility**
+- Ensured mobile-responsive layouts using Bootstrap
+- Implemented accessible navigation patterns
+- Added proper semantic HTML
+- Optimized for PWD accessibility requirements
+
+**12. Branch Merging & Feature Integration**
+- Successfully merged features from `borromeobranch` into `react-migration`:
+  - **Merge Commit:** `dabfe1f` - "Merge remote-tracking branch 'origin/borromeobranch' into react-migration"
+  - Resolved routing conflicts in `App.js`
+  - Integrated user and admin dashboard features
+  - Combined authentication systems
+  - Unified API service layers
+
+**13. User Dashboard Implementation**
+- Developed comprehensive user dashboard (`userpage.jsx`):
+  - **User Profile Display:**
+    - Fetches user data from SheetDB via registration number
+    - Displays personal information, disability details, and contact info
+    - Shows emergency contact information
+    - Displays uploaded document filenames
+  - **Application Status Tracking:**
+    - Real-time status display (Pending/Accepted/Denied)
+    - Color-coded status badges (Yellow/Green/Red)
+    - Progress bar visualization (0%, 60%, 100%)
+    - Status-based messaging
+  - **Navigation Features:**
+    - Dashboard view with quick actions
+    - Help modal with user guide
+    - Logout functionality with session cleanup
+  - **Session Management:**
+    - Auto-redirect if not authenticated
+    - Stores `userId` (registration number) as primary key
+    - Fallback to demo data if API unavailable
+
+**14. Admin Dashboard Implementation**
+- Created admin management interface (`adminpage.jsx`):
+  - **Statistics Dashboard:**
+    - Total applicants count
+    - Accepted applications count
+    - Pending applications count
+    - Rejected applications count
+  - **Data Visualization:**
+    - Recharts bar chart for application status overview
+    - Color-coded bars (Green/Yellow/Red/Gray)
+    - Real-time data from SheetDB
+  - **Status Normalization:**
+    - Handles multiple status variants (Accept/Accepted, Deny/Denied/Rejected)
+    - Case-insensitive matching
+    - Unknown status fallback
+  - **Application Management:**
+    - Full list of all applications
+    - Formatted full names (Last, First Middle)
+    - Status-based filtering capabilities
+
+**15. Enhanced Authentication System**
+- Implemented dual authentication in `login.jsx`:
+  - **User Login:**
+    - Email-based authentication (case-insensitive)
+    - Password verification via SheetDB API
+    - Stores multiple session keys: `userId`, `loggedInUser`, `userData`
+    - Auto-redirect to user dashboard on success
+    - Loading states with spinner icons
+    - Comprehensive error messages
+  - **Admin Login:**
+    - React-Bootstrap modal interface
+    - Separate admin credentials (`adminEmail`, `adminPassword`)
+    - "Remember Me" functionality (localStorage vs sessionStorage)
+    - Separate SheetDB endpoint for admin authentication
+    - Modal state management with form cleanup
+  - **Auto-Authentication Check:**
+    - useEffect hook checks existing session on page load
+    - Redirects authenticated users to appropriate dashboard
+    - Supports both user and admin sessions
+
+**16. API Service Layer Development**
+- **User API Module (`userApi.js`):**
+  - `getCurrentUserData()` - Fetches user profile by registration number
+    - Searches SheetDB by `regNumber` parameter
+    - Returns normalized user data with all fields
+    - Comprehensive error handling and logging
+    - Supports dual storage (sessionStorage and localStorage)
+  - `logoutUser()` - Clears all session data
+    - Removes userId, loggedInUser, userData
+    - Clears entire sessionStorage
+    - Prepares for clean re-authentication
+  
+- **Registration API Enhancements (`registrationApi.js`):**
+  - `submitRegistration()` improvements:
+    - Duplicate registration number checking before submission
+    - Sheet structure verification with debug logging
+    - Default status changed from "Denied" to "Pending"
+    - Password field support (generated or custom)
+    - Enhanced error responses with detailed messages
+  - `checkEmailExists()` - Validates email uniqueness
+
+**17. Data Management & Normalization**
+- **Status Normalization System:**
+  - Standardizes status values across the application
+  - Handles variants: "Accept"→"accepted", "Pending"→"pending", "Deny"→"rejected"
+  - Unknown status fallback for edge cases
+  
+- **Session Storage Strategy:**
+  - **User Session Keys:**
+    - `userId` - Primary identifier (registration number)
+    - `loggedInUser` - Email for legacy support
+    - `userData` - Full user object (JSON stringified)
+  - **Admin Session Keys:**
+    - `adminLoggedIn` - Admin email
+    - Storage choice: localStorage (remember) or sessionStorage
+  
+- **Color Coding System:**
+  - Status colors: Accepted (Green #198754), Pending (Yellow #ffc107), Rejected (Red #dc3545), Unknown (Gray #6c757d)
+  - Applied consistently across user and admin interfaces
+
+**18. UI/UX Enhancements**
+- **User Dashboard Features:**
+  - Responsive sidebar navigation with mobile toggle
+  - Status-based progress indicators
+  - Help modal with user guide and contact information
+  - Quick action buttons (View Status, Update Info)
+  - Application guide with step-by-step instructions
+  
+- **Admin Dashboard Features:**
+  - Summary cards with FontAwesome icons
+  - Interactive bar chart with hover tooltips
+  - Responsive grid layout
+  - Admin sidebar with navigation links
+  
+- **Login Page Features:**
+  - Tabbed interface concept (User/Admin)
+  - Modal-based admin login for better UX
+  - Loading spinners during authentication
+  - Inline error/success messages
+  - Accessibility features (ARIA labels, form descriptions)
+
+**19. Documentation Updates**
+- **API Documentation (`api-documentation.md`):**
+  - Documented `getCurrentUserData()` and `logoutUser()` functions
+  - Enhanced login API documentation (user and admin)
+  - Admin dashboard data fetching API details
+  - Registration API enhancements
+  - Session storage strategies
+  - Status normalization rules
+  - Branch merge summary with commit history
+  
+- **Function Documentation (`function-documentation.md`):**
+  - Added "Merged Features Function Documentation" section
+  - User dashboard functions (loadUserData, getStatusInfo, handleNavClick, etc.)
+  - Admin dashboard functions (fetchData, normalizeStatus, getColor)
+  - Enhanced login functions (handleUserLogin, handleAdminLogin, modal handlers)
+  - Session management functions with auto-redirect logic
+  - Branch merge impact summary
+
+**Current Status:**
+- ✅ React application fully functional
+- ✅ All public and authenticated routes working
+- ✅ Component architecture established
+- ✅ User dashboard with real-time data fetching
+- ✅ Admin dashboard with statistics and visualization
+- ✅ Dual authentication system (user and admin)
+- ✅ API service layer fully implemented
+- ✅ Session management with auto-redirect
+- ✅ Status tracking and normalization
+- ✅ Build system optimized for production
+- ✅ Comprehensive documentation (3 documentation files updated)
+- ⚠️ Backend (Laravel) integration pending
+- ⚠️ Database implementation pending (currently using SheetDB)
+- ⚠️ File upload storage solution pending
+- ⚠️ Password hashing and security enhancements pending
+
+**Key Features Summary:**
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| User Registration | ✅ Complete | Form with validation, file uploads, auto-generated passwords |
+| User Login | ✅ Complete | Email-based authentication with session management |
+| Admin Login | ✅ Complete | Modal-based login with "Remember Me" functionality |
+| User Dashboard | ✅ Complete | Profile display, status tracking, help modal, logout |
+| Admin Dashboard | ✅ Complete | Statistics, bar chart visualization, application list |
+| Status Tracking | ✅ Complete | Color-coded badges, progress bars, normalized statuses |
+| Routing System | ✅ Complete | Public/authenticated layouts, 11+ routes, 404 handling |
+| API Integration | ✅ Complete | SheetDB for user/admin data, registration, authentication |
+| Session Management | ✅ Complete | Dual storage strategy, auto-redirect, logout functionality |
+| Documentation | ✅ Complete | API docs, function docs, setup guide, merge summary |
+
+**For Detailed Documentation:**
+- **API Endpoints & Usage:** See `api-documentation.md`
+- **Function Implementations:** See `function-documentation.md`
 
 ### Final Term
 
 ---
 
-## Legacy (HTML/CSS/JS) to React JS ⚛️
+## ⚛️ Legacy (HTML/CSS/JS) to React JS Migration Guide
 
 ### Complete React Migration Guide
 
