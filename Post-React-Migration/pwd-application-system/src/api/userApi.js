@@ -1,5 +1,24 @@
+/**
+ * @summary Base URL for the SheetDB API endpoint storing user registration data.
+ * 
+ * @remarks
+ * This is the original API endpoint for user data storage.
+ * All user registration operations will use this base URL.
+ */
 const SHEETDB_URL = 'https://sheetdb.io/api/v1/wgjit0nprbfxe'; // SheetDB API for user 
 
+/**
+ * @summary Retrieves current user data from SheetDB based on stored user ID.
+ * 
+ * @returns {Promise<Object>} Normalized user data object with all profile fields.
+ * 
+ * @throws {Error} Throws error if no user ID found or API request fails.
+ * 
+ * @remarks
+ * Searches for user by registration number stored in sessionStorage or localStorage.
+ * Includes comprehensive logging for debugging authentication flow.
+ * Normalizes data structure to match exact spreadsheet column names.
+ */
 export const getCurrentUserData = async () => {
     try {
         console.log('[userApi] Starting getCurrentUserData');
@@ -36,12 +55,12 @@ export const getCurrentUserData = async () => {
         const userData = data[0];
         
         //Map and normalize the data structure - match spreadsheet EXACT column names
-        const normalizedData = {
+        const normalizedData = { // Match spreadsheet EXACT casing
             regNumber: userData.regNumber || '',
             regDate: userData.regDate || '',
-            lastName: userData.lastName || '',        // Match spreadsheet EXACT casing
-            firstName: userData.firstName || '',      // Match spreadsheet EXACT casing
-            middleName: userData.middleName || '',    // Match spreadsheet EXACT casing
+            lastName: userData.lastName || '',
+            firstName: userData.firstName || '',
+            middleName: userData.middleName || '',
             disability: userData.disability || '',
             street: userData.street || '',
             barangay: userData.barangay || '',
@@ -83,7 +102,12 @@ export const getCurrentUserData = async () => {
 };
 
 /**
- * Logout user by clearing all stored data
+ * @summary Logs out user by clearing all stored authentication data.
+ * 
+ * @remarks
+ * Removes user ID from both localStorage and sessionStorage.
+ * Clears all session storage data to ensure complete logout.
+ * Used in logout functionality and session timeout handling.
  */
 export const logoutUser = () => {
     console.log('[userApi] Logging out user');

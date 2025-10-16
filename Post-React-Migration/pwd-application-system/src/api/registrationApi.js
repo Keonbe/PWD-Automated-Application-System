@@ -1,5 +1,37 @@
+/**
+ * @summary Base URL for the SheetDB API endpoint storing user registration data.
+ * 
+ * @remarks
+ * This is the original API endpoint for user data storage.
+ * All user registration operations will use this base URL.
+ */
 const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe"; //Orig API (Marqus) User
 
+/**
+ * @summary Submits a new user registration to the SheetDB database.
+ * 
+ * @param {Object} formData - The registration form data containing user information.
+ * @param {string} formData.regNumber - Unique registration number for the user.
+ * @param {string} formData.regDate - Date of registration.
+ * @param {string} formData.lastName - User's last name.
+ * @param {string} formData.firstName - User's first name.
+ * @param {string} formData.middleName - User's middle name (optional).
+ * @param {string} formData.disability - Type of disability.
+ * @param {Object} formData.address - Complete address information.
+ * @param {string} formData.contact - Contact information.
+ * @param {string} formData.dob - Date of birth.
+ * @param {string} formData.sex - Gender.
+ * @param {string} formData.password - User password.
+ * 
+ * @returns {Promise<Object>} Result object with success status and message.
+ * 
+ * @throws {Error} Throws error if API calls fail or network issues occur.
+ * 
+ * @remarks
+ * This function performs duplicate registration check before submission.
+ * Includes debug logging to help troubleshoot SheetDB structure issues.
+ * Temporarily stores only file names (not actual files) for midterm compromise.
+ */
 export const submitRegistration = async (formData) => {
     try {
         //Check if registration number already exists
@@ -22,12 +54,12 @@ export const submitRegistration = async (formData) => {
         //Prepare data for SheetDB to match its expected format and add new user.
         const registrationData = {
             data: [
-                {
+                { // Match spreadsheet EXACT casing
                     regNumber: formData.regNumber,
                     regDate: formData.regDate,
-                    lastName: formData.lastName,        // Match spreadsheet EXACT casing
-                    firstName: formData.firstName,      // Match spreadsheet EXACT casing
-                    middleName: formData.middleName || '',  // Match spreadsheet EXACT casing
+                    lastName: formData.lastName,
+                    firstName: formData.firstName,
+                    middleName: formData.middleName || '',
                     disability: formData.disability,
                     street: formData.street,
                     barangay: formData.barangay,
@@ -93,7 +125,20 @@ export const submitRegistration = async (formData) => {
     }
 };
 
-//Check if email already exists
+/**
+ * @summary Checks if an email address already exists in the registration database.
+ * 
+ * @param {string} email - The email address to check for duplicates.
+ * 
+ * @returns {Promise<boolean>} True if email exists, false if available or on error.
+ * 
+ * @throws {Error} Throws error if API call fails, returns false on network issues.
+ * 
+ * @remarks
+ * Used during registration form validation to prevent duplicate accounts.
+ * Returns false on errors to avoid blocking registration due to temporary issues.
+ * Checks if email already exists
+ */
 export const checkEmailExists = async (email) => {
     try {
         const response = await fetch(`${sheetdbUrl}/search?email=${email}`);
