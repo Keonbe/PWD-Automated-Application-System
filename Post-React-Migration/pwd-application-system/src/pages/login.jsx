@@ -4,27 +4,49 @@ import logo from '../assets/images/dasma-logo-only.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 
-/** TODO: JS CODE*/ 
 export default function Login() {
-    const navigate = useNavigate();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [adminEmail, setAdminEmail] = useState('');
-    const [adminPassword, setAdminPassword] = useState('');
-    const [adminRemember, setAdminRemember] = useState(false);
-    const [loginMessage, setLoginMessage] = useState('');
-    const [adminLoginMessage, setAdminLoginMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [adminIsLoading, setAdminIsLoading] = useState(false);
-    
-    // Add state for admin modal
-    const [showAdminModal, setShowAdminModal] = useState(false);
 
+    /**
+     * @summary Main login component handling both user and admin authentication flows.
+     * 
+     * @returns {JSX.Element} Returns a login interface with user form and admin modal.
+     * 
+     * @remarks
+     * This component manages dual login systems with separate API endpoints.
+     * Includes session management and automatic redirection for authenticated users.
+     * Uses Bootstrap for responsive design and modal functionality.
+     */
+    const navigate = useNavigate();
+    const [email, setEmail] = useState(''); /**  @summary User email input state for login form. */
+    const [password, setPassword] = useState(''); /** @summary User password input state for login form. */
+    const [adminEmail, setAdminEmail] = useState(''); /**  @summary Admin email input state for admin login modal. */
+    const [adminPassword, setAdminPassword] = useState(''); /**  @summary Admin password input state for admin login modal. */
+    const [adminRemember, setAdminRemember] = useState(false); /** @summary Remember me toggle state for admin login persistence. */
+    const [loginMessage, setLoginMessage] = useState(''); /** @summary User login status message display state. */
+    const [adminLoginMessage, setAdminLoginMessage] = useState(''); /**  @summary Admin login status message display state. */
+    const [isLoading, setIsLoading] = useState(false); /**  @summary User login loading state for form submission. */
+    const [adminIsLoading, setAdminIsLoading] = useState(false); /**  @summary Admin login loading state for form submission. */
+    const [showAdminModal, setShowAdminModal] = useState(false); /**  @summary Admin modal visibility control state. */
+
+    /**
+     * @summary SheetDB API URL for user authentication data.
+     * @summary SheetDB API URL for admin authentication data.
+     * 
+     * @remarks
+     * Original API endpoint for user registration data email-based login authentication system.
+     * Admin database using username-based authentication system.
+     */
     const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe"; //user
     const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; //admin (username)
-    //const adminSheetdbTestUrl = "https://sheetdb.io/api/v1/ljqq6umrhu60o"; //admin test (email)
     
 
+    /**
+     * @summary Checks for existing user sessions and redirects authenticated users.
+     * 
+     * @remarks
+     * Supports both legacy 'loggedInUser' (email) and new 'userId' (regNumber) session keys.
+     * Prevents authenticated users from accessing login page unnecessarily.
+     */
     useEffect(() => { // Check if already logged in
         // Support either legacy key 'loggedInUser' (email) or new key 'userId' (regNumber)
         if (sessionStorage.getItem("userId") || sessionStorage.getItem("loggedInUser")) {
@@ -38,6 +60,20 @@ export default function Login() {
         }
     }, [navigate]);
 
+
+    /**
+     * @summary Handles user login form submission and authentication.
+     * 
+     * @param {Event} e - Form submission event object.
+     * 
+     * @returns {Promise<void>}
+     * 
+     * @throws {Error} Throws error if API request fails or network issues occur.
+     * 
+     * @remarks
+     * Validates credentials against user database and stores session data.
+     * Includes protection against submission when admin modal is open.
+     */
     const handleUserLogin = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -101,6 +137,19 @@ export default function Login() {
         }
     };
 
+    /**
+     * @summary Handles admin login form submission and authentication.
+     * 
+     * @param {Event} e - Form submission event object.
+     * 
+     * @returns {Promise<void>}
+     * 
+     * @throws {Error} Throws error if API request fails or network issues occur.
+     * 
+     * @remarks
+     * Supports "remember me" functionality using localStorage for persistence.
+     * Uses admin-specific API endpoint with email/password authentication.
+     */
     const handleAdminLogin = async (e) => {
         e.preventDefault();
         setAdminIsLoading(true);
@@ -140,8 +189,19 @@ export default function Login() {
         }
     };
 
-    // Admin modal handlers
+    /**
+     * @summary Opens the admin login modal dialog.
+     * 
+     * @remarks
+     * Triggered by admin login button click in the main interface.
+     */
     const handleShowAdminModal = () => setShowAdminModal(true);
+    /**
+     * @summary Closes the admin login modal and resets form state.
+     * 
+     * @remarks
+     * Clears admin form fields and messages to ensure clean state on next open.
+     */
     const handleCloseAdminModal = () => {
         setShowAdminModal(false);
         // Clear admin form when modal closes

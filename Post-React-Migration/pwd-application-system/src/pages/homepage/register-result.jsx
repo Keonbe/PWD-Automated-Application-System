@@ -3,9 +3,24 @@ import { useLocation } from "react-router-dom";
 import "../../assets/styles/register_result-styles.css";
 
 export default function RegisterResult() {
-  const location = useLocation();
+  const location = useLocation(); /** @summary React Router location object for accessing navigation state. */
+  /**
+   * @summary State for storing registration form data from navigation or session storage.
+   * 
+   * @remarks
+   * Holds the most recent registration data for display on the confirmation page.
+   * Initially null until data is loaded from either location state or session storage.
+   */
   const [data, setData] = useState(null);
 
+  /**
+   * @summary Effect hook for loading registration data from navigation state or session storage.
+   * 
+   * @remarks
+   * Attempts to retrieve form data from React Router location state first (highest priority).
+   * Falls back to sessionStorage if no location state is available.
+   * Persists location state data to sessionStorage for page refresh resilience.
+   */
   useEffect(() => {
     // Try location.state first (navigation), then sessionStorage fallback
     const fromState = location?.state?.formData;
@@ -23,6 +38,19 @@ export default function RegisterResult() {
     }
   }, [location]);
 
+  /**
+   * @summary Safely displays registration data values with fallback handling.
+   * 
+   * @param {string} key - The property key to display from the registration data.
+   * @param {string} fallback - Fallback text to display if data is missing or empty.
+   * 
+   * @returns {string} The formatted display value or fallback text.
+   * 
+   * @remarks
+   * Handles array values by joining with commas for readable display.
+   * Provides null-safe access to nested registration data properties.
+   * Returns fallback when no data is available or specific key is missing.
+   */
   const display = (key, fallback = '') => {
     if (!data) return fallback;
     const val = data[key];
