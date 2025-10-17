@@ -30,7 +30,40 @@ Contents
 ## Overview
 This system is designed to:
 * PWD Accessible website for ease of application process
-* Separate user views for Admin/Employees and User
+* Streamlined user experience for both applicants and administrators
+* Improved accessibility features for users with disabilities
+* Efficient data management solutions
+* User-friendly interface with intuitive navigation
+* Responsive design for various devices
+* Separate dedicated pages for Admin/Employees and User
+
+## Functionality
+
+This React-based frontend (located in `Post-React-Migration/pwd-application-system/src`) implements the user-first functionality for the PWD Automated Application System. The summary below describes the main pages, shared components, API wrappers, and the typical flow through the app.
+
+- Pages & routes (what the user sees):
+  - **Public pages**: Home, News, FAQ, Resources, Contact — located under `src/pages/homepage` and its children.
+  - **Authentication**: 
+    - `src/pages/login.jsx` provides login. 
+    - Registration and registration result pages are `src/pages/homepage/register.jsx` and `register-result.jsx`.
+  - **User area**: `src/pages/userpage/userpage.jsx` — the authenticated user dashboard.
+  - **Admin area**: `src/pages/adminpage/adminpage.jsx` and `src/pages/adminpage/adminverify.jsx` for admin-specific views and verification.
+
+- Shared UI components:
+  - `src/components/public-header.jsx` and `src/components/public-footer.jsx` — site header/footer and navigation used across routes.
+  - `src/components/adminsidebar.jsx` — admin navigation and layout helper.
+  - `src/components/statuschart.jsx` — chart/status widget used by admin pages.
+  *[More shared components soon.]*
+
+- Styling & assets:
+  - CSS: page styles live in `src/assets/styles/`
+  - Images and static assets in `src/assets/images` and the `public/` folder.
+
+- API integration and data flow:
+  - API wrappers live in `src/api/`:
+    - `registrationApi.js` — handles registration submissions.
+    - `userApi.js` — handles user operations such as login and status checks.
+  - Typical flow: a page/component collects form inputs -> calls a function from `src/api/*` -> that function performs an HTTP request (to SheetDB or a future backend) -> the component reads the response and updates UI/state or navigates to a result page.
 
 ## Tech Stack
 * **Frontend:** 
