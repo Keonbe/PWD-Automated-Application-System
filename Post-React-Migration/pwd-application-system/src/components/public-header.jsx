@@ -5,12 +5,33 @@ import { Link } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 
 export default function UserHeader() {
+  /**
+   * @summary Navbar expansion state for mobile menu toggle.
+   * 
+   * @remarks
+   * Manages the collapsed/expanded state of the mobile navigation menu.
+   * Required because React alone doesn't handle Bootstrap's JavaScript components.
+   */
   const [expanded, setExpanded] = useState(false);
 
+  /**
+   * @summary Toggles the navbar expansion state for mobile view.
+   * 
+   * @remarks
+   * Handles the click event for the navbar toggle button.
+   * Alternates between expanded and collapsed states for mobile menu.
+   */
   const handleToggle = () => {
     setExpanded(expanded ? false : true);
   };
 
+  /**
+   * @summary Closes the navbar when a navigation link is clicked.
+   * 
+   * @remarks
+   * Ensures mobile navbar automatically collapses after navigation selection.
+   * Improves user experience on mobile devices by closing menu after click.
+   */
   const handleNavClick = () => {
     setExpanded(false);
   };

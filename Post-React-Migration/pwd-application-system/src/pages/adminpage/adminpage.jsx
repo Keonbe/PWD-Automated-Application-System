@@ -20,6 +20,13 @@ const AdminPage = () => {
   const [applications, setApplications] = useState([]);
   const [statusData, setStatusData] = useState([]);
 
+  /**
+   * @summary Color mapping configuration for status visualization.
+   * 
+   * @remarks
+   * Provides consistent color coding across charts, badges, and status indicators.
+   * Follows Bootstrap color conventions for intuitive status recognition.
+   */
   const barColors = {
     accepted: "#198754", // green
     pending: "#ffc107", // yellow
@@ -27,6 +34,16 @@ const AdminPage = () => {
     unknown: "#6c757d", // gray
   };
 
+  /**
+   * @summary Normalizes application status values for consistent categorization.
+   * 
+   * @param {string} status - Raw status value from application data.
+   * @returns {string} Normalized status: 'accepted', 'pending', 'rejected', or 'unknown'.
+   * 
+   * @remarks
+   * Handles variations in status terminology from different data entry sources.
+   * Ensures consistent grouping and color coding across the dashboard.
+   */
   const normalizeStatus = (status) => {
     if (!status) return "unknown";
     const s = status.trim().toLowerCase();
@@ -36,8 +53,25 @@ const AdminPage = () => {
     return "unknown";
   };
 
+  /**
+   * @summary Retrieves color code for a given application status.
+   * 
+   * @param {string} status - Application status value.
+   * @returns {string} Hexadecimal color code for the status.
+   * 
+   * @remarks
+   * Wrapper function that applies normalization before color lookup.
+   * Used for dynamic styling of status badges and visual elements.
+   */
   const getColor = (status) => barColors[normalizeStatus(status)];
 
+  /**
+   * @summary Effect hook for fetching and processing application data on component mount.
+   * 
+   * @remarks
+   * Retrieves all applications from API, normalizes status values, and prepares data for visualization.
+   * Handles data transformation for both display and analytical purposes.
+   */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -90,6 +124,13 @@ const AdminPage = () => {
     statusData.find((s) => s.name.toLowerCase() === "rejected")?.Applications ||
     0;
 
+  /**
+   * @summary Legend configuration for status color coding visualization.
+   * 
+   * @remarks
+   * Provides label-color mappings for charts, legends, and status explanation components.
+   * Used to generate consistent status legends across the dashboard interface.
+   */
   const legendItems = Object.keys(barColors).map((key) => ({
     label: key.charAt(0).toUpperCase() + key.slice(1),
     color: barColors[key],

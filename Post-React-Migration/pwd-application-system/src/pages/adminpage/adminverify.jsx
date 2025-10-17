@@ -13,6 +13,16 @@ const AdminVerify = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
+  /**
+   * @summary Normalizes applicant status values for consistent display and processing.
+   * 
+   * @param {string} status - Raw status value from applicant data.
+   * @returns {string} Normalized status value: 'accepted', 'pending', 'denied', or 'unknown'.
+   * 
+   * @remarks
+   * Handles variations in status formatting from different data sources.
+   * Ensures consistent color coding and display logic across the application.
+   */
   const normalizeStatus = (status) => {
     if (!status) return "unknown";
     const s = status.trim().toLowerCase();
@@ -22,6 +32,17 @@ const AdminVerify = () => {
     return "unknown";
   };
 
+  /**
+   * @summary Fetches the oldest pending applicant from the database queue.
+   * 
+   * @returns {Promise<void>}
+   * 
+   * @throws {Error} Throws error if API request fails or data format is invalid.
+   * 
+   * @remarks
+   * Retrieves the first applicant with 'pending' status for review processing.
+   * Sets loading state appropriately and handles empty result scenarios.
+   */
   // Fetch the oldest pending applicant
   const fetchOldestPending = async () => {
     try {
@@ -35,10 +56,30 @@ const AdminVerify = () => {
     }
   };
 
+
+  /**
+   * @summary Effect hook for loading initial applicant data on component mount.
+   * 
+   * @remarks
+   * Automatically fetches the first pending applicant when component loads.
+   * Only runs once on initial render to prevent unnecessary API calls.
+   */
   useEffect(() => {
     fetchOldestPending();
   }, []);
 
+  /**
+   * @summary Updates applicant status and loads next pending applicant.
+   * 
+   * @param {string} newStatus - The new status to assign: 'accepted' or 'denied'.
+   * @returns {Promise<void>}
+   * 
+   * @throws {Error} Throws error if API update fails or applicant data is missing.
+   * 
+   * @remarks
+   * Updates current applicant status via PATCH request and automatically fetches next applicant.
+   * Provides user feedback via alerts and maintains application workflow continuity.
+   */
   const updateStatus = async (newStatus) => {
     if (!applicant) return;
     setUpdating(true);
