@@ -4,27 +4,49 @@ import logo from '../assets/images/dasma-logo-only.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 
-/** TODO: JS CODE*/ 
 export default function Login() {
-    const navigate = useNavigate();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [adminEmail, setAdminEmail] = useState('');
-    const [adminPassword, setAdminPassword] = useState('');
-    const [adminRemember, setAdminRemember] = useState(false);
-    const [loginMessage, setLoginMessage] = useState('');
-    const [adminLoginMessage, setAdminLoginMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [adminIsLoading, setAdminIsLoading] = useState(false);
-    
-    // Add state for admin modal
-    const [showAdminModal, setShowAdminModal] = useState(false);
 
+    /**
+     * @summary Main login component handling both user and admin authentication flows.
+     * 
+     * @returns {JSX.Element} Returns a login interface with user form and admin modal.
+     * 
+     * @remarks
+     * This component manages dual login systems with separate API endpoints.
+     * Includes session management and automatic redirection for authenticated users.
+     * Uses Bootstrap for responsive design and modal functionality.
+     */
+    const navigate = useNavigate();
+    const [email, setEmail] = useState(''); /**  @summary User email input state for login form. */
+    const [password, setPassword] = useState(''); /** @summary User password input state for login form. */
+    const [adminEmail, setAdminEmail] = useState(''); /**  @summary Admin email input state for admin login modal. */
+    const [adminPassword, setAdminPassword] = useState(''); /**  @summary Admin password input state for admin login modal. */
+    const [adminRemember, setAdminRemember] = useState(false); /** @summary Remember me toggle state for admin login persistence. */
+    const [loginMessage, setLoginMessage] = useState(''); /** @summary User login status message display state. */
+    const [adminLoginMessage, setAdminLoginMessage] = useState(''); /**  @summary Admin login status message display state. */
+    const [isLoading, setIsLoading] = useState(false); /**  @summary User login loading state for form submission. */
+    const [adminIsLoading, setAdminIsLoading] = useState(false); /**  @summary Admin login loading state for form submission. */
+    const [showAdminModal, setShowAdminModal] = useState(false); /**  @summary Admin modal visibility control state. */
+
+    /**
+     * @summary SheetDB API URL for user authentication data.
+     * @summary SheetDB API URL for admin authentication data.
+     * 
+     * @remarks
+     * Original API endpoint for user registration data email-based login authentication system.
+     * Admin database using username-based authentication system.
+     */
     const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe"; //user
     const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; //admin (username)
-    //const adminSheetdbTestUrl = "https://sheetdb.io/api/v1/ljqq6umrhu60o"; //admin test (email)
     
 
+    /**
+     * @summary Checks for existing user sessions and redirects authenticated users.
+     * 
+     * @remarks
+     * Supports both legacy 'loggedInUser' (email) and new 'userId' (regNumber) session keys.
+     * Prevents authenticated users from accessing login page unnecessarily.
+     */
     useEffect(() => { // Check if already logged in
         // Support either legacy key 'loggedInUser' (email) or new key 'userId' (regNumber)
         if (sessionStorage.getItem("userId") || sessionStorage.getItem("loggedInUser")) {
@@ -38,11 +60,32 @@ export default function Login() {
         }
     }, [navigate]);
 
+
+    /**
+     * @summary Handles user login form submission and authentication.
+     * 
+     * @param {Event} e - Form submission event object.
+     * 
+     * @returns {Promise<void>}
+     * 
+     * @throws {Error} Throws error if API request fails or network issues occur.
+     * 
+     * @remarks
+     * Validates credentials against user database and stores session data.
+     * Includes protection against submission when admin modal is open.
+     */
     const handleUserLogin = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setLoginMessage('');
 
+        // Prevent user login if admin modal is open
+        if (showAdminModal) {
+        console.log('Admin modal is open - ignoring user form submission');
+        return;
+        }
+
+        // Basic validation
         if (!email || !password) {
             setLoginMessage('<div class="alert alert-danger">Please enter both username and password.</div>');
             setIsLoading(false);
@@ -94,6 +137,19 @@ export default function Login() {
         }
     };
 
+    /**
+     * @summary Handles admin login form submission and authentication.
+     * 
+     * @param {Event} e - Form submission event object.
+     * 
+     * @returns {Promise<void>}
+     * 
+     * @throws {Error} Throws error if API request fails or network issues occur.
+     * 
+     * @remarks
+     * Supports "remember me" functionality using localStorage for persistence.
+     * Uses admin-specific API endpoint with email/password authentication.
+     */
     const handleAdminLogin = async (e) => {
         e.preventDefault();
         setAdminIsLoading(true);
@@ -133,8 +189,19 @@ export default function Login() {
         }
     };
 
-    // Admin modal handlers
+    /**
+     * @summary Opens the admin login modal dialog.
+     * 
+     * @remarks
+     * Triggered by admin login button click in the main interface.
+     */
     const handleShowAdminModal = () => setShowAdminModal(true);
+    /**
+     * @summary Closes the admin login modal and resets form state.
+     * 
+     * @remarks
+     * Clears admin form fields and messages to ensure clean state on next open.
+     */
     const handleCloseAdminModal = () => {
         setShowAdminModal(false);
         // Clear admin form when modal closes
@@ -177,7 +244,7 @@ export default function Login() {
                                             name="username"
                                             placeholder="Enter your username"
                                             aria-describedby="username-addon"
-                                            autoComplete="username"
+                                            autoComplete="off"
                                             required
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
@@ -199,7 +266,7 @@ export default function Login() {
                                             name="password"
                                             placeholder="Enter your password"
                                             aria-describedby="password-addon"
-                                            autoComplete="current-password"
+                                            autoComplete="off"
                                             required
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
@@ -235,15 +302,15 @@ export default function Login() {
                                 </div>
 
                                 {/* Links: Register & Admin */}
-                                <div id="register-admin-links" className="d-flex align-items-center justify-content-between">
-                                    <div>
-                                        <span className="small text-black m-2">Not registered?</span>
-                                        <Link to="/consent" className="small text-primary fw-semibold order-2">Create an account</Link>
+                                <div id="register-admin-links">
+                                    <div className="register-section">
+                                        <span className="small text-black">Not registered?</span>
+                                        <Link to="/consent" className="small text-primary fw-semibold">Create an account</Link>
                                     </div>
-                                    <div>
-                                        <span className="small text-black m-2">Are you an Admin?</span>
+                                    <div className="admin-section">
+                                        <span className="small text-black">Are you an Admin?</span>
                                         <button 
-                                            className="small text-danger fw-semibold order-1 border-0 bg-transparent p-0 text-decoration-underline"
+                                            className="small text-danger fw-semibold border-0 bg-transparent p-0"
                                             onClick={handleShowAdminModal}
                                         >
                                             Admin login
@@ -261,79 +328,6 @@ export default function Login() {
                                 dangerouslySetInnerHTML={{ __html: loginMessage }}
                             />
 
-                            {/* React-Bootstrap Admin Login Modal */}
-                            <Modal show={showAdminModal} onHide={handleCloseAdminModal}>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>Admin Login</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <form id="adminLoginForm" onSubmit={handleAdminLogin} noValidate>
-                                        <div className="mb-3">
-                                            <label htmlFor="adminEmail" className="form-label">Email address</label>
-                                            <input 
-                                                type="email" 
-                                                className="form-control" 
-                                                id="adminEmail" 
-                                                required
-                                                value={adminEmail}
-                                                onChange={(e) => setAdminEmail(e.target.value)}
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="adminPassword" className="form-label">Password</label>
-                                            <input 
-                                                type="password" 
-                                                className="form-control" 
-                                                id="adminPassword" 
-                                                required
-                                                value={adminPassword}
-                                                onChange={(e) => setAdminPassword(e.target.value)}
-                                            />
-                                        </div>
-                                        <div className="mb-3 form-check">
-                                            <input 
-                                                type="checkbox" 
-                                                className="form-check-input" 
-                                                id="adminRememberMe"
-                                                checked={adminRemember}
-                                                onChange={(e) => setAdminRemember(e.target.checked)}
-                                            />
-                                            <label className="form-check-label" htmlFor="adminRememberMe">Remember me</label>
-                                        </div>
-                                        <button 
-                                            type="submit" 
-                                            className="btn btn-success" 
-                                            id="adminLoginBtn"
-                                            disabled={adminIsLoading}
-                                        >
-                                            {adminIsLoading ? (
-                                                <>
-                                                    <i className="fa fa-spinner fa-spin me-1" aria-hidden="true"></i> Logging in...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <i className="fa fa-right-to-bracket me-1" aria-hidden="true"></i> Login
-                                                </>
-                                            )}
-                                        </button>
-                                    </form>
-
-                                    {/* Admin message display area */}
-                                    <div 
-                                        id="adminLoginMessage" 
-                                        className="mt-3 p-3" 
-                                        role="status" 
-                                        aria-live="polite"
-                                        dangerouslySetInnerHTML={{ __html: adminLoginMessage }}
-                                    />
-                                </Modal.Body>
-                                <Modal.Footer className="flex-nowrap justify-content-around">
-                                    <Button variant="secondary" onClick={handleCloseAdminModal}>
-                                        Close
-                                    </Button>
-                                </Modal.Footer>
-                            </Modal>
-
                             {/* Footer Quick Links */}
                             <p className="alert alert-warning small text-black fw-semibold mt-3 mb-0">
                                 This portal is for registered users and authorized personnel. Unauthorized use is prohibited.
@@ -348,6 +342,79 @@ export default function Login() {
                     </div>
                 </div>
             </div>
+
+            {/* React-Bootstrap Admin Login Modal */}
+            <Modal show={showAdminModal} onHide={handleCloseAdminModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Admin Login</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form id="adminLoginForm" onSubmit={handleAdminLogin} noValidate>
+                        <div className="mb-3">
+                            <label htmlFor="adminEmail" className="form-label">Email address</label>
+                            <input 
+                                type="email" 
+                                className="form-control" 
+                                id="adminEmail" 
+                                required
+                                value={adminEmail}
+                                onChange={(e) => setAdminEmail(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="adminPassword" className="form-label">Password</label>
+                            <input 
+                                type="password" 
+                                className="form-control" 
+                                id="adminPassword" 
+                                required
+                                value={adminPassword}
+                                onChange={(e) => setAdminPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3 form-check">
+                            <input 
+                                type="checkbox" 
+                                className="form-check-input" 
+                                id="adminRememberMe"
+                                checked={adminRemember}
+                                onChange={(e) => setAdminRemember(e.target.checked)}
+                            />
+                            <label className="form-check-label" htmlFor="adminRememberMe">Remember me</label>
+                        </div>
+                        <button 
+                            type="submit" 
+                            className="btn btn-success" 
+                            id="adminLoginBtn"
+                            disabled={adminIsLoading}
+                        >
+                            {adminIsLoading ? (
+                                <>
+                                    <i className="fa fa-spinner fa-spin me-1" aria-hidden="true"></i> Logging in...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fa fa-right-to-bracket me-1" aria-hidden="true"></i> Login
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    {/* Admin message display area */}
+                    <div 
+                        id="adminLoginMessage" 
+                        className="mt-3 p-3" 
+                        role="status" 
+                        aria-live="polite"
+                        dangerouslySetInnerHTML={{ __html: adminLoginMessage }}
+                    />
+                </Modal.Body>
+                <Modal.Footer className="flex-nowrap justify-content-around">
+                    <Button variant="secondary" onClick={handleCloseAdminModal}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </main>
     );
 };

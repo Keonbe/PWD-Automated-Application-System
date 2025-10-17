@@ -13,8 +13,14 @@ This document provides comprehensive documentation for all API integrations in t
 5. [Registration Submission API](#registration-submission-api)
     - [submitRegistration(formData)](#function-submitregistration)
     - [checkEmailExists(email)](#function-checkemailexists)
-6. [API Error Handling](#api-error-handling)
-7. [API Security Considerations](#api-security-considerations)
+6. [Merged Features API Documentation](#merged-features-api-documentation)
+    - [User Data Management API (userApi.js)](#1-user-data-management-api-userapijs)
+    - [Enhanced Login API (login.jsx)](#2-enhanced-login-api-loginjsx)
+    - [Admin Dashboard Data Fetching API](#3-admin-dashboard-data-fetching-api)
+    - [Registration API Enhancements](#4-registration-api-enhancements)
+    - [Branch Merge Summary](#5-branch-merge-summary)
+7. [API Error Handling](#api-error-handling)
+8. [API Security Considerations](#api-security-considerations)
 
 ---
 
@@ -1254,6 +1260,493 @@ const handleLogout = async () => {
 - Removes data from `localStorage`
 - Clears all data from `sessionStorage`
 - User must log in again to access protected pages
+
+---
+
+## Merged Features API Documentation
+
+### Overview
+This section documents the new APIs and features merged from the `borromeobranch` into the `react-migration` branch, which includes enhanced user authentication, admin dashboard functionality, and user data management capabilities.
+
+---
+
+### 1. User Data Management API (`userApi.js`)
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/api/userApi.js`
+
+#### Function: `getCurrentUserData()`
+
+**Purpose:** Retrieves the complete user profile data from SheetDB based on the logged-in user's registration number.
+
+**API Endpoint Used:**
+```
+GET https://sheetdb.io/api/v1/wgjit0nprbfxe/search?regNumber={regNumber}
+```
+
+**Parameters:**
+- None (retrieves `userId` from sessionStorage or localStorage internally)
+
+**Returns:**
+```javascript
+Promise<Object> {
+    regNumber: string,           // 12-digit registration number
+    regDate: string,            // Registration date (YYYY-MM-DD)
+    lastName: string,           // User's last name
+    firstName: string,          // User's first name
+    middleName: string,         // User's middle name
+    disability: string,         // Type of disability
+    street: string,             // Street address
+    barangay: string,          // Barangay
+    municipality: string,       // Municipality (default: Dasmariñas)
+    province: string,           // Province (default: Cavite)
+    region: string,             // Region (default: IV-A)
+    tel: string,               // Telephone number
+    mobile: string,            // Mobile number
+    email: string,             // Email address
+    dob: string,               // Date of birth (YYYY-MM-DD)
+    sex: string,               // Gender
+    nationality: string,        // Nationality
+    blood: string,             // Blood type
+    civil: string,             // Civil status
+    emergencyName: string,      // Emergency contact name
+    emergencyPhone: string,     // Emergency contact phone
+    emergencyRelationship: string, // Emergency contact relationship
+    proofIdentity: string,      // Proof of identity filename
+    proofDisability: string,    // Proof of disability filename
+    proofIdentityName: string,  // Proof of identity display name
+    proofDisabilityName: string, // Proof of disability display name
+    password: string,           // User password
+    generatedPassword: string,  // Auto-generated password
+    status: string,            // Application status (Pending/Accepted/Denied)
+    _raw: Object               // Original raw data for debugging
+}
+```
+
+**Implementation:**
+```javascript
+export const getCurrentUserData = async () => {
+    try {
+        console.log('[userApi] Starting getCurrentUserData');
+        
+        // Try to get userId from both sessionStorage and localStorage
+        const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+        
+        if (!userId) {
+            throw new Error('No user ID found. Please log in again.');
+        }
+
+        // Build API URL to search by regNumber
+        const searchUrl = `${SHEETDB_URL}/search?regNumber=${encodeURIComponent(userId)}`;
+        
+        // Fetch data from SheetDB
+        const response = await fetch(searchUrl);
+        
+        if (!response.ok) {
+            throw new Error(`API responded with status ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // SheetDB returns an array of matching rows
+        if (!Array.isArray(data) || data.length === 0) {
+            throw new Error(`No user found with registration number: ${userId}`);
+        }
+        
+        // Get the first matching user and normalize data
+        const userData = data[0];
+        const normalizedData = {
+            regNumber: userData.regNumber || '',
+            regDate: userData.regDate || '',
+            // ... (mapping all fields)
+            status: userData.status || 'Pending',
+            _raw: userData
+        };
+        
+        return normalizedData;
+        
+    } catch (error) {
+        console.error('[userApi] Error in getCurrentUserData:', error.message);
+        throw error;
+    }
+};
+```
+
+**Usage Example:**
+```javascript
+import { getCurrentUserData } from '../../api/userApi';
+
+const loadUserData = async () => {
+    try {
+        const data = await getCurrentUserData();
+        console.log('User data:', data);
+        setUserData(data);
+    } catch (err) {
+        console.error('Failed to load user data:', err.message);
+        setError(err.message);
+    }
+};
+```
+
+**Error Handling:**
+```javascript
+// Throws Error with messages:
+- "No user ID found. Please log in again."
+- "API responded with status {statusCode}"
+- "No user found with registration number: {regNumber}"
+```
+
+---
+
+#### Function: `logoutUser()`
+
+**Purpose:** Clears all user session data from browser storage.
+
+**Parameters:**
+- None
+
+**Returns:**
+- `void`
+
+**Implementation:**
+```javascript
+export const logoutUser = () => {
+    console.log('[userApi] Logging out user');
+    localStorage.removeItem('userId');
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('userData');
+    sessionStorage.clear();
+};
+```
+
+**Usage Example:**
+```javascript
+import { logoutUser } from '../../api/userApi';
+import { useNavigate } from 'react-router-dom';
+
+const handleLogout = () => {
+    logoutUser();
+    navigate('/login', { replace: true });
+};
+```
+
+---
+
+### 2. Enhanced Login API (`login.jsx`)
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/login.jsx`
+
+#### User Login Handler
+
+**Purpose:** Authenticates users using email and password, stores session data, and redirects to user dashboard.
+
+**API Endpoint Used:**
+```
+GET https://sheetdb.io/api/v1/wgjit0nprbfxe/search?email={email}&password={password}
+```
+
+**Features:**
+- Email-based authentication (case-insensitive)
+- Password verification
+- Dual storage strategy (sessionStorage for userId and userData)
+- Automatic redirect on successful login
+- Loading states and error messages
+
+**Implementation:**
+```javascript
+const handleUserLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setLoginMessage('');
+
+    if (!email || !password) {
+        setLoginMessage('<div class="alert alert-danger">Please enter both username and password.</div>');
+        setIsLoading(false);
+        return;
+    }
+
+    try {
+        const qEmail = encodeURIComponent(email.trim().toLowerCase());
+        const qPassword = encodeURIComponent(password);
+        const response = await fetch(`${sheetdbUrl}/search?email=${qEmail}&password=${qPassword}`);
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            const userRecord = data[0];
+            
+            // Store the regNumber as userId
+            if (userRecord.regNumber) {
+                sessionStorage.setItem('userId', userRecord.regNumber);
+            }
+
+            // Keep legacy email key
+            sessionStorage.setItem("loggedInUser", qEmail);
+
+            // Store the full user data for immediate use
+            sessionStorage.setItem('userData', JSON.stringify(userRecord));
+
+            setLoginMessage('<div class="alert alert-success">Login successful! Redirecting...</div>');
+            setTimeout(() => {
+                navigate('/userpage', { replace: true });
+            }, 1000);
+        } else {
+            setLoginMessage('<div class="alert alert-danger">Invalid email or password. Please try again.</div>');
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        setLoginMessage('<div class="alert alert-danger">Login service is temporarily unavailable. Please try again later.</div>');
+    } finally {
+        setIsLoading(false);
+    }
+};
+```
+
+**Session Storage Keys:**
+- `userId` - Registration number (primary identifier)
+- `loggedInUser` - User email (legacy support)
+- `userData` - Full user object (JSON stringified)
+
+---
+
+#### Admin Login Handler with Modal
+
+**Purpose:** Authenticates admin users using email and password with a React-Bootstrap modal interface.
+
+**API Endpoint Used:**
+```
+GET https://sheetdb.io/api/v1/duayfvx2u7zh9/search?adminEmail={adminEmail}&adminPassword={adminPassword}
+```
+
+**Features:**
+- Modal-based admin login form
+- "Remember Me" functionality (localStorage vs sessionStorage)
+- Separate admin credentials (adminEmail, adminPassword)
+- Independent loading states and error messages
+
+**Implementation:**
+```javascript
+const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    setAdminIsLoading(true);
+    setAdminLoginMessage('');
+
+    if (!adminEmail || !adminPassword) {
+        setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Please enter both email and password.</div>');
+        setAdminIsLoading(false);
+        return;
+    }
+
+    try {
+        const qadminEmail = encodeURIComponent(adminEmail.trim().toLowerCase());
+        const qadminPassword = encodeURIComponent(adminPassword);
+        const response = await fetch(`${adminSheetdbUrl}/search?adminEmail=${qadminEmail}&adminPassword=${qadminPassword}`);
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+            if (adminRemember) {
+                localStorage.setItem("adminLoggedIn", adminEmail);
+            } else {
+                sessionStorage.setItem("adminLoggedIn", adminEmail);
+            }
+            
+            setAdminLoginMessage('<div class="alert alert-success m-3 p-3">Admin login successful! Redirecting...</div>');
+            setTimeout(() => {
+                navigate('/adminpage', { replace: true });
+            }, 1000);
+        } else {
+            setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Invalid admin credentials. Please try again.</div>');
+        }
+    } catch (error) {
+        console.error("Admin login error:", error);
+        setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Admin login service is temporarily unavailable.</div>');
+    } finally {
+        setAdminIsLoading(false);
+    }
+};
+```
+
+**Modal Management:**
+```javascript
+const [showAdminModal, setShowAdminModal] = useState(false);
+const handleShowAdminModal = () => setShowAdminModal(true);
+const handleCloseAdminModal = () => {
+    setShowAdminModal(false);
+    setAdminEmail('');
+    setAdminPassword('');
+    setAdminLoginMessage('');
+};
+```
+
+**Storage Keys:**
+- `adminLoggedIn` - Admin email (stored in localStorage if "Remember Me" checked, sessionStorage otherwise)
+
+---
+
+### 3. Admin Dashboard Data Fetching API
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/adminpage/adminpage.jsx`
+
+**Purpose:** Fetches all user applications and computes statistics for the admin dashboard.
+
+**API Endpoint Used:**
+```
+GET https://sheetdb.io/api/v1/wgjit0nprbfxe
+```
+
+**Features:**
+- Fetches all user registrations
+- Status normalization (accepted, pending, rejected)
+- Real-time statistics computation
+- Data formatting for Recharts visualization
+
+**Implementation:**
+```javascript
+useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const response = await fetch(SHEETDB_URL);
+            const data = await response.json();
+
+            const formattedData = data.map((row) => {
+                const normalizedStatus = normalizeStatus(row.status);
+                return {
+                    ...row,
+                    fullName: `${row.lastName || ""}, ${row.firstName || ""} ${row.middleName || ""}`.trim(),
+                    status: normalizedStatus,
+                };
+            });
+
+            setApplications(formattedData);
+
+            const counts = formattedData.reduce((acc, row) => {
+                acc[row.status] = (acc[row.status] || 0) + 1;
+                return acc;
+            }, {});
+
+            const chartData = Object.entries(counts).map(([status, count]) => ({
+                name: status.charAt(0).toUpperCase() + status.slice(1),
+                Applications: count,
+            }));
+
+            setStatusData(chartData);
+        } catch (error) {
+            console.error("Error fetching data from SheetDB:", error);
+        }
+    };
+
+    fetchData();
+}, []);
+```
+
+**Status Normalization:**
+```javascript
+const normalizeStatus = (status) => {
+    if (!status) return "unknown";
+    const s = status.trim().toLowerCase();
+    if (s.includes("accept")) return "accepted";
+    if (s.includes("pending") || s.includes("wait")) return "pending";
+    if (s.includes("reject") || s.includes("denied")) return "rejected";
+    return "unknown";
+};
+```
+
+**Computed Statistics:**
+```javascript
+const totalApplicants = statusData.reduce((sum, s) => sum + s.Applications, 0);
+const acceptedCount = statusData.find((s) => s.name.toLowerCase() === "accepted")?.Applications || 0;
+const pendingCount = statusData.find((s) => s.name.toLowerCase() === "pending")?.Applications || 0;
+const rejectedCount = statusData.find((s) => s.name.toLowerCase() === "rejected")?.Applications || 0;
+```
+
+---
+
+### 4. Registration API Enhancements
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/api/registrationApi.js`
+
+#### Enhanced `submitRegistration()` Function
+
+**New Features:**
+- Duplicate registration number checking
+- Sheet structure verification (debug logging)
+- Default status set to "Pending"
+- Password field support (generated or custom)
+- Comprehensive error handling and debugging
+
+**Key Changes from Previous Version:**
+```javascript
+// NEW: Check if registration number already exists
+const checkResponse = await fetch(`${sheetdbUrl}/search?regNumber=${formData.regNumber}`);
+const existingRegistrations = await checkResponse.json();
+
+if (existingRegistrations.length > 0) {
+    return {
+        success: false,
+        message: "Registration number already exists. Please try again."
+    };
+}
+
+// NEW: Debug logging for sheet structure
+console.log('Checking current sheet structure...');
+const sheetCheckResponse = await fetch(sheetdbUrl);
+const sheetData = await sheetCheckResponse.json();
+console.log('Current sheet data sample:', sheetData.slice(0, 1));
+
+// NEW: Enhanced data structure with password support
+const registrationData = {
+    data: [{
+        // ... all fields ...
+        password: formData.password || formData.generatedPassword || '',
+        status: formData.status || 'Pending'  // Changed default from 'Denied' to 'Pending'
+    }]
+};
+
+// NEW: Comprehensive response debugging
+console.log('Data being sent to SheetDB:', registrationData);
+console.log('SheetDB response status:', addResponse.status);
+console.log('SheetDB response data:', responseData);
+```
+
+---
+
+### 5. Branch Merge Summary
+
+**Merged From:** `borromeobranch`  
+**Merged Into:** `react-migration`  
+**Merge Commit:** `dabfe1f`
+
+**Key Merged Features:**
+
+1. **User Dashboard (UserPage)**
+   - Dynamic user data fetching via `getCurrentUserData()`
+   - Real-time status display with color-coded badges
+   - Progress bar based on application status
+   - Help modal integration
+   - Logout functionality
+
+2. **Admin Dashboard (AdminPage)**
+   - Statistics cards (Total, Accepted, Pending, Rejected)
+   - Recharts bar chart visualization
+   - Status normalization across variants
+   - Real-time data fetching
+
+3. **Enhanced Login System**
+   - Email-based user authentication
+   - Admin modal login with React-Bootstrap
+   - "Remember Me" functionality for admins
+   - Dual storage strategy (session + local)
+   - Loading states and error messages
+
+4. **User API Module**
+   - `getCurrentUserData()` - Profile data fetching
+   - `logoutUser()` - Session cleanup
+   - Comprehensive error handling
+   - Debug logging throughout
+
+5. **Registration Improvements**
+   - Duplicate checking for registration numbers
+   - Default status changed to "Pending"
+   - Password field support
+   - Enhanced debugging capabilities
 
 ---
 

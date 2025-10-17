@@ -6,8 +6,18 @@ import "../assets/styles/adminpage.css";
 const AdminSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const currentPath = location.pathname;
+  /**
+   * @summary Current route path derived from location object.
+   * @remarks Used to compare against navigation items for active state management.
+   */
+  const currentPath = location.pathname; 
 
+  /**
+   * @summary Navigation items configuration for admin sidebar menu.
+   * @remarks
+   * Defines the structure, icons, and paths for all admin navigation options.
+   * Includes special handling for logout functionality with isLogout flag.
+   */
   const navItems = [
     {
       path: "/adminpage",
@@ -27,6 +37,13 @@ const AdminSidebar = () => {
     },
   ];
 
+  /**
+   * @summary Handles admin logout process with session cleanup.
+   * 
+   * @remarks
+   * Removes admin authentication tokens from both session and local storage.
+   * Redirects to home page with replace option to prevent back navigation.
+   */
   const handleLogout = () => {
     sessionStorage.removeItem("adminLoggedIn");
     localStorage.removeItem("adminLoggedIn");

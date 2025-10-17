@@ -6,14 +6,27 @@ import { Link, useNavigate } from "react-router-dom";
 import { submitRegistration } from "../../api/registrationApi";
 
 export default function Register() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false); /** @summary Form submission loading state for registration process. */
+  const [submitMessage, setSubmitMessage] = useState(''); /** @summary Form submission status message for user feedback. */
   const navigate = useNavigate();
 
-  //File input refs
-  const identityRef = useRef(null);
-  const disabilityRef = useRef(null);
+  /** File input refs: @remarks Provides direct access to the identity proof file input for validation and file name retrieval. */
+  const identityRef = useRef(null); /** @summary File input reference for identity document upload. */
+  const disabilityRef = useRef(null); /** @summary File input reference for disability document upload. */
 
+  /**
+   * @summary Handles registration form submission with comprehensive data processing.
+   * 
+   * @param {Event} event - Form submission event object.
+   * @returns {Promise<void>}
+   * 
+   * @throws {Error} Throws error if API submission fails or form validation errors occur.
+   * 
+   * @remarks
+   * Manually collects form data to ensure all fields are captured properly, including radio buttons.
+   * Generates registration number, date, and temporary password automatically.
+   * Includes file name storage and session persistence for result page display.
+   */
   //Handle form submit with API integration
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -118,6 +131,18 @@ export default function Register() {
     }
   };
 
+  /**
+   * @summary Updates file input button text and styling based on selected file.
+   * 
+   * @param {Object} inputRef - React ref object pointing to the file input element.
+   * @param {string} buttonId - HTML ID of the button element to update.
+   * 
+   * @remarks
+   * Provides visual feedback by changing button text to show selected file name.
+   * Updates button styling to indicate successful file selection with checkmark icon.
+   * Supports both identity and disability document upload buttons.
+ */
+//Update file input button text and style based on selected file
   //Update file input button text and style based on selected file
   const updateFileName = (inputRef, buttonId) => {
     const fileInput = inputRef.current;
@@ -139,6 +164,17 @@ export default function Register() {
     }
   };
 
+  /**
+   * @summary Validates all required form fields and provides visual feedback.
+   * 
+   * @param {HTMLFormElement} form - The form element to validate.
+   * @returns {boolean} True if all required fields are valid, false otherwise.
+   * 
+   * @remarks
+   * Handles both standard input fields and radio button groups for disability/civil status.
+   * Applies Bootstrap validation classes (is-invalid/is-valid) for visual feedback.
+   * Supports checkbox, radio, and standard input field validation.
+   */
   //Validate a form and return boolean (valid or invalid)
   const validateForm = (form) => {
     const requiredFields = form.querySelectorAll("[required]");
@@ -178,6 +214,15 @@ export default function Register() {
     return valid;
   };
 
+  /**
+   * @summary Generates a unique 12-digit numeric registration number.
+   * 
+   * @returns {string} 12-digit random number string for user identification.
+   * 
+   * @remarks
+   * Creates a unique identifier for each registration using random number generation.
+   * Used as the primary key for user records in the database system.
+   */
   //Generate random 12-digit registration number
   const generateRegistrationNumber = () => {
     let result = '';
@@ -187,6 +232,15 @@ export default function Register() {
     return result;
   };
 
+  /**
+   * @summary Generates an 8-digit numeric temporary password.
+   * 
+   * @returns {string} 8-digit random number string for temporary authentication.
+   * 
+   * @remarks
+   * Creates a simple numeric password for initial user login.
+   * Users are expected to change this password after first login for security.
+   */
   // Generate an 8-digit numeric password (characters 0-9)
   const generatePassword8 = () => {
     let p = '';
@@ -196,6 +250,16 @@ export default function Register() {
     return p;
   };
 
+
+  /**
+   * @summary Gets current date in YYYY-MM-DD format for registration.
+   * 
+   * @returns {string} Current date formatted as YYYY-MM-DD.
+   * 
+   * @remarks
+   * Used to timestamp registrations with the submission date.
+   * Ensures consistent date formatting across the application.
+   */
   //Get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
     const today = new Date();

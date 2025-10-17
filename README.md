@@ -37,20 +37,20 @@ This system is designed to:
   * `ReactJS`
   * `Bootstrap`
   * `HTML`/`CSS`/`JS` ***(Legacy)***
-  * [![Frontend](https://skillicons.dev/icons?i=react,bootstrap,html,css,js)](https://skillicons.dev)
+  [![Frontend](https://skillicons.dev/icons?i=react,bootstrap,html,css,js)](https://skillicons.dev)
 * **Backend:** 
   * `Laravel` ***(Not yet implemented)***
-  * [![Backend](https://skillicons.dev/icons?i=laravel,php)](https://skillicons.dev)
+  [![Backend](https://skillicons.dev/icons?i=laravel,php)](https://skillicons.dev)
 * **Database:** 
   * ***(Not yet implemented)***
-  * [![Database](https://skillicons.dev/icons?i=mysql)](https://skillicons.dev)
+  [![Database](https://skillicons.dev/icons?i=mysql)](https://skillicons.dev)
 * **Tools:** 
   * `Visual Studio Code` 
   * `Chrome DevTools`
   * `Markdown` for Documentation
   * `SheetDB` for Database API
   * `Postman` for API Testing
-  * [![Tools](https://skillicons.dev/icons?i=vscode,md,postman)](https://skillicons.dev)
+  [![Tools](https://skillicons.dev/icons?i=vscode,md,postman)](https://skillicons.dev)
 
 
 ## Prerequisites
@@ -149,10 +149,6 @@ git push origin feature/<short-descr>
 <!-- Grid of all contributors -->
 ![Contributors Grid](https://contrib.rocks/image?repo=Keonbe/PWD-Automated-Application-System)
 
-#### 🏆 Top Contributors to This Repo
-<!-- Pie chart showing who contributed most -->
-![Contribution Pie Chart](https://contrib.nn.ci/api?repo=Keonbe/PWD-Automated-Application-System&type=pie)
-
 ## Documentation Guide
 
 1. **Start Here:** Read `init-documentation.md` to understand the project structure
@@ -160,3 +156,11 @@ git push origin feature/<short-descr>
 3. **Set Up:** Follow the setup instructions in `init-documentation.md`
 4. **Learn APIs:** Review `api-documentation.md` to understand backend integration
 5. **Study Functions:** Read `function-documentation.md` to understand code patterns
+6. **Contribute:** Follow `contribution_guide-documentation.md` for contributing guidelines
+
+#### Documentation Links:
+
+- [Project Documentation Guide](documentation/init-documentation.md)
+- [API Documentation](documentation/api-documentation.md)
+- [Function Documentation](documentation/function-documentation.md)
+- [Contribution Guide](documentation/contribution_guide-documentation.md)

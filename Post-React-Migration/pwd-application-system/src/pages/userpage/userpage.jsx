@@ -7,19 +7,28 @@ import logo from '../../assets/images/dasma-logo-only.png';
 
 export default function UserPage() {
   const navigate = useNavigate();
-  const [isSidebarActive, setSidebarActive] = useState(false);
-  const [activeNav, setActiveNav] = useState(0);
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [isSidebarActive, setSidebarActive] = useState(false); /** @summary Mobile sidebar visibility state. @remarks Controls the collapsible sidebar on mobile devices using CSS classes. */
+  const [activeNav, setActiveNav] = useState(0); /** @summary Active navigation item index. @remarks Tracks which navigation item is currently active (Dashboard, Help, Logout). */
+  const [userData, setUserData] = useState(null); /** @summary User data state storing profile and application information. @remarks Holds the information of the logged-in user fetched from API or demo data fallback. */
+  const [loading, setLoading] = useState(true); /** @summary Loading state for API data fetch operations. @remarksShows loading spinner while user data is being retrieved from the API. */
+  const [error, setError] = useState(null); /** @summary Error state for API request failures. @remarks Holds any error messages related to user data fetching when API calls fail and triggers demo data fallback. */
 
-  // help modal refer: https://react-bootstrap.netlify.app/docs/components/modal/
-  // help modal useState
-  const [showHelpModal, setShowHelpModal] = useState(false);
+  // help modal useState refer: https://react-bootstrap.netlify.app/docs/components/modal/
+  const [showHelpModal, setShowHelpModal] = useState(false); /**  @summary Help modal visibility state for user assistance. @remarks Controls the display of the help information modal using React Bootstrap. */
   // modal handlers
-  const handleCloseHelpModal = () => setShowHelpModal(false);
-  const handleShowHelpModal = () => setShowHelpModal(true);
+  const handleCloseHelpModal = () => setShowHelpModal(false); /** @summary Closes the help modal dialog.  @remarks Handler function for modal close events and cancel actions. */
+  const handleShowHelpModal = () => setShowHelpModal(true); /** @summary Opens the help modal dialog. @remarks Triggered when user clicks the help navigation item or help button. */
 
+  /**
+   * @summary Computes status display information based on application status.
+   * 
+   * @param {string} status - The raw status value from user data.
+   * @returns {Object} Object containing display label, progress percentage, and CSS classes.
+   * 
+   * @remarks
+   * Maps backend status values to user-friendly labels and visual indicators.
+   * Supports three canonical statuses: pending, accepted, denied with fallback handling.
+   */
   //Compute display label, progress percent and css class based on stored status
   const getStatusInfo = (status) => {
     //Only accept the three canonical statuses: pending, accepted, denied
@@ -37,6 +46,13 @@ export default function UserPage() {
     return { label: status || 'Unknown', percent: 0, badgeClass: 'status-neutral', fillClass: 'fill-neutral' };
   };
 
+  /**
+   * @summary Effect hook for loading user data on component mount.
+   * 
+   * @remarks
+   * Fetches current user data from API and handles authentication checks.
+   * Falls back to demo data if API requests fail for development continuity.
+   */
   // Fetch user data on mount
   useEffect(() => {
     const loadUserData = async () => {
@@ -76,6 +92,15 @@ export default function UserPage() {
     loadUserData();
   }, [navigate]);
 
+  /**
+   * @summary Provides demo user data for development and fallback scenarios.
+   * 
+   * @returns {Object} Complete user data object with sample values.
+   * 
+   * @remarks
+   * Used when API is unavailable or during development testing.
+   * Mirrors the exact data structure expected from the live API.
+   */
   const getDemoUserData = () => {
     return {
       // Use same formats as register.jsx: 12-digit numeric regNumber and YYYY-MM-DD dates
@@ -115,6 +140,15 @@ export default function UserPage() {
     };
   };
 
+  /**
+   * @summary Handles navigation item clicks with associated actions.
+   * 
+   * @param {number} index - The index of the clicked navigation item.
+   * 
+   * @remarks
+   * Manages sidebar state for mobile and triggers appropriate actions for each nav item.
+   * Closes mobile sidebar automatically after navigation selection.
+   */
   const handleNavClick = (index) => {
     setActiveNav(index);
     if (isSidebarActive) {
@@ -135,12 +169,25 @@ export default function UserPage() {
     }
   };
 
+  /**
+   * @summary Displays help information to the user.
+   * 
+   * @remarks
+   * Opens the help modal with application guidance and support information.
+   */
   const showHelp = () => {
     // Show help modal or page
     handleShowHelpModal();
     //alert('Help information will be displayed here.');
   };
 
+  /**
+   * @summary Handles user logout and session cleanup.
+   * 
+   * @remarks
+   * Clears authentication data and redirects to login page.
+   * Includes error handling to ensure logout completes even if errors occur.
+   */
   const handleLogout = async () => {
     try {
       console.log('[UserPage] Logging out...');
@@ -153,6 +200,13 @@ export default function UserPage() {
     }
   };
 
+  /**
+   * @summary Navigation items configuration for sidebar menu.
+   * 
+   * @remarks
+   * Defines the structure and icons for the main navigation menu.
+   * Used to generate the sidebar navigation links dynamically.
+   */
   const navItems = [
     { icon: 'fas fa-home', text: 'Dashboard' },
     { icon: 'fas fa-question-circle', text: 'Help' },
