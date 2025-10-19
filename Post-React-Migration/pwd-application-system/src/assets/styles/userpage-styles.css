@@ -3,6 +3,8 @@
   font-family: system-ui, -apple-system, sans-serif;
   background-color: #f5f5f5;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Header */
@@ -11,6 +13,7 @@
   color: white;
   padding: 1rem 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
 }
 
 .user-dashboard-header h1 {
@@ -31,7 +34,7 @@
 /* Layout */
 .user-app-container {
   display: flex;
-  min-height: calc(100vh - 60px);
+  min-height: 100vh;
 }
 
 /* Sidebar */
@@ -40,6 +43,11 @@
   background-color: white;
   border-right: 1px solid #e0e0e0;
   padding: 1.5rem 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
   transition: left 0.3s;
 }
 
@@ -269,13 +277,39 @@
   }
 
   .user-sidebar {
+    position: fixed;
+    left: -250px;
+    top: 60px;
+    height: calc(100vh - 60px);
+    width: 250px;
     z-index: 1099;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+    transition: left 0.3s ease;
   }
 
-  /* Ensure the sidebar itself can scroll independently */
-  .user-sidebar, .user-sidebar-active {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+  .user-sidebar-active {
+    left: 0;
+  }
+
+  .user-app-container {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .user-mobile-menu-btn {
+    display: block;
+  }
+
+  .user-main-content {
+    padding: 1rem;
+  }
+
+  .user-page-title {
+    font-size: 1.5rem;
+  }
+
+  .user-progress-steps {
+    font-size: 0.65rem;
   }
 }
 
@@ -345,35 +379,4 @@
 
 .user-overlay-active {
   display: block;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .user-sidebar {
-    position: fixed;
-    left: -250px;
-    top: 60px;
-    height: calc(100vh - 60px);
-    z-index: 1000;
-  }
-
-  .user-sidebar-active {
-    left: 0;
-  }
-
-  .user-mobile-menu-btn {
-    display: block;
-  }
-
-  .user-main-content {
-    padding: 1rem;
-  }
-
-  .user-page-title {
-    font-size: 1.5rem;
-  }
-
-  .user-progress-steps {
-    font-size: 0.65rem;
-  }
 }
