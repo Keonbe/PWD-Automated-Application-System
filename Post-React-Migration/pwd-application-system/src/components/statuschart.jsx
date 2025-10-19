@@ -11,7 +11,8 @@ import {
 } from "recharts";
 import { normalizeStatus, barColors } from "../utils/statusUtils";
 
-const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
+//const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
+const SHEETDB_URL = "https://sheetdb.io/api/v1/ljqq6umrhu60"; //Backup SheetsDB
 
 export default function StatusChart({
   chartData = null,

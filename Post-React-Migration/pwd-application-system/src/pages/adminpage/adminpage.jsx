@@ -5,7 +5,8 @@ import "../../assets/styles/adminpage.css";
 import StatusChart from "../../components/statuschart";
 import { normalizeStatus, barColors, getColor } from "../../utils/statusUtils";
 
-const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
+//const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
+const SHEETDB_URL ="https://sheetdb.io/api/v1/ljqq6umrhu60o"; //Backup SheetsDB
 
 const AdminPage = () => {
   const [applications, setApplications] = useState([]);
