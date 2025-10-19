@@ -12,44 +12,67 @@ import {
 
 const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
 
-export default function StatusChart() {
-  const [data, setData] = useState([]);
+export default function StatusChart({
+  chartData = null,
+  height = 400,
+  invert = false,
+}) {
+  const [data, setData] = useState(chartData || []);
 
-  // Define bar colors (keys are lowercase)
+  // Use the same color mapping as adminpage
   const barColors = {
-    approved: "#198754", // green
+    accepted: "#198754", // green
     pending: "#ffc107", // yellow
     rejected: "#dc3545", // red
-    unknown: "#6c757d", // grey
+    unknown: "#6c757d", // gray
+  };
+
+  const normalizeStatus = (status) => {
+    if (!status) return "unknown";
+    const s = String(status).trim().toLowerCase();
+    if (s.includes("accept")) return "accepted";
+    if (s.includes("pending") || s.includes("wait")) return "pending";
+    if (s.includes("reject") || s.includes("denied")) return "rejected";
+    return "unknown";
   };
 
   useEffect(() => {
+    // If chartData prop provided, use it and skip fetch
+    if (chartData) {
+      setData(chartData);
+      return;
+    }
+
     const fetchData = async () => {
       try {
-        const res = await fetch(SHEETDB_URL);
-        const rows = await res.json();
+        const response = await fetch(SHEETDB_URL);
+        const rows = await response.json();
 
-        // Count statuses
-        const counts = { approved: 0, pending: 0, rejected: 0, unknown: 0 };
+        // Normalize and count statuses
+        const counts = {};
         rows.forEach((row) => {
-          const status = (row.status || "unknown").trim().toLowerCase();
-          counts[status] = (counts[status] || 0) + 1;
+          const st = normalizeStatus(row.status);
+          counts[st] = (counts[st] || 0) + 1;
         });
 
-        // Convert counts to array for chart
-        const chartData = Object.entries(counts).map(([name, value]) => ({
-          name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize for display
-          value,
+        const chart = Object.entries(counts).map(([status, count]) => ({
+          name: status.charAt(0).toUpperCase() + status.slice(1),
+          Applications: count,
         }));
 
-        setData(chartData);
+        setData(chart);
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Error fetching chart data:", err);
       }
     };
 
     fetchData();
-  }, []);
+  }, [chartData]);
+
+  const legendItems = Object.keys(barColors).map((key) => ({
+    label: key.charAt(0).toUpperCase() + key.slice(1),
+    color: barColors[key],
+  }));
 
   return (
     <div
@@ -60,41 +83,67 @@ export default function StatusChart() {
         boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
         padding: "1.5em",
       }}>
-      <h6 className="mb-3 text-center">Application Status Overview</h6>
-      {data.length > 0 ? (
+      {data && data.length > 0 ? (
         <>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={height}>
             <BarChart
               data={data}
-              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
               <XAxis dataKey="name" />
               <YAxis allowDecimals={false} />
               <Tooltip />
-              <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-                {data.map((entry, index) => {
-                  const key = entry.name.toLowerCase();
-                  return (
-                    <Cell key={index} fill={barColors[key] || "#6c757d"} />
-                  );
-                })}
+              <Bar dataKey="Applications" radius={[10, 10, 0, 0]}>
+                {data.map((entry, index) => (
+                  <Cell
+                    key={index}
+                    fill={barColors[normalizeStatus(entry.name)] || "#6c757d"}
+                  />
+                ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
 
           <div
-            className="d-flex justify-content-center mt-2"
-            style={{ gap: "1.5em", fontSize: "0.9em" }}>
-            {data.map((entry) => {
-              const key = entry.name.toLowerCase();
-              return (
+            className="chart-legend d-flex justify-content-center mt-2"
+            style={{ gap: "1rem", flexWrap: "wrap", alignItems: "center" }}
+            role="list"
+            aria-label="Application status legend">
+            {legendItems.map((item) => (
+              <div
+                key={item.label}
+                role="listitem"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  color: invert ? "#fff" : "#212529",
+                  fontSize: "0.9rem",
+                }}>
                 <span
-                  key={entry.name}
-                  style={{ color: barColors[key] || "#6c757d" }}>
-                  ● {entry.name}
+                  aria-hidden="true"
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    background: item.color,
+                    display: "inline-block",
+                    boxShadow: invert
+                      ? "0 0 0 2px rgba(255,255,255,0.12) inset"
+                      : "none",
+                    border: invert
+                      ? "1px solid rgba(255,255,255,0.08)"
+                      : "none",
+                  }}></span>
+                <span
+                  style={{
+                    color: invert ? "#fff" : item.color,
+                    fontWeight: 500,
+                  }}>
+                  {item.label}
                 </span>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </>
       ) : (
