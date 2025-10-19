@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import { normalizeStatus, barColors } from "../utils/statusUtils";
 
 const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
 
@@ -19,22 +20,7 @@ export default function StatusChart({
 }) {
   const [data, setData] = useState(chartData || []);
 
-  // Use the same color mapping as adminpage
-  const barColors = {
-    accepted: "#198754", // green
-    pending: "#ffc107", // yellow
-    rejected: "#dc3545", // red
-    unknown: "#6c757d", // gray
-  };
-
-  const normalizeStatus = (status) => {
-    if (!status) return "unknown";
-    const s = String(status).trim().toLowerCase();
-    if (s.includes("accept")) return "accepted";
-    if (s.includes("pending") || s.includes("wait")) return "pending";
-    if (s.includes("reject") || s.includes("denied")) return "rejected";
-    return "unknown";
-  };
+  // normalizeStatus and barColors are imported from shared utils
 
   useEffect(() => {
     // If chartData prop provided, use it and skip fetch

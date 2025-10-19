@@ -3,6 +3,7 @@ import AdminSidebar from "../../components/adminsidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../assets/styles/adminpage.css";
 import StatusChart from "../../components/statuschart";
+import { normalizeStatus, barColors, getColor } from "../../utils/statusUtils";
 
 const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
 
@@ -17,13 +18,6 @@ const AdminPage = () => {
    * Provides consistent color coding across charts, badges, and status indicators.
    * Follows Bootstrap color conventions for intuitive status recognition.
    */
-  const barColors = {
-    accepted: "#198754", // green
-    pending: "#ffc107", // yellow
-    rejected: "#dc3545", // red
-    unknown: "#6c757d", // gray
-  };
-
   /**
    * @summary Normalizes application status values for consistent categorization.
    *
@@ -34,15 +28,6 @@ const AdminPage = () => {
    * Handles variations in status terminology from different data entry sources.
    * Ensures consistent grouping and color coding across the dashboard.
    */
-  const normalizeStatus = (status) => {
-    if (!status) return "unknown";
-    const s = status.trim().toLowerCase();
-    if (s.includes("accept")) return "accepted";
-    if (s.includes("pending") || s.includes("wait")) return "pending";
-    if (s.includes("reject") || s.includes("denied")) return "rejected";
-    return "unknown";
-  };
-
   /**
    * @summary Retrieves color code for a given application status.
    *
@@ -53,7 +38,7 @@ const AdminPage = () => {
    * Wrapper function that applies normalization before color lookup.
    * Used for dynamic styling of status badges and visual elements.
    */
-  const getColor = (status) => barColors[normalizeStatus(status)];
+  // getColor and normalizeStatus are imported from shared utils
 
   /**
    * @summary Effect hook for fetching and processing application data on component mount.
