@@ -21,7 +21,8 @@ export default function Login() {
     const [password, setPassword] = useState(''); /** @summary User password input state for login form. */
     const [adminEmail, setAdminEmail] = useState(''); /**  @summary Admin email input state for admin login modal. */
     const [adminPassword, setAdminPassword] = useState(''); /**  @summary Admin password input state for admin login modal. */
-    const [adminRemember, setAdminRemember] = useState(false); /** @summary Remember me toggle state for admin login persistence. */
+     /* Commented out adminRemember state to avoid triggering user form when admin modal is open. */
+     // const [adminRemember, setAdminRemember] = useState(false); /** @summary Remember me toggle state for admin login persistence. */
     const [loginMessage, setLoginMessage] = useState(''); /** @summary User login status message display state. */
     const [adminLoginMessage, setAdminLoginMessage] = useState(''); /**  @summary Admin login status message display state. */
     const [isLoading, setIsLoading] = useState(false); /**  @summary User login loading state for form submission. */
@@ -169,12 +170,9 @@ export default function Login() {
             const data = await response.json();
             
             if (data && data.length > 0) {
-                if (adminRemember) {
-                    localStorage.setItem("adminLoggedIn", adminEmail);
-                } else {
-                    sessionStorage.setItem("adminLoggedIn", adminEmail);
-                }
-                
+                // Default to session persistence for admin login to avoid unexpected background effects.
+                sessionStorage.setItem("adminLoggedIn", adminEmail);
+
                 setAdminLoginMessage('<div class="alert alert-success m-3 p-3">Admin login successful! Redirecting...</div>');
                 setTimeout(() => {
                     navigate('/adminpage', { replace: true });
@@ -311,6 +309,7 @@ export default function Login() {
                                     <div className="admin-section">
                                         <span className="small text-black">Are you an Admin?</span>
                                         <button 
+                                            type="button"
                                             className="small text-danger fw-semibold border-0 bg-transparent p-0"
                                             onClick={handleShowAdminModal}
                                         >
@@ -373,7 +372,9 @@ export default function Login() {
                                 onChange={(e) => setAdminPassword(e.target.value)}
                             />
                         </div>
-                        <div className="mb-3 form-check">
+                        {/* Admin "Remember me" checkbox removed from UI to avoid background user form interference.
+                            If persistence is required later, reintroduce with proper state and isolated behavior. */}
+                        {/* <div className="mb-3 form-check">
                             <input 
                                 type="checkbox" 
                                 className="form-check-input" 
@@ -382,7 +383,7 @@ export default function Login() {
                                 onChange={(e) => setAdminRemember(e.target.checked)}
                             />
                             <label className="form-check-label" htmlFor="adminRememberMe">Remember me</label>
-                        </div>
+                        </div> */}
                         <button 
                             type="submit" 
                             className="btn btn-success" 

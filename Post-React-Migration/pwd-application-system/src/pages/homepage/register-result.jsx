@@ -118,7 +118,7 @@ export default function RegisterResult() {
                     <p className="mb-1"><strong>Sex:</strong> {display('sex','—')}</p>
                     <p className="mb-1"><strong>Date of Birth:</strong> {display('dob','—')}</p>
                     <p className="mb-1"><strong>Emergency Contact:</strong> {display('emergencyName','—')} — {display('emergencyPhone','—')} ({display('emergencyRelationship','—')})</p>
-                    <p className="mb-0 text-muted small">This is a temporary client-side preview. No data has been submitted to a server.</p>
+                    {/* <p className="mb-0 text-muted small">This is a temporary client-side preview. No data has been submitted to a server.</p> */}
                   </div>
                 </div>
               </div>
