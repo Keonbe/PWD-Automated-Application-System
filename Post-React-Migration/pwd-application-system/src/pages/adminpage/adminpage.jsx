@@ -2,19 +2,11 @@ import React, { useEffect, useState } from "react";
 import AdminSidebar from "../../components/adminsidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../assets/styles/adminpage.css";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
+import StatusChart from "../../components/statuschart";
+import { normalizeStatus, barColors, getColor } from "../../utils/statusUtils";
 
-const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
+//const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
+const SHEETDB_URL ="https://sheetdb.io/api/v1/ljqq6umrhu60o"; //Backup SheetsDB
 
 const AdminPage = () => {
   const [applications, setApplications] = useState([]);
@@ -22,52 +14,36 @@ const AdminPage = () => {
 
   /**
    * @summary Color mapping configuration for status visualization.
-   * 
+   *
    * @remarks
    * Provides consistent color coding across charts, badges, and status indicators.
    * Follows Bootstrap color conventions for intuitive status recognition.
    */
-  const barColors = {
-    accepted: "#198754", // green
-    pending: "#ffc107", // yellow
-    rejected: "#dc3545", // red
-    unknown: "#6c757d", // gray
-  };
-
   /**
    * @summary Normalizes application status values for consistent categorization.
-   * 
+   *
    * @param {string} status - Raw status value from application data.
    * @returns {string} Normalized status: 'accepted', 'pending', 'rejected', or 'unknown'.
-   * 
+   *
    * @remarks
    * Handles variations in status terminology from different data entry sources.
    * Ensures consistent grouping and color coding across the dashboard.
    */
-  const normalizeStatus = (status) => {
-    if (!status) return "unknown";
-    const s = status.trim().toLowerCase();
-    if (s.includes("accept")) return "accepted";
-    if (s.includes("pending") || s.includes("wait")) return "pending";
-    if (s.includes("reject") || s.includes("denied")) return "rejected";
-    return "unknown";
-  };
-
   /**
    * @summary Retrieves color code for a given application status.
-   * 
+   *
    * @param {string} status - Application status value.
    * @returns {string} Hexadecimal color code for the status.
-   * 
+   *
    * @remarks
    * Wrapper function that applies normalization before color lookup.
    * Used for dynamic styling of status badges and visual elements.
    */
-  const getColor = (status) => barColors[normalizeStatus(status)];
+  // getColor and normalizeStatus are imported from shared utils
 
   /**
    * @summary Effect hook for fetching and processing application data on component mount.
-   * 
+   *
    * @remarks
    * Retrieves all applications from API, normalizes status values, and prepares data for visualization.
    * Handles data transformation for both display and analytical purposes.
@@ -126,7 +102,7 @@ const AdminPage = () => {
 
   /**
    * @summary Legend configuration for status color coding visualization.
-   * 
+   *
    * @remarks
    * Provides label-color mappings for charts, legends, and status explanation components.
    * Used to generate consistent status legends across the dashboard interface.
@@ -173,38 +149,7 @@ const AdminPage = () => {
 
         <section className="chart-card">
           <h5>Application Status Overview</h5>
-          {statusData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart
-                data={statusData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                <XAxis dataKey="name" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="Applications" radius={[10, 10, 0, 0]}>
-                  {statusData.map((entry, index) => (
-                    <Cell
-                      key={index}
-                      fill={barColors[normalizeStatus(entry.name)] || "#6c757d"}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <p className="text-center text-muted">Loading chart data...</p>
-          )}
-          <div
-            className="chart-legend d-flex justify-content-center mt-2"
-            style={{ gap: "1.5rem" }}>
-            {legendItems.map((item) => (
-              <span key={item.label} style={{ color: item.color }}>
-                ● {item.label}
-              </span>
-            ))}
-          </div>
+          <StatusChart chartData={statusData} />
         </section>
 
         <section className="table-card">

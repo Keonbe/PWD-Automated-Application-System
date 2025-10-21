@@ -4,7 +4,8 @@ import AdminSidebar from "../../components/adminsidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../assets/styles/adminpage.css";
 
-const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
+//const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
+const SHEETDB_URL ="https://sheetdb.io/api/v1/ljqq6umrhu60o"; //Backup SheetsDB
 
 const AdminVerify = () => {
   const navigate = useNavigate();

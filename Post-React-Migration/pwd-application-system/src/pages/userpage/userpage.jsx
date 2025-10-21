@@ -4,6 +4,7 @@ import { getCurrentUserData, logoutUser } from "../../api/userApi";
 import { useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import logo from '../../assets/images/dasma-logo-only.png';
+import UserSidebar from '../../components/usersidebar';
 
 export default function UserPage() {
   const navigate = useNavigate();
@@ -200,18 +201,7 @@ export default function UserPage() {
     }
   };
 
-  /**
-   * @summary Navigation items configuration for sidebar menu.
-   * 
-   * @remarks
-   * Defines the structure and icons for the main navigation menu.
-   * Used to generate the sidebar navigation links dynamically.
-   */
-  const navItems = [
-    { icon: 'fas fa-home', text: 'Dashboard' },
-    { icon: 'fas fa-question-circle', text: 'Help' },
-    { icon: 'fas fa-sign-out-alt', text: 'Logout' }
-  ];
+
 
   // Show loading state
   if (loading) {
@@ -293,31 +283,12 @@ export default function UserPage() {
 
       <div className="user-app-container">
         {/* Sidebar */}
-        <aside className={`user-sidebar ${isSidebarActive ? 'user-sidebar-active' : ''}`}>
-          <div className="user-info">
-            <div className="user-avatar">
-              <i className="fas fa-user"></i>
-            </div>
-            <div className="user-name">{userData.firstName} {userData.lastName}</div>
-            <span className="user-status">{userData.status}</span>
-          </div>
-
-          <ul className="user-nav-menu">
-            {navItems.map((item, index) => (
-              <li key={index} className="user-nav-item">
-                <button
-                  type="button"
-                  className={`user-nav-link ${activeNav === index ? 'user-nav-link-active' : ''}`}
-                  onClick={() => handleNavClick(index)}
-                  aria-pressed={activeNav === index}
-                >
-                  <i className={item.icon} aria-hidden="true"></i>
-                  <span>{item.text}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </aside>
+        <UserSidebar 
+          userData={userData}
+          activeNav={activeNav}
+          isSidebarActive={isSidebarActive}
+          onNavClick={handleNavClick}
+        />
 
         {/* Main Content */}
         <main className="user-main-content">

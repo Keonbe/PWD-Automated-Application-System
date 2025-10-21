@@ -5,6 +5,9 @@
 - [Merging to Main](#merging-to-main)
 - [Pull Request Workflow](#pull-request-workflow)
 - [Merge Conflict Resolution](#merge-conflict-resolution)
+- [Best Practices for Collaboration](#best-practices-for-collaboration)
+- [Troubleshooting](#troubleshooting)
+- [Pull Request Template](#pull-request-template)
 
 ---
 
@@ -270,3 +273,163 @@ git push origin main
 git remote -v
 git remote set-url origin https://github.com/username/repo.git
 ```
+---
+
+
+# Pull Request Template
+
+### PR Template Overview
+
+Our project uses a standardized PR template to ensure consistent and thorough code reviews. Below is the complete template with explanations for each section.
+
+### Complete PR Template
+
+```markdown
+# Pull Request Template
+
+## Summary
+<!-- Provide a 1-2 sentence overview of the changes -->
+
+## Changes Made
+<!-- Detailed description of what was changed -->
+
+### What was added/removed/changed:
+- [List specific changes]
+- [Use bullet points]
+- [Include file paths if helpful]
+
+## Analysis
+<!-- Technical reasoning behind changes -->
+
+**Code Impact:**
+- [How changes affect existing codebase]
+
+**Dependencies:**
+- [New dependencies or changes to existing ones]
+
+**References:**
+- [Related files, components, or systems]
+
+## Testing
+<!-- Verification methods used -->
+- [ ] Unit tests updated/added
+- [ ] Integration tests passing
+- [ ] Manual testing performed
+- [ ] All existing tests pass
+
+## Screenshots/Evidence
+<!-- Visual proof of changes if applicable -->
+
+## Impact Assessment
+### ✅ Positive Impacts
+- [Benefits of these changes]
+
+### ⚠️ Potential Concerns
+- [Any risks or considerations]
+
+### 🔒 Breaking Changes
+- [ ] Yes (describe)
+- [ ] No
+
+## Documentation
+- [ ] README updated
+- [ ] Code comments added/updated
+- [ ] init-documentation documentation updated
+- [ ] API documentation updated
+- [ ] Function documentation updated
+- [ ] No documentation needed
+
+## Deployment Notes
+<!-- Special deployment requirements -->
+```
+
+### Best Practices
+
+#### Branch Naming Convention 
+```
+feature/user-authentication
+bugfix/login-error
+hotfix/critical-bug
+release/v1.2.0
+docs/readme-update
+refactor/auth-service
+```
+
+#### Commit Message Guidelines
+```
+feat: add user login functionality
+fix: resolve navbar rendering issue
+docs: update API documentation
+style: format code with prettier
+refactor: simplify authentication logic
+test: add login component tests
+chore: update dependencies
+```
+
+#### Code Review Checklist
+- [ ] Code follows project style guidelines
+- [ ] No sensitive data exposed
+- [ ] Error handling implemented
+- [ ] Performance considerations addressed
+- [ ] Documentation updated if needed
+- [ ] Tests are comprehensive and passed
+
+### PR Workflow
+
+#### 1. Pre-Submission Checklist
+- Rebase onto latest main branch
+- Run all tests locally
+- Update documentation if needed
+- Ensure commit history is clean
+
+#### 2. Submission
+- Fill out all relevant sections in PR template
+- Assign appropriate reviewers
+- Link related issues
+- Add relevant labels
+
+#### 3. Review Process
+- Address reviewer comments promptly
+- Update PR description if changes made
+- Keep conversations (via comments) focused and constructive
+
+#### 4. Post-Merge
+- Delete feature branch (if applicable, after confirming no further work is needed and after merge - Communicate first before deleting a branch)
+- Verify deployment if auto-deployed
+- Update related documentation
+
+### Example PR Sections
+
+#### Good Summary Example:
+```
+This PR refactors the authentication service to use JWT tokens instead of session cookies, improving security and enabling stateless authentication.
+```
+
+#### Good Changes Made Example:
+```
+- Replaced session-based auth with JWT in AuthService.js
+- Updated login component to handle token storage
+- Added token refresh mechanism
+- Removed session middleware from server
+```
+
+#### Good Analysis Example:
+```
+**Code Impact:** Changes affect login flow and API authentication
+**Dependencies:** Added jsonwebtoken library, removed express-session
+**References:** Impacts UserContext, API middleware, and all protected routes
+```
+
+#### Labels to Use
+- `feature` - New functionality
+- `bugfix` - Bug resolution
+- `hotfix` - Critical production fix
+- `documentation` - Docs updates
+- `refactor` - Code improvements
+- `tests` - Test-related changes
+
+#### Review Expectations
+- Reviews should be completed within 24-36 hours
+- Use suggestion blocks for minor changes
+- Be specific about required vs. optional changes
+- Keep feedback constructive and technical
