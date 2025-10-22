@@ -230,7 +230,7 @@ export default function Login() {
                                 </p>
 
                                 {/* Username */}
-                                <div className="form-group mb-3">
+                                <div className="form-group">
                                     <label htmlFor="username" className="form-label">Username</label>
                                     <div className="input-group">
                                         <span className="input-group-text" id="username-addon" aria-hidden="true">
@@ -252,7 +252,7 @@ export default function Login() {
                                 </div>
 
                                 {/* Password */}
-                                <div className="form-group mb-3">
+                                <div className="form-group">
                                     <label htmlFor="password" className="form-label">Password</label>
                                     <div className="input-group">
                                         <span className="input-group-text" id="password-addon" aria-hidden="true">

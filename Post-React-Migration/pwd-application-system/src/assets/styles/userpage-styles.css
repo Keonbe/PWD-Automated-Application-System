@@ -20,12 +20,15 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  display: flex;
+  align-items: center;
 }
 
 .user-dashboard-header h1 {
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
+  line-height: 1.2;
 }
 
 .user-mobile-menu-btn {
@@ -132,14 +135,17 @@
 
 /* Header logo image */
 .user-header-logo {
-  width: 60px;
-  height: 60px;
+  width: 2.75rem; /* ~44px */
+  height: 2.75rem;
   border-radius: 5px;
+  flex-shrink: 0;
 }
 
 /* Align logo and title */
 .user-dashboard-header h1 {
   margin-left: 1rem;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 /* Main Content */
@@ -321,6 +327,41 @@
     left: 0;
     right: 0;
     z-index: 1001;
+  }
+
+  /* header spacing */
+  .user-dashboard-header .container-fluid {
+    padding: 0.65rem 1rem;
+  }
+
+  .user-dashboard-header .user-header-logo {
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+  }
+
+  .user-dashboard-header h1 {
+    font-size: 1.1rem; 
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.2;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  /* Left flex group alignment */
+  .user-dashboard-header .d-flex.align-items-center {
+    gap: 0.5rem;
+    align-items: center;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+
+  /* Menu button alignment */
+  .user-mobile-menu-btn {
+    flex-shrink: 0;
+    padding: 0.5rem;
+    font-size: 1.25rem;
   }
 
   .user-sidebar {

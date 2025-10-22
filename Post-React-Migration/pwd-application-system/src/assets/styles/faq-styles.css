@@ -58,25 +58,6 @@ body{
     outline: 2px solid var(--dasma-gold);
 }
 
-/* Modified Template Code from - Code above replaced this code
-https://www.bootdey.com/snippets/view/Faqs-frequently-asked-questions-with-tabs#html 
-.nav-tabs-custom .nav-item .nav-link.active {
-    color: var(--dasma-green);
-    font-weight: 600;
-}
-
-.nav-tabs-custom .nav-item .nav-link:hover {
-    color: var(--dasma-green);
-}
-.nav-tabs-custom .nav-item .nav-link {
-    border: none;
-    color: var(--dasma-dark);
-    font-weight: 500;
-    position: relative;
-    background: transparent;
-    transition: color 0.3s ease;
-}*/
-
 .text-muted {
     color: #8ca3bd!important;
 }

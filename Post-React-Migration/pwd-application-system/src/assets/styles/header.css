@@ -113,7 +113,7 @@
     }
 }
 
-/* Mobile navbar collapsed menu alignment */
+/* Mobile navbar collapsed menu */
 @media (max-width: 991.98px) {
     .navbar-collapse {
         text-align: left;

@@ -2,8 +2,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;  /* allow wrapping on smaller screens */
-    gap: 0.75rem;  /* consistent spacing between buttons */
+    flex-wrap: wrap;
+    gap: 0.75rem;
     padding: 1rem;
 }
 

@@ -92,7 +92,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* Responsive map embed - keeps aspect ratio and scales to container */
+/* Responsive map embed */
 .map-embed {
     position: relative;
     width: 100%;
@@ -115,9 +115,8 @@ body {
     border: 0;
 }
 
-/* Smaller height on very small screens for better fit */
 @media (max-width: 480px) {
     .map-embed {
-        padding-bottom: 90%; /* slightly taller on very narrow screens */
+        padding-bottom: 90%;
     }
 }
