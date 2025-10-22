@@ -234,3 +234,51 @@ body {
 .form-group-enhanced {
     margin-bottom: 1.5rem;
 }
+
+/* Ensure sample images are centered and scale correctly on all viewports */
+.sample-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Narrow screens: apply stacking/centering rules just below 720px */
+@media (max-width: 720px) {
+    /* Stack the submit/cancel buttons and make them full width to avoid overflow */
+    .form-section.text-center .d-flex {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-section.text-center .d-flex .btn {
+        width: 100%;
+        padding-left: 1rem; /* reduce very large horizontal padding */
+        padding-right: 1rem;
+        box-sizing: border-box;
+        font-size: 1rem;
+    }
+
+    .form-section.text-center .d-flex .btn + .btn {
+        margin-top: 0.5rem;
+    }
+
+    /* Reduce upload section padding slightly to give more room */
+    .upload-section {
+        padding: 1rem;
+    }
+
+    /* Make upload buttons a bit smaller so they don't push layout */
+    .upload-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    /* Ensure any text-centric containers center their contents */
+    .upload-section, .upload-section p, .upload-section img {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
