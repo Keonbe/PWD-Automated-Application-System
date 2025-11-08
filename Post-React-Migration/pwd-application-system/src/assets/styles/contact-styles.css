@@ -91,3 +91,32 @@ body {
     background-color: var(--dasma-dark-green);
     transform: translateY(-2px);
 }
+
+/* Responsive map embed */
+.map-embed {
+    position: relative;
+    width: 100%;
+    /* 4:3 aspect ratio */
+    padding-bottom: 75%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.map-embed iframe,
+.map-embed embed,
+.map-embed object {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+@media (max-width: 480px) {
+    .map-embed {
+        padding-bottom: 90%;
+    }
+}

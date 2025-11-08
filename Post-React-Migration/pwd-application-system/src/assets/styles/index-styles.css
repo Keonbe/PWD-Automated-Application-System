@@ -14,7 +14,8 @@ body {
     background-color: #f5f5f5;
 }
 
-
+/*  Universal Styles: Above
+    Dedicated Styles: Below */
 
 /* Hero Section */
 .hero {
@@ -161,7 +162,7 @@ body {
     }
 }
 
-/* Tablets and small desktops: From 768px(iPad Mini) to 1080px(Nest Hub) */
+/* Tablets and small desktops */
 @media (max-width: 1080px) and (min-width: 768px) {
     .hero-image {
         max-width: 90%;

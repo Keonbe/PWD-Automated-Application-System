@@ -1,15 +1,14 @@
 body { 
     background: #F8F8FF; 
 }
-.brand-logo {  /* Image style */
+.brand-logo {
     width:75px; 
     height:75px; 
-    object-fit:cover;
     object-fit: cover;
     border-radius: 6px;
     display: inline-block;
 }
-.login-section { /* Centering the main login form */
+.login-section {
     min-height: 80vh; 
 }
 .card { 
@@ -21,13 +20,13 @@ body {
     -webkit-box-shadow: 1px 2px 24px -4px rgba(0,0,0,0.87);
     -moz-box-shadow: 1px 2px 24px -4px rgba(0,0,0,0.87);
 }
-.assist-desc a {  /* Assistance Style */
+.assist-desc a {
     text-decoration: none; 
     color: inherit; 
     font-weight:600; 
 }
 
-/* Register & Admin Links Style */
+/* Register & Admin Links */
 #register-admin-links {
     margin-top: 1rem;
     padding-top: 1rem;
@@ -38,12 +37,11 @@ body {
     text-decoration: none; 
 }
 
-#footer-links a {  /* Footer Links Style */
+#footer-links a {
     text-decoration: none; 
     color: inherit; 
 }
 
-/* Desktop/Tablet */
 @media (min-width: 576px) {
     #register-admin-links {
         display: flex !important;
@@ -59,7 +57,6 @@ body {
     }
 }
 
-/* Mobile */
 @media (max-width: 575.98px) {
     #register-admin-links {
         display: flex !important;
@@ -72,9 +69,23 @@ body {
         width: 100%;
         text-align: left;
     }
+    
+    #register-admin-links span {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+    }
+    
+    #register-admin-links > div {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    
+    #register-admin-links > div:last-child {
+        border-bottom: none;
+    }
 }
 
-/* Link sections styling */
 #register-admin-links > div {
     display: flex;
     align-items: center;
@@ -98,20 +109,77 @@ body {
     text-decoration: underline;
 }
 
-@media (max-width: 575.98px) {
-    #register-admin-links span {
-        display: block;
-        margin-bottom: 0.25rem;
-        margin-right: 0;
-        font-weight: 500;
+/* Input Group */
+.input-group {
+    display: flex;
+    width: 100%;
+}
+
+.input-group-text {
+    /* hide icon box so inputs have full borders across all sizes */
+    display: none !important;
+}
+
+.input-group .form-control {
+    flex: 1;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem !important;
+    padding: 0.625rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    /* ensure no abrupt gap where icon used to be */
+    margin: 0 !important;
+}
+
+.input-group .form-control:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+    outline: 0;
+    z-index: 3;
+}
+
+.input-group:focus-within .input-group-text {
+    border-color: #198754;
+}
+
+.input-group-text i {
+    font-size: 1.1rem;
+    color: #495057;
+}
+
+/* Form Spacing */
+#loginForm .form-group {
+    margin-bottom: 1rem;
+}
+
+#loginForm .form-label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    display: block;
+}
+
+/* Mobile - Hide icons and extend inputs to full width */
+@media (max-width: 690px) {
+    .input-group-text {
+        display: none !important;
     }
     
-    #register-admin-links > div {
-        padding: 0.5rem 0;
-        border-bottom: 1px solid #f8f9fa;
+    .input-group .form-control {
+        border: 1px solid #dee2e6 !important;
+        border-radius: 0.375rem !important;
+        font-size: 16px !important; 
     }
     
-    #register-admin-links > div:last-child {
-        border-bottom: none;
+    #loginForm .form-label {
+        font-size: 0.95rem;
+    }
+}
+
+/* Tablet and larger - Keep icons visible */
+@media (min-width: 691px) {
+    .input-group .form-control {
+        font-size: 1rem;
     }
 }

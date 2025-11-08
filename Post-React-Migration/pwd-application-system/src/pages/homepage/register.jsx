@@ -363,7 +363,6 @@ export default function Register() {
               Full Name
             </label>
             <div className="input-group">
-              <span className="input-group-text bg-light">Name Format</span>
               <input
                 type="text"
                 name="lastName"

@@ -71,18 +71,18 @@ export default function Contact() {
                     </div>
                 </div>
 
-                <div className="aos-item" data-aos="fade-up" data-aos-delay="800">
-                    <div className="mt-4 w-100 aos-item__inner"> {/* Google Map Embed: Satellite */}
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7429.297414415808!2d120.9539612336753!3d14.331711743606277!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397d5007ca6431d%3A0x93afca2e48b83877!2sDasmari%C3%B1as%20City%20Hall!5e1!3m2!1sen!2sph!4v1759673542488!5m2!1sen!2sph" 
-                        width="600" 
-                        height="450" 
-                        style={{ border: 0 }}
-                        allowFullScreen
-                        loading="lazy" 
-                        referrerpolicy="no-referrer-when-downgrade"
-                    ></iframe>
-                    </div>
-                </div>
+                                <div className="aos-item" data-aos="fade-up" data-aos-delay="800">
+                                        <div className="mt-4 w-100 aos-item__inner"> {/* Google Map Embed: Satellite */}
+                                        <div className="map-embed">
+                                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7429.297414415808!2d120.9539612336753!3d14.331711743606277!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397d5007ca6431d%3A0x93afca2e48b83877!2sDasmari%C3%B1as%20City%20Hall!5e1!3m2!1sen!2sph!4v1759673542488!5m2!1sen!2sph" 
+                                                title="Dasmariñas City Hall map"
+                                                allowFullScreen
+                                                loading="lazy" 
+                                                referrerPolicy="no-referrer-when-downgrade"
+                                            ></iframe>
+                                        </div>
+                                        </div>
+                                </div>
                 </div>
 
                 {/* Contact Form */}

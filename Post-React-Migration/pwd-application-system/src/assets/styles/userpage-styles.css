@@ -1,5 +1,6 @@
 /* User Dashboard Styles - Scoped with user- prefix */
 .user-dashboard-wrapper {
+  --user-header-height: 64px; /* adjustable header height to prevent overlap */
   font-family: system-ui, -apple-system, sans-serif;
   background-color: #f5f5f5;
   min-height: 100vh;
@@ -11,18 +12,23 @@
 .user-dashboard-header {
   background-color: #2d7c2f;
   color: white;
-  padding: 1rem 0;
+  /* ensure header height is predictable so content can be offset when header is fixed */
+  min-height: var(--user-header-height);
+  padding: 0 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
   position: sticky;
   top: 0;
   z-index: 1000;
+  display: flex;
+  align-items: center;
 }
 
 .user-dashboard-header h1 {
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
+  line-height: 1.2;
 }
 
 .user-mobile-menu-btn {
@@ -129,14 +135,17 @@
 
 /* Header logo image */
 .user-header-logo {
-  width: 60px;
-  height: 60px;
+  width: 2.75rem; /* ~44px */
+  height: 2.75rem;
   border-radius: 5px;
+  flex-shrink: 0;
 }
 
 /* Align logo and title */
 .user-dashboard-header h1 {
   margin-left: 1rem;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 /* Main Content */
@@ -174,8 +183,10 @@
 }
 
 .user-info-row {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  column-gap: 1rem;
+  align-items: start;
   padding: 0.75rem 0;
   border-bottom: 1px solid #f0f0f0;
 }
@@ -187,10 +198,33 @@
 .user-info-label {
   color: #666;
   font-size: 0.875rem;
+  line-height: 1.2;
+  word-break: break-word; /* allow long labels to wrap */
+  hyphens: auto;
 }
 
 .user-info-value {
   font-weight: 600;
+  word-break: break-word; /* allow long values to wrap instead of overflowing */
+  overflow-wrap: anywhere;
+  min-width: 0; /* allow flex/grid children to shrink correctly */
+}
+
+/* Make label/value stack on small screens to avoid breaking layout */
+@media (max-width: 600px) {
+  .user-info-row {
+    grid-template-columns: 1fr;
+    row-gap: 0.25rem;
+  }
+
+  .user-info-label {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .user-info-value {
+    font-weight: 600;
+  }
 }
 
 /* Progress Bar */
@@ -282,8 +316,9 @@
     z-index: 1100;
   }
 
+  /* When header is fixed on small screens, offset the wrapper by the header height */
   .user-dashboard-wrapper {
-    padding-top: 60px;
+    padding-top: var(--user-header-height);
   }
 
   .user-dashboard-header {
@@ -292,6 +327,41 @@
     left: 0;
     right: 0;
     z-index: 1001;
+  }
+
+  /* header spacing */
+  .user-dashboard-header .container-fluid {
+    padding: 0.65rem 1rem;
+  }
+
+  .user-dashboard-header .user-header-logo {
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+  }
+
+  .user-dashboard-header h1 {
+    font-size: 1.1rem; 
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.2;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  /* Left flex group alignment */
+  .user-dashboard-header .d-flex.align-items-center {
+    gap: 0.5rem;
+    align-items: center;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+
+  /* Menu button alignment */
+  .user-mobile-menu-btn {
+    flex-shrink: 0;
+    padding: 0.5rem;
+    font-size: 1.25rem;
   }
 
   .user-sidebar {
@@ -304,7 +374,7 @@
     z-index: 1099;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
     transition: left 0.3s ease;
-    padding-top: calc(1.5rem + 60px);
+    padding-top: calc(1.5rem + var(--user-header-height));
     align-self: stretch; /* Ensure sidebar stretches full height */
   }
 
