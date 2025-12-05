@@ -64,27 +64,56 @@ This React-based frontend (located in `Post-React-Migration/pwd-application-syst
     - `registrationApi.js` — handles registration submissions.
     - `userApi.js` — handles user operations such as login and status checks.
   - Typical flow: a page/component collects form inputs -> calls a function from `src/api/*` -> that function performs an HTTP request (to SheetDB or a future backend) -> the component reads the response and updates UI/state or navigates to a result page.
+- Backend:
+  - The backend is not yet implemented. Currently, the app uses [SheetDB](https://sheetdb.io/) as a temporary backend to store registration data in Google Sheets.
+  - In future phases, a PHP + MySQL backend using XAMPP with AXIOS will be developed to replace SheetDB for better performance and security.
 
 ## Tech Stack
-* **Frontend:** 
-  * `ReactJS`
-  * `Bootstrap`
-  * `HTML`/`CSS`/`JS` ***(Legacy)***
-  [![Frontend](https://skillicons.dev/icons?i=react,bootstrap,html,css,js)](https://skillicons.dev)
-* **Backend:** 
-  * `Laravel` ***(Not yet implemented)***
-  [![Backend](https://skillicons.dev/icons?i=laravel,php)](https://skillicons.dev)
-* **Database:** 
-  * ***(Not yet implemented)***
-  [![Database](https://skillicons.dev/icons?i=mysql)](https://skillicons.dev)
-* **Tools:** 
-  * `Visual Studio Code` 
-  * `Chrome DevTools`
-  * `Markdown` for Documentation
-  * `SheetDB` for Database API
-  * `Postman` for API Testing
-  [![Tools](https://skillicons.dev/icons?i=vscode,md,postman)](https://skillicons.dev)
+## Tech Stack
 
+- **Frontend:**
+  <p align="left">
+    <img src="https://skillicons.dev/icons?i=react,bootstrap,html,css,js" alt="Last Commit">
+  </p>
+
+  - `ReactJS`
+  - `Bootstrap`
+  - `HTML`/`CSS`/`JS` ***(Legacy)***
+
+  <br>
+
+- **Backend:**
+  <p align="left">
+  <img src="https://img.shields.io/badge/Xampp-F37623?style=for-the-badge&logo=xampp&logoColor=white" alt="XAMPP Badge" />
+  </p>
+
+  - `SheetDB` ***(Temporary - midterm)***
+  - `XAMPP (PHP + MySQL)` ***(Contingency / In progress — theoretical)***
+
+  <br>
+
+- **Database:**
+  <p align="left">
+  <img src="https://skillicons.dev/icons?i=mysql, php" alt="Last Commit">
+  </p>
+
+  - `MySQL`
+  - `phpMyAdmin`
+
+  <br>
+
+- **Tools:**
+   <p align="left">
+    <img src="https://skillicons.dev/icons?i=vscode,md,postman" alt="Last Commit">
+  </p>
+
+  - `Visual Studio Code`
+  - `Chrome DevTools`
+  - `Markdown` for Documentation
+  - `SheetDB` for Database API (Midterm, temporary)
+  - `Postman` for API Testing
+
+  <br>
 
 ## Prerequisites
 - Node.js (>= 16 recommended) and npm
