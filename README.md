@@ -73,7 +73,7 @@ This React-based frontend (located in `Post-React-Migration/pwd-application-syst
 
 - **Frontend:**
   <p align="left">
-    <img src="https://skillicons.dev/icons?i=react,bootstrap,html,css,js" alt="Last Commit">
+    <img src="https://skillicons.dev/icons?i=react,bootstrap,html,css,js" alt="Frontend Icons">
   </p>
 
   - `ReactJS`
@@ -94,7 +94,7 @@ This React-based frontend (located in `Post-React-Migration/pwd-application-syst
 
 - **Database:**
   <p align="left">
-  <img src="https://skillicons.dev/icons?i=mysql, php" alt="Last Commit">
+  <img src="https://skillicons.dev/icons?i=mysql,php" alt="Database Icons">
   </p>
 
   - `MySQL`
@@ -104,7 +104,7 @@ This React-based frontend (located in `Post-React-Migration/pwd-application-syst
 
 - **Tools:**
    <p align="left">
-    <img src="https://skillicons.dev/icons?i=vscode,md,postman" alt="Last Commit">
+    <img src="https://skillicons.dev/icons?i=vscode,md,postman" alt="Tools Icons">
   </p>
 
   - `Visual Studio Code`
