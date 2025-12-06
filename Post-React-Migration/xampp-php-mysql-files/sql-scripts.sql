@@ -15,7 +15,7 @@ GO
 -- ===============================================================
 -- TABLE 1: PWD_Registry (PWD Registration)
 -- ===============================================================
-CREATE TABLE PWD_Registry (
+CREATE TABLE IF NOT EXISTS pwd_users (
     -- Primary Key
     id INT AUTO_INCREMENT PRIMARY KEY,
     regNumber VARCHAR(20) NOT NULL UNIQUE,
@@ -72,12 +72,24 @@ GO
 -- ===============================================================
 -- TABLE 2: Admin_Users (Admin Authentication)
 -- ===============================================================
+CREATE TABLE admin_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    adminEmail VARCHAR(150) NOT NULL UNIQUE,
+    adminPassword VARCHAR(255) NOT NULL,
+    adminName VARCHAR(100),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
---
+-- Insert default admin (change password in production!)
+INSERT INTO admin_users (adminEmail, adminPassword, adminName) 
+VALUES ('admin@dasma.gov.ph', 'admin123', 'System Administrator');
+
+
 
 -- ===============================================================
 --              STORED PROCEDURES FOR CRUD OPERATIONS
 -- ===============================================================
+
 
 
 -- ===============================================================
