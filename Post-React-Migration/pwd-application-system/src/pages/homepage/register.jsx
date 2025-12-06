@@ -546,15 +546,90 @@ export default function Register() {
                 />
               </div>
               <div className="col-md-6">
-                <input
-                  type="text"
+                <select
                   name="barangay"
                   id="barangay"
-                  className="form-control"
-                  placeholder="Barangay"
+                  className="form-select"
                   aria-label="Barangay"
                   required
-                />
+                >
+                  <option value="" disabled selected>Select Barangay</option>
+                  <option value="Burol">Burol</option>
+                  <option value="Burol I">Burol I</option>
+                  <option value="Burol II">Burol II</option>
+                  <option value="Burol III">Burol III</option>
+                  <option value="Datu Esmael (Bago-a-ingud)">Datu Esmael (Bago-a-ingud)</option>
+                  <option value="Emmanuel Bergado I">Emmanuel Bergado I</option>
+                  <option value="Emmanuel Bergado II">Emmanuel Bergado II</option>
+                  <option value="Fatima I">Fatima I</option>
+                  <option value="Fatima II">Fatima II</option>
+                  <option value="Fatima III">Fatima III</option>
+                  <option value="Langkaan I">Langkaan I</option>
+                  <option value="Langkaan II">Langkaan II</option>
+                  <option value="Luzviminda I">Luzviminda I</option>
+                  <option value="Luzviminda II">Luzviminda II</option>
+                  <option value="Paliparan I">Paliparan I</option>
+                  <option value="Paliparan II">Paliparan II</option>
+                  <option value="Paliparan III">Paliparan III</option>
+                  <option value="Sabang">Sabang</option>
+                  <option value="Saint Peter I">Saint Peter I</option>
+                  <option value="Saint Peter II">Saint Peter II</option>
+                  <option value="Salawag">Salawag</option>
+                  <option value="Salitran I">Salitran I</option>
+                  <option value="Salitran II">Salitran II</option>
+                  <option value="Salitran III">Salitran III</option>
+                  <option value="Salitran IV">Salitran IV</option>
+                  <option value="Sampaloc I">Sampaloc I</option>
+                  <option value="Sampaloc II">Sampaloc II</option>
+                  <option value="Sampaloc III">Sampaloc III</option>
+                  <option value="Sampaloc IV">Sampaloc IV</option>
+                  <option value="Sampaloc V (New Era)">Sampaloc V (New Era)</option>
+                  <option value="San Agustin I">San Agustin I</option>
+                  <option value="San Agustin II">San Agustin II</option>
+                  <option value="San Agustin III">San Agustin III</option>
+                  <option value="San Andres I">San Andres I</option>
+                  <option value="San Andres II">San Andres II</option>
+                  <option value="San Antonio De Padua I">San Antonio De Padua I</option>
+                  <option value="San Antonio De Padua II">San Antonio De Padua II</option>
+                  <option value="San Dionisio (Barangay 1)">San Dionisio (Barangay 1)</option>
+                  <option value="San Esteban (Barangay 4)">San Esteban (Barangay 4)</option>
+                  <option value="San Francisco I">San Francisco I</option>
+                  <option value="San Francisco II">San Francisco II</option>
+                  <option value="San Isidro Labrador I">San Isidro Labrador I</option>
+                  <option value="San Isidro Labrador II">San Isidro Labrador II</option>
+                  <option value="San Jose">San Jose</option>
+                  <option value="San Juan (San Juan I)">San Juan (San Juan I)</option>
+                  <option value="San Lorenzo Ruiz I">San Lorenzo Ruiz I</option>
+                  <option value="San Lorenzo Ruiz II">San Lorenzo Ruiz II</option>
+                  <option value="San Luis I">San Luis I</option>
+                  <option value="San Luis II">San Luis II</option>
+                  <option value="San Manuel I">San Manuel I</option>
+                  <option value="San Manuel II">San Manuel II</option>
+                  <option value="San Mateo">San Mateo</option>
+                  <option value="San Miguel">San Miguel</option>
+                  <option value="San Miguel II">San Miguel II</option>
+                  <option value="San Nicolas I">San Nicolas I</option>
+                  <option value="San Nicolas II">San Nicolas II</option>
+                  <option value="San Roque (Sta. Cristina II)">San Roque (Sta. Cristina II)</option>
+                  <option value="San Simon (Barangay 7)">San Simon (Barangay 7)</option>
+                  <option value="Santa Cristina I">Santa Cristina I</option>
+                  <option value="Santa Cristina II">Santa Cristina II</option>
+                  <option value="Santa Cruz I">Santa Cruz I</option>
+                  <option value="Santa Cruz II">Santa Cruz II</option>
+                  <option value="Santa Fe">Santa Fe</option>
+                  <option value="Santa Lucia (San Juan II)">Santa Lucia (San Juan II)</option>
+                  <option value="Santa Maria (Barangay 20)">Santa Maria (Barangay 20)</option>
+                  <option value="Santo Cristo (Barangay 3)">Santo Cristo (Barangay 3)</option>
+                  <option value="Santo Niño I">Santo Niño I</option>
+                  <option value="Santo Niño II">Santo Niño II</option>
+                  <option value="Victoria Reyes Pag-asa">Victoria Reyes Pag-asa</option>
+                  <option value="Zone I (Pob.)">Zone I (Pob.)</option>
+                  <option value="Zone I-A">Zone I-A</option>
+                  <option value="Zone I-B">Zone I-B</option>
+                  <option value="Zone II (Pob.)">Zone II (Pob.)</option>
+                  <option value="Zone III (Pob.)">Zone III (Pob.)</option>
+                  <option value="Zone IV (Pob.)">Zone IV (Pob.)</option>
+                </select>
               </div>
               <div className="col-md-6">
                 <input
