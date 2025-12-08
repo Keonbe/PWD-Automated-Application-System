@@ -3,19 +3,30 @@ import "../../assets/styles/register-styles.css";
 import id from "../../assets/images/sample-id.png";
 import medCert from "../../assets/images/sample-medcert.png";
 import { Link, useNavigate } from "react-router-dom";
-import { submitRegistration } from "../../api/registrationApi";
+import { submitRegistration, checkEmailExists } from "../../api/registrationApi";
 
 export default function Register() {
-  const [isSubmitting, setIsSubmitting] = useState(false); /** @summary Form submission loading state for registration process. */
-  const [submitMessage, setSubmitMessage] = useState(''); /** @summary Form submission status message for user feedback. */
+
+  /** @summary Form submission loading state for registration process. */
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  /** @summary Form submission status message for user feedback. */
+  const [submitMessage, setSubmitMessage] = useState('');
+
+  /** @summary Email validation state for duplicate check feedback. */
+  const [emailValidation, setEmailValidation] = useState({ checking: false, exists: false, message: '' });
   const navigate = useNavigate();
 
   /** File input refs: @remarks Provides direct access to the identity proof file input for validation and file name retrieval. */
-  const identityRef = useRef(null); /** @summary File input reference for identity document upload. */
-  const disabilityRef = useRef(null); /** @summary File input reference for disability document upload. */
+
+  /** @summary File input reference for identity document upload. */
+  const identityRef = useRef(null);
+
+  /** @summary File input reference for disability document upload. */
+  const disabilityRef = useRef(null);
 
   /**
-   * @summary Handles registration form submission with comprehensive data processing.
+   * @summary Handles registration form submission with comprehensive data processing. Handle form submit with API integration
    * 
    * @param {Event} event - Form submission event object.
    * @returns {Promise<void>}
@@ -27,13 +38,23 @@ export default function Register() {
    * Generates registration number, date, and temporary password automatically.
    * Includes file name storage and session persistence for result page display.
    */
-  //Handle form submit with API integration
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     const form = event.target;
 
+    // Validate form before submission
     if (!validateForm(form)) {
-      setSubmitMessage("Please fill in all required fields marked with an asterisk (*). Please check highlighted fields.");
+      const errorMsg = "Please fill in all required fields marked with an asterisk (*). Please check highlighted fields.";
+      setSubmitMessage(errorMsg);
+      console.error('[Form Validation] error', errorMsg);
+      return;
+    }
+
+    // Check if email already exists
+    if (emailValidation.exists) {
+      const errorMsg = "Cannot submit: Email address is already registered. Please use a different email.";
+      setSubmitMessage(errorMsg);
+      console.error('[Form Submission] error', errorMsg);
       return;
     }
 
@@ -60,11 +81,11 @@ export default function Register() {
         mobile: form.mobile.value.trim(),
         email: form.email.value.trim(),
         
-  // Personal info
-  dob: form.dob.value,
-  // `sex` is a <select> element in the form, read its value directly
-  sex: form.sex?.value || '',
-  nationality: form.nationality?.value?.trim() || 'Filipino',
+        // Personal info
+        dob: form.dob.value,
+        // `sex` is a <select> element in the form, read its value directly
+        sex: form.sex?.value || '',
+        nationality: form.nationality?.value?.trim() || 'Filipino',
         blood: form.blood?.value?.trim() || '',
         civil: form.querySelector('input[name="civil"]:checked')?.value || '',
         
@@ -104,16 +125,21 @@ export default function Register() {
       formData.password = formData.generatedPassword;
 
       // Submit to API
+      console.log('[Form Submission] Submitting registration data...');
       const result = await submitRegistration(formData);
 
+      // Handle API response
       if (result.success) {
-        setSubmitMessage(result.message);
+        const successMsg = result.message;
+        setSubmitMessage(successMsg);
+        console.log('[Form Submission] Success:', successMsg);
+        console.log('[Form Submission] Registration Number:', formData.regNumber);
         
         // Store in sessionStorage for result page
         try {
           sessionStorage.setItem('lastRegistration', JSON.stringify(formData));
         } catch (e) {
-          console.warn('Could not save to sessionStorage:', e);
+          console.warn('[Session Storage] Could not save to sessionStorage:', e);
         }
 
         // Navigate to result page after a short delay
@@ -121,14 +147,20 @@ export default function Register() {
           navigate('/register/result', { state: { formData } });
         }, 2000);
       } else {
-        setSubmitMessage(result.message);
+        const errorMsg = result.message;
+        setSubmitMessage(errorMsg);
+        console.error('[Form Submission] 404 Failed:', errorMsg);
       }
     } catch (error) {
-      console.error('Form submission error:', error);
-      setSubmitMessage('Something went wrong. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+      // Handle unexpected errors
+      const errorMsg = 'Something went wrong. Please try again.';
+      console.error('[Form Submission] 404 Exception:', error);
+      console.error('[Form Submission] Error details:', error.response?.data || error.message);
+      setSubmitMessage(errorMsg);
+      } finally {
+        setIsSubmitting(false);
+        console.log('[Form Submission] Submission complete. isSubmitting set to false.');
+      }
   };
 
   /**
@@ -141,9 +173,7 @@ export default function Register() {
    * Provides visual feedback by changing button text to show selected file name.
    * Updates button styling to indicate successful file selection with checkmark icon.
    * Supports both identity and disability document upload buttons.
- */
-//Update file input button text and style based on selected file
-  //Update file input button text and style based on selected file
+  */
   const updateFileName = (inputRef, buttonId) => {
     const fileInput = inputRef.current;
     const button = document.getElementById(buttonId);
@@ -161,6 +191,62 @@ export default function Register() {
       }`;
       button.classList.remove("btn-success");
       button.classList.add("upload-btn");
+    }
+  };
+
+  /**
+   * @summary Handles email blur event to check if email already exists.
+   * 
+   * @param {Event} event - The blur event from email input field.
+   * @returns {Promise<void>}
+   * 
+   * @remarks
+   * Provides real-time feedback on email availability.
+   * Updates visual indicators and console logs for debugging.
+   * Applies Bootstrap validation classes for user feedback.
+   */
+  const handleEmailBlur = async (event) => {
+    const email = event.target.value.trim();
+    const emailInput = event.target;
+    
+    if (!email || !email.includes('@')) {
+      setEmailValidation({ checking: false, exists: false, message: '' });
+      return;
+    }
+
+    setEmailValidation({ checking: true, exists: false, message: 'Checking email...' });
+    console.log('[Email Validation] Validating email:', email);
+
+    try {
+      const exists = await checkEmailExists(email);
+      
+      if (exists) {
+        setEmailValidation({ 
+          checking: false, 
+          exists: true, 
+          message: '⚠️ This email is already registered. Please use a different email.' 
+        });
+        emailInput.classList.add('is-invalid');
+        emailInput.classList.remove('is-valid');
+        console.error('[Email Validation] Email already exists:', email);
+      } else {
+        setEmailValidation({ 
+          checking: false, 
+          exists: false, 
+          message: '✓ Email is available' 
+        });
+        emailInput.classList.add('is-valid');
+        emailInput.classList.remove('is-invalid');
+        console.log('[Email Validation] Email is available:', email);
+      }
+    } catch (error) {
+      console.error('[Email Validation] Error checking email:', error);
+      setEmailValidation({ 
+        checking: false, 
+        exists: false, 
+        message: '⚠️ Could not verify email. Please try again.' 
+      });
+      emailInput.classList.remove('is-valid', 'is-invalid');
     }
   };
 
@@ -723,13 +809,27 @@ export default function Register() {
                   name="email"
                   placeholder="Email Address"
                   aria-describedby="emailHelp"
+                  onBlur={handleEmailBlur}
                   required
                 />
                 <label htmlFor="email" className="required-field">
                   Email Address
                 </label>
                 <div id="emailHelp" className="form-text">
-                  We'll never share your email
+                  {emailValidation.checking && (
+                    <span className="text-info">
+                      <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                      Checking email availability...
+                    </span>
+                  )}
+                  {!emailValidation.checking && emailValidation.message && (
+                    <span className={emailValidation.exists ? 'text-danger fw-bold' : 'text-success fw-bold'}>
+                      {emailValidation.message}
+                    </span>
+                  )}
+                  {!emailValidation.checking && !emailValidation.message && (
+                    "We'll never share your email"
+                  )}
                 </div>
               </div>
             </div>
@@ -787,16 +887,210 @@ export default function Register() {
             </div>
             <div className="col-md-3">
               <div className="form-floating">
-                <input
-                  type="text"
-                  className="form-control"
+                <select
+                  className="form-select"
                   id="nationality"
                   name="nationality"
-                  placeholder="Filipino"
-                  defaultValue="Filipino"
                   aria-describedby="nationalityHelp"
                   required
-                />
+                  defaultValue="Philippines"
+                >
+                  <option value="" disabled>
+                    Select Nationality
+                  </option>
+                  <option>Afghanistan</option>
+                  <option>Albania</option>
+                  <option>Algeria</option>
+                  <option>Andorra</option>
+                  <option>Angola</option>
+                  <option>Antigua and Barbuda</option>
+                  <option>Argentina</option>
+                  <option>Armenia</option>
+                  <option>Australia</option>
+                  <option>Austria</option>
+                  <option>Azerbaijan</option>
+                  <option>Bahamas</option>
+                  <option>Bahrain</option>
+                  <option>Bangladesh</option>
+                  <option>Barbados</option>
+                  <option>Belarus</option>
+                  <option>Belgium</option>
+                  <option>Belize</option>
+                  <option>Benin</option>
+                  <option>Bhutan</option>
+                  <option>Bolivia</option>
+                  <option>Bosnia and Herzegovina</option>
+                  <option>Botswana</option>
+                  <option>Brazil</option>
+                  <option>Brunei</option>
+                  <option>Bulgaria</option>
+                  <option>Burkina Faso</option>
+                  <option>Burundi</option>
+                  <option>Cabo Verde</option>
+                  <option>Cambodia</option>
+                  <option>Cameroon</option>
+                  <option>Canada</option>
+                  <option>Central African Republic</option>
+                  <option>Chad</option>
+                  <option>Chile</option>
+                  <option>China</option>
+                  <option>Colombia</option>
+                  <option>Comoros</option>
+                  <option>Congo (Republic of the)</option>
+                  <option>Congo (Democratic Republic of the)</option>
+                  <option>Costa Rica</option>
+                  <option>Côte d'Ivoire</option>
+                  <option>Croatia</option>
+                  <option>Cuba</option>
+                  <option>Cyprus</option>
+                  <option>Czechia</option>
+                  <option>Denmark</option>
+                  <option>Djibouti</option>
+                  <option>Dominica</option>
+                  <option>Dominican Republic</option>
+                  <option>Ecuador</option>
+                  <option>Egypt</option>
+                  <option>El Salvador</option>
+                  <option>Equatorial Guinea</option>
+                  <option>Eritrea</option>
+                  <option>Estonia</option>
+                  <option>Eswatini</option>
+                  <option>Ethiopia</option>
+                  <option>Fiji</option>
+                  <option>Finland</option>
+                  <option>France</option>
+                  <option>Gabon</option>
+                  <option>Gambia</option>
+                  <option>Georgia</option>
+                  <option>Germany</option>
+                  <option>Ghana</option>
+                  <option>Greece</option>
+                  <option>Grenada</option>
+                  <option>Guatemala</option>
+                  <option>Guinea</option>
+                  <option>Guinea-Bissau</option>
+                  <option>Guyana</option>
+                  <option>Haiti</option>
+                  <option>Honduras</option>
+                  <option>Hungary</option>
+                  <option>Iceland</option>
+                  <option>India</option>
+                  <option>Indonesia</option>
+                  <option>Iran</option>
+                  <option>Iraq</option>
+                  <option>Ireland</option>
+                  <option>Israel</option>
+                  <option>Italy</option>
+                  <option>Jamaica</option>
+                  <option>Japan</option>
+                  <option>Jordan</option>
+                  <option>Kazakhstan</option>
+                  <option>Kenya</option>
+                  <option>Kiribati</option>
+                  <option>Kosovo</option>
+                  <option>Kuwait</option>
+                  <option>Kyrgyzstan</option>
+                  <option>Laos</option>
+                  <option>Latvia</option>
+                  <option>Lebanon</option>
+                  <option>Lesotho</option>
+                  <option>Liberia</option>
+                  <option>Libya</option>
+                  <option>Liechtenstein</option>
+                  <option>Lithuania</option>
+                  <option>Luxembourg</option>
+                  <option>Madagascar</option>
+                  <option>Malawi</option>
+                  <option>Malaysia</option>
+                  <option>Maldives</option>
+                  <option>Mali</option>
+                  <option>Malta</option>
+                  <option>Marshall Islands</option>
+                  <option>Mauritania</option>
+                  <option>Mauritius</option>
+                  <option>Mexico</option>
+                  <option>Micronesia</option>
+                  <option>Moldova</option>
+                  <option>Monaco</option>
+                  <option>Mongolia</option>
+                  <option>Montenegro</option>
+                  <option>Morocco</option>
+                  <option>Mozambique</option>
+                  <option>Myanmar</option>
+                  <option>Namibia</option>
+                  <option>Nauru</option>
+                  <option>Nepal</option>
+                  <option>Netherlands</option>
+                  <option>New Zealand</option>
+                  <option>Nicaragua</option>
+                  <option>Niger</option>
+                  <option>Nigeria</option>
+                  <option>North Macedonia</option>
+                  <option>Norway</option>
+                  <option>Oman</option>
+                  <option>Pakistan</option>
+                  <option>Palau</option>
+                  <option>Panama</option>
+                  <option>Papua New Guinea</option>
+                  <option>Paraguay</option>
+                  <option>Peru</option>
+                  <option>Philippines</option>
+                  <option>Poland</option>
+                  <option>Portugal</option>
+                  <option>Qatar</option>
+                  <option>Romania</option>
+                  <option>Russian Federation</option>
+                  <option>Rwanda</option>
+                  <option>Saint Kitts and Nevis</option>
+                  <option>Saint Lucia</option>
+                  <option>Saint Vincent and the Grenadines</option>
+                  <option>Samoa</option>
+                  <option>San Marino</option>
+                  <option>Sao Tome and Principe</option>
+                  <option>Saudi Arabia</option>
+                  <option>Senegal</option>
+                  <option>Serbia</option>
+                  <option>Seychelles</option>
+                  <option>Sierra Leone</option>
+                  <option>Singapore</option>
+                  <option>Slovakia</option>
+                  <option>Slovenia</option>
+                  <option>Solomon Islands</option>
+                  <option>Somalia</option>
+                  <option>South Africa</option>
+                  <option>South Sudan</option>
+                  <option>Spain</option>
+                  <option>Sri Lanka</option>
+                  <option>Sudan</option>
+                  <option>Suriname</option>
+                  <option>Sweden</option>
+                  <option>Switzerland</option>
+                  <option>Syrian Arab Republic</option>
+                  <option>Tajikistan</option>
+                  <option>Tanzania</option>
+                  <option>Thailand</option>
+                  <option>Timor-Leste</option>
+                  <option>Togo</option>
+                  <option>Tonga</option>
+                  <option>Trinidad and Tobago</option>
+                  <option>Tunisia</option>
+                  <option>Turkey</option>
+                  <option>Turkmenistan</option>
+                  <option>Tuvalu</option>
+                  <option>Uganda</option>
+                  <option>Ukraine</option>
+                  <option>United Arab Emirates</option>
+                  <option>United Kingdom</option>
+                  <option>United States of America</option>
+                  <option>Uruguay</option>
+                  <option>Uzbekistan</option>
+                  <option>Vanuatu</option>
+                  <option>Venezuela</option>
+                  <option>Viet Nam</option>
+                  <option>Yemen</option>
+                  <option>Zambia</option>
+                  <option>Zimbabwe</option>
+                </select>
                 <label htmlFor="nationality" className="required-field">
                   Nationality
                 </label>
@@ -933,14 +1227,28 @@ export default function Register() {
                 />
               </div>
               <div className="col-md-6">
-                <input
-                  type="text"
+                <select
                   name="emergencyRelationship"
-                  className="form-control"
-                  placeholder="Relationship to You"
+                  id="emergencyRelationship"
+                  className="form-select"
                   aria-label="Relationship to Emergency Contact"
                   required
-                />
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    Select Relationship
+                  </option>
+                  <option value="Family">Family</option>
+                  <option value="Parents">Parents</option>
+                  <option value="Spouse">Spouse</option>
+                  <option value="Children">Children</option>
+                  <option value="Siblings">Siblings</option>
+                  <option value="Friends">Friends</option>
+                  <option value="Neighbor">Neighbor</option>
+                  <option value="Caregiver">Caregiver</option>
+                  <option value="Relative">Relative</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
             </div>
             <div className="form-text">
@@ -1188,6 +1496,3 @@ export default function Register() {
     </main>
   );
 }
-
-//TODO: No Password & Username(Email) yet
-// https://docs.google.com/spreadsheets/d/1aNvr3hZd3vZSQHB46XwVLMuusiUzbDM-ENYNqjya-aA/edit?gid=0#gid=0 I hate going back and forth

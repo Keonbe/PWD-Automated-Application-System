@@ -1,14 +1,19 @@
+import api from './axiosConfig';
+
 /**
- * @summary Base URL for the SheetDB API endpoint storing user registration data.
+ * @summary API Configuration for user data endpoints
  * 
  * @remarks
- * This is the original API endpoint for user data storage.
- * All user registration operations will use this base URL.
+ * Using PHP/MySQL backend with XAMPP
+ * SheetDB legacy code is commented out below for reference
  */
-    //const SHEETDB_URL = 'https://sheetdb.io/api/v1/wgjit0nprbfxe'; // SheetDB API for user 
-    const SHEETDB_URL = 'https://sheetdb.io/api/v1/ljqq6umrhu60o'; // Backup SheetsDB
+
+// ============== SheetDB Configuration (Commented Out) ==============
+// const SHEETDB_URL = 'https://sheetdb.io/api/v1/wgjit0nprbfxe'; // SheetDB API for user 
+// const SHEETDB_URL = 'https://sheetdb.io/api/v1/ljqq6umrhu60o'; // Backup SheetsDB
+
 /**
- * @summary Retrieves current user data from SheetDB based on stored user ID.
+ * @summary Retrieves current user data from PHP/MySQL backend based on stored user ID.
  * 
  * @returns {Promise<Object>} Normalized user data object with all profile fields.
  * 
@@ -17,13 +22,13 @@
  * @remarks
  * Searches for user by registration number stored in sessionStorage or localStorage.
  * Includes comprehensive logging for debugging authentication flow.
- * Normalizes data structure to match exact spreadsheet column names.
+ * Normalizes data structure to match database column names.
  */
 export const getCurrentUserData = async () => {
     try {
         console.log('[userApi] Starting getCurrentUserData');
         
-        //Try to get userId from both sessionStorage and localStorage
+        // Try to get userId from both sessionStorage and localStorage
         const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
         
         console.log('[userApi] Retrieved userId:', userId);
@@ -32,11 +37,72 @@ export const getCurrentUserData = async () => {
             throw new Error('No user ID found. Please log in again.');
         }
 
-        //Build API URL to search by regNumber
+        // ============== PHP/MySQL Backend (XAMPP) ==============
+        console.log('[userApi] Fetching from PHP backend...');
+        
+        // POST to get-user-data.php endpoint
+        const res = await api.post('/get-user-data.php', {
+            regNumber: userId
+        });
+        
+        console.log('[userApi] Response received:', res.data);
+        console.log('[userApi] HTTP status:', res.status);
+        
+        if (res.data.success) {
+            console.log('[userApi] SUCCESS - User data retrieved');
+            const userData = res.data.user;
+            
+            // Map and normalize the data structure
+            // Note: Database stores filenames in proofIdentity/proofDisability only
+            const normalizedData = {
+                regNumber: userData.regNumber || '',
+                regDate: userData.regDate || '',
+                lastName: userData.lastName || '',
+                firstName: userData.firstName || '',
+                middleName: userData.middleName || '',
+                disability: userData.disability || '',
+                street: userData.street || '',
+                barangay: userData.barangay || '',
+                municipality: userData.municipality || '',
+                province: userData.province || '',
+                region: userData.region || '',
+                tel: userData.tel || '',
+                mobile: userData.mobile || '',
+                email: userData.email || '',
+                dob: userData.dob || '',
+                sex: userData.sex || '',
+                nationality: userData.nationality || '',
+                blood: userData.blood || '',
+                civil: userData.civil || '',
+                emergencyName: userData.emergencyName || '',
+                emergencyPhone: userData.emergencyPhone || '',
+                emergencyRelationship: userData.emergencyRelationship || '',
+                proofIdentity: userData.proofIdentity || '',
+                proofDisability: userData.proofDisability || '',
+                // Map filenames to *Name fields for backward compatibility
+                proofIdentityName: userData.proofIdentity || '',
+                proofDisabilityName: userData.proofDisability || '',
+                password: userData.password || '',
+                generatedPassword: userData.password || '', // Use same password
+                status: userData.status || 'Pending',
+                _raw: userData // Keep original for debugging
+            };
+            
+            console.log('[userApi] Normalized user data:', normalizedData);
+            return normalizedData;
+            
+        } else {
+            console.error('[userApi] FAILED - Could not retrieve user data');
+            console.error('[userApi] Reason:', res.data.message);
+            throw new Error(res.data.message || 'Failed to retrieve user data');
+        }
+        
+        /* ============== SheetDB Backend (Legacy - Commented Out) ==============
+        // Build API URL to search by regNumber
         const searchUrl = `${SHEETDB_URL}/search?regNumber=${encodeURIComponent(userId)}`;
         console.log('[userApi] Fetching from:', searchUrl);
         
-        //Fetch data from SheetDB
+        // Fetch data from SheetDB
         const response = await fetch(searchUrl);
         
         if (!response.ok) {
@@ -46,15 +112,15 @@ export const getCurrentUserData = async () => {
         const data = await response.json();
         console.log('[userApi] Raw API response:', data);
         
-        //SheetDB returns an array of matching rows
+        // SheetDB returns an array of matching rows
         if (!Array.isArray(data) || data.length === 0) {
             throw new Error(`No user found with registration number: ${userId}`);
         }
         
-        //Get the first matching user
+        // Get the first matching user
         const userData = data[0];
         
-        //Map and normalize the data structure - match spreadsheet EXACT column names
+        // Map and normalize the data structure - match spreadsheet EXACT column names
         const normalizedData = { // Match spreadsheet EXACT casing
             regNumber: userData.regNumber || '',
             regDate: userData.regDate || '',
@@ -90,9 +156,12 @@ export const getCurrentUserData = async () => {
         
         console.log('[userApi] Normalized user data:', normalizedData);
         return normalizedData;
+        ============== End SheetDB Backend (Legacy) ============== */
         
     } catch (error) {
-        console.error(' [userApi] Error in getCurrentUserData:', error.message);
+        console.error('[userApi] ERROR - Error in getCurrentUserData:', error.message);
+        console.error('[userApi] Error details:', error);
+        console.error('[userApi] Error response:', error.response?.data);
         console.error('[userApi] Storage check:', {
             sessionUserId: sessionStorage.getItem('userId'),
             localUserId: localStorage.getItem('userId')

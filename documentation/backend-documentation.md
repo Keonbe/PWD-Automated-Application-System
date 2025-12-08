@@ -105,4 +105,43 @@ const API_MODE = 'php';    // Use XAMPP backend
 
 ---
 
-*Last Updated: December 3, 2025*
+## 📡 Files with SheetDB.io Interactions
+
+The following files currently interact with SheetDB.io and require CRUD method implementation (including fetch/read/get operations) during backend migration:
+
+### Frontend Files (React)
+
+| File | SheetDB Operations | Methods Required |
+|------|-------------------|------------------|
+| `src/api/registrationApi.js` | **CREATE**: Submit new registrations<br>**READ**: Check regNumber existence<br>**READ**: Validate email uniqueness | POST (create user)<br>GET/search (check duplicates) |
+| `src/api/userApi.js` | **READ**: Fetch user data by regNumber | GET/search (retrieve user profile) |
+| `src/pages/login.jsx` | **READ**: User authentication<br>**READ**: Admin authentication | GET/search (validate credentials) |
+| `src/pages/adminpage/adminverify.jsx` | **READ**: Fetch pending applicants<br>**UPDATE**: Change application status | GET/search (get applicants)<br>PATCH (update status) |
+| `src/components/statuschart.jsx` | **READ**: Fetch all applications for statistics | GET (retrieve all records) |
+| `src/pages/homepage/register.jsx` | Mirror file name fields to SheetDB columns | Data formatting for CREATE |
+
+### Legacy Files (Pre-Migration)
+
+| File | SheetDB Operations | Notes |
+|------|-------------------|-------|
+| `Pre-React-Migration/pages/user/userLogin.html` | **READ**: User/Admin login validation | Legacy implementation - reference only |
+
+### SheetDB Endpoints Used
+
+- **User Data**: `https://sheetdb.io/api/v1/ljqq6umrhu60o` (Backup)
+- **Admin Data**: `https://sheetdb.io/api/v1/duayfvx2u7zh9`
+- **Original**: `https://sheetdb.io/api/v1/wgjit0nprbfxe` (Commented out)
+
+### Required PHP Endpoints for Migration
+
+1. **`register.php`** - Replace `registrationApi.js` POST requests
+2. **`check-email.php`** - Replace `registrationApi.js` email validation
+3. **`user.php`** - Replace `userApi.js` GET by regNumber
+4. **`login.php`** - Replace `login.jsx` user authentication
+5. **`admin-login.php`** - Replace `login.jsx` admin authentication
+6. **`applications.php`** - Replace `adminverify.jsx` and `statuschart.jsx` GET all
+7. **`update-status.php`** - Replace `adminverify.jsx` PATCH status
+
+---
+
+*Last Updated: December 7, 2025*

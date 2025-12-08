@@ -1,12 +1,16 @@
+import api from './axiosConfig';
+
 /**
- * @summary Base URL for the SheetDB API endpoint storing user registration data.
+ * @summary API Configuration for registration endpoints
  * 
  * @remarks
- * This is the original API endpoint for user data storage.
- * All user registration operations will use this base URL.
+ * Using PHP/MySQL backend with XAMPP
+ * SheetDB legacy code is commented out below for reference
  */
-    //const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe"; //Orig API (Marqus) User
-    const sheetdbUrl = "https://sheetdb.io/api/v1/ljqq6umrhu60o"; //Backup SheetsDB
+
+// ============== SheetDB Configuration (Commented Out) ==============
+// const USE_PHP_BACKEND = true; // Change to `false` to use SheetDB
+// const sheetdbUrl = "https://sheetdb.io/api/v1/ljqq6umrhu60o";
 /**
  * @summary Submits a new user registration to the SheetDB database.
  * 
@@ -34,6 +38,61 @@
  */
 export const submitRegistration = async (formData) => {
     try {
+        // ============== PHP/MySQL Backend (XAMPP) ==============
+        // Prepare registration data
+        const registrationData = {
+            regNumber: formData.regNumber,
+            regDate: formData.regDate,
+            lastName: formData.lastName,
+            firstName: formData.firstName,
+            middleName: formData.middleName || '',
+            disability: formData.disability,
+            street: formData.street,
+            barangay: formData.barangay,
+            municipality: formData.municipality || 'Dasmariñas',
+            province: formData.province || 'Cavite',
+            region: formData.region || 'IV-A',
+            tel: formData.tel || '',
+            mobile: formData.mobile,
+            email: formData.email,
+            dob: formData.dob,
+            sex: formData.sex,
+            nationality: formData.nationality || 'Filipino',
+            blood: formData.blood || '',
+            civil: formData.civil,
+            emergencyName: formData.emergencyName,
+            emergencyPhone: formData.emergencyPhone,
+            emergencyRelationship: formData.emergencyRelationship,
+            proofIdentity: formData.proofIdentity || '',
+            proofDisability: formData.proofDisability || '',
+            password: formData.password || formData.generatedPassword || '',
+            status: 'pending'
+        };
+
+        console.log('[submitRegistration] Submitting to PHP backend...');
+        console.log('[submitRegistration] Data:', registrationData); // Debug log
+
+        // POST to register.php endpoint, with api residing in `backend/api/register.php`
+        const res = await api.post('/register.php', registrationData); // Pass registrationData to '/register.php' for backend
+        console.log('[submitRegistration] PHP response received:', res.data);
+
+        if (res.data.success) {
+            console.log('[submitRegistration] SUCCESS - Registration completed');
+            console.log('[submitRegistration] Registration Number:', registrationData.regNumber);
+            return {
+                success: true,
+                message: res.data.message || "Registration submitted successfully!"
+            };
+        } else {
+            console.error('[submitRegistration] FAILED - Registration rejected');
+            console.error('[submitRegistration] Reason:', res.data.message);
+            return {
+                success: false,
+                message: res.data.message || "Registration failed. Please try again."
+            };
+        }
+
+        /* ============== SheetDB Backend (Legacy - Commented Out) ==============
         //Check if registration number already exists
         const checkResponse = await fetch(`${sheetdbUrl}/search?regNumber=${formData.regNumber}`);
         const existingRegistrations = await checkResponse.json();
@@ -45,16 +104,10 @@ export const submitRegistration = async (formData) => {
             };
         }
 
-        // Debug: First, let's check what the current sheet structure looks like
-        console.log('Checking current sheet structure...');
-        const sheetCheckResponse = await fetch(sheetdbUrl);
-        const sheetData = await sheetCheckResponse.json();
-        console.log('Current sheet data sample:', sheetData.slice(0, 1)); // First row to see column structure
-
-        //Prepare data for SheetDB to match its expected format and add new user.
+        //Prepare data for SheetDB
         const registrationData = {
             data: [
-                { // Match spreadsheet EXACT casing
+                {
                     regNumber: formData.regNumber,
                     regDate: formData.regDate,
                     lastName: formData.lastName,
@@ -72,7 +125,7 @@ export const submitRegistration = async (formData) => {
                     dob: formData.dob,
                     sex: formData.sex,
                     nationality: formData.nationality || 'Filipino',
-                    blood: formData.blood || '',        // Match spreadsheet "blood" not "bloodtype"
+                    blood: formData.blood || '',
                     civil: formData.civil,
                     emergencyName: formData.emergencyName,
                     emergencyPhone: formData.emergencyPhone,
@@ -81,15 +134,12 @@ export const submitRegistration = async (formData) => {
                     proofDisability: formData.proofDisability || '',
                     password: formData.password || formData.generatedPassword || '',
                     status: formData.status || 'Pending'
-                    //Note: As we are only SheetDB, to compromise we are only storing file names temporarily for midterm.
                 }
             ]
         };
 
-        // Debug: Log the data being sent to SheetDB
-        console.log('Data being sent to SheetDB:', registrationData);
+        console.log('Submitting to SheetDB:', registrationData);
 
-        //Submit registration data
         const addResponse = await fetch(sheetdbUrl, {
             method: "POST",
             headers: {
@@ -97,13 +147,9 @@ export const submitRegistration = async (formData) => {
             },
             body: JSON.stringify(registrationData)
         });
-
-        // Debug: Log the response
-        console.log('SheetDB response status:', addResponse.status);
-        console.log('SheetDB response ok:', addResponse.ok);
         
         const responseData = await addResponse.json();
-        console.log('SheetDB response data:', responseData);
+        console.log('SheetDB response:', responseData);
 
         if (addResponse.ok) {
             return {
@@ -116,11 +162,16 @@ export const submitRegistration = async (formData) => {
                 message: "Registration failed. Please try again."
             };
         }
+        ============== End SheetDB Legacy Code ============== */
+
     } catch (error) {
-        console.error("Registration error:", error);
+        console.error("[submitRegistration] ERROR - Registration failed with exception");
+        console.error("[submitRegistration] Error details:", error);
+        console.error("[submitRegistration] Error response:", error.response?.data);
+        console.error("[submitRegistration] Error message:", error.response?.data?.message || error.message);
         return {
             success: false,
-            message: "Something went wrong. Please try again later."
+            message: error.response?.data?.message || "Error connecting to backend. Please try again later."
         };
     }
 };
@@ -137,15 +188,36 @@ export const submitRegistration = async (formData) => {
  * @remarks
  * Used during registration form validation to prevent duplicate accounts.
  * Returns false on errors to avoid blocking registration due to temporary issues.
- * Checks if email already exists
  */
 export const checkEmailExists = async (email) => {
     try {
-        const response = await fetch(`${sheetdbUrl}/search?email=${email}`);
+        // ============== PHP/MySQL Backend (XAMPP) ==============
+        console.log('🔍 [checkEmailExists] Checking if email exists:', email);
+        
+        // GET request to check-email.php endpoint
+        const res = await api.get(`/check-email.php?email=${encodeURIComponent(email)}`);
+        
+        const exists = res.data.exists || false;
+        
+        if (exists) {
+            console.error('[checkEmailExists] Email already exists in database');
+            console.log('[checkEmailExists] Response data:', res.data);
+        } else {
+            console.log('[checkEmailExists] Email is available');
+        }
+
+        /* ============== SheetDB Backend (Legacy - Commented Out) ==============
+        const response = await fetch(`${sheetdbUrl}/search?email=${encodeURIComponent(email)}`);
         const existingUsers = await response.json();
         return existingUsers.length > 0;
+        ============== End SheetDB Legacy Code ============== */
+        
+        return exists;
+
     } catch (error) {
-        console.error("Error checking email:", error);
+        console.error("[checkEmailExists] ERROR - Failed to check email");
+        console.error("[checkEmailExists] Error details:", error);
+        console.error("[checkEmailExists] Returning false to avoid blocking registration");
         return false;
     }
 };

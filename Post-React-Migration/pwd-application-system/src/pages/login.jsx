@@ -3,6 +3,7 @@ import '../assets/styles/login-styles.css';
 import logo from '../assets/images/dasma-logo-only.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
+import { userLogin, adminLogin } from '../api/loginApi'; // Import login API functions from xampp-php-mysql-files/api
 
 export default function Login() {
 
@@ -30,16 +31,21 @@ export default function Login() {
     const [showAdminModal, setShowAdminModal] = useState(false); /**  @summary Admin modal visibility control state. */
 
     /**
-     * @summary SheetDB API URL for user authentication data.
-     * @summary SheetDB API URL for admin authentication data.
+     * @summary SheetDB API URL for user authentication data (LEGACY - COMMENTED OUT).
+     * @summary SheetDB API URL for admin authentication data (LEGACY - COMMENTED OUT).
      * 
      * @remarks
      * Original API endpoint for user registration data email-based login authentication system.
      * Admin database using username-based authentication system.
-     */
-    //const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe"; //user 
-    const sheetdbUrl = "https://sheetdb.io/api/v1/ljqq6umrhu60o"; //Backup SheetsDB
-    const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; //admin (username)
+     * 
+     * MIGRATION NOTE: Now using PHP/MySQL backend with XAMPP.
+     * API endpoints moved to loginApi.js which calls user-login.php and admin-login.php
+    // ============== SheetDB URLs (Legacy - Commented Out) ==============
+    // const sheetdbUrl = "https://sheetdb.io/api/v1/wgjit0nprbfxe"; //user 
+    // const sheetdbUrl = "https://sheetdb.io/api/v1/ljqq6umrhu60o"; //Backup SheetsDB
+    // const adminSheetdbUrl = "https://sheetdb.io/api/v1/duayfvx2u7zh9"; //admin (username)
+    // ============== End SheetDB Legacy Code ==============
+    */
     
 
     /**
@@ -94,7 +100,47 @@ export default function Login() {
             return;
         }
 
-        try { // q = query to search
+        try {
+            // ============== PHP/MySQL Backend (XAMPP) ==============
+            console.log('[Login] Attempting user login via PHP backend...');
+            
+            // Call userLogin API from loginApi.js
+            const result = await userLogin(email, password);
+            
+            if (result.success && result.user) {
+                const userRecord = result.user;
+                console.log('[Login] User found:', userRecord);
+                
+                // Store the regNumber as userId
+                if (userRecord.regNumber) {
+                    sessionStorage.setItem('userId', userRecord.regNumber);
+                    console.log('[Login] Stored userId in sessionStorage:', userRecord.regNumber);
+                } else {
+                    console.error('[Login] User record missing regNumber!', userRecord);
+                }
+
+                // Keep legacy email key
+                sessionStorage.setItem("loggedInUser", email.trim().toLowerCase());
+
+                // Store the full user data for immediate use
+                try { 
+                    sessionStorage.setItem('userData', JSON.stringify(userRecord)); 
+                    console.log('[Login] Stored full user data in sessionStorage');
+                } catch (e) {
+                    console.warn('[Login] Could not store userData:', e);
+                }
+
+                setLoginMessage('<div class="alert alert-success">Login successful! Redirecting...</div>');
+                setTimeout(() => {
+                    navigate('/userpage', { replace: true });
+                }, 1000);
+            } else {
+                const errorMsg = result.message || 'Invalid email or password. Please try again.';
+                setLoginMessage(`<div class="alert alert-danger">${errorMsg}</div>`);
+                console.error('[Login] Authentication failed:', errorMsg);
+            }
+
+            /* ============== SheetDB Backend (Legacy - Commented Out) ==============
             // Use the 'email' and 'password' columns from the sheet
             const qEmail = encodeURIComponent(email.trim().toLowerCase());
             const qPassword = encodeURIComponent(password);
@@ -131,6 +177,8 @@ export default function Login() {
             } else {
                 setLoginMessage('<div class="alert alert-danger">Invalid email or password. Please try again.</div>');
             }
+            ============== End SheetDB Legacy Code ============== */
+
         } catch (error) {
             console.error("Error:", error);
             setLoginMessage('<div class="alert alert-danger">Login service is temporarily unavailable. Please try again later.</div>');
@@ -163,7 +211,39 @@ export default function Login() {
             return;
         }
 
-        try { //admin email or username
+        try {
+            // ============== PHP/MySQL Backend (XAMPP) ==============
+            console.log('[AdminLogin] Attempting admin login via PHP backend...');
+            
+            // Call adminLogin API from loginApi.js
+            const result = await adminLogin(adminEmail, adminPassword);
+            
+            if (result.success && result.admin) {
+                const adminRecord = result.admin;
+                console.log('[AdminLogin] Admin authenticated:', adminRecord);
+                
+                // Default to session persistence for admin login to avoid unexpected background effects.
+                sessionStorage.setItem("adminLoggedIn", adminEmail.trim().toLowerCase());
+
+                // Store admin data for potential future use
+                try {
+                    sessionStorage.setItem('adminData', JSON.stringify(adminRecord));
+                    console.log('[AdminLogin] Stored admin data in sessionStorage');
+                } catch (e) {
+                    console.warn('[AdminLogin] Could not store adminData:', e);
+                }
+
+                setAdminLoginMessage('<div class="alert alert-success m-3 p-3">Admin login successful! Redirecting...</div>');
+                setTimeout(() => {
+                    navigate('/adminpage', { replace: true });
+                }, 1000);
+            } else {
+                const errorMsg = result.message || 'Invalid admin credentials. Please try again.';
+                setAdminLoginMessage(`<div class="alert alert-danger m-3 p-3">${errorMsg}</div>`);
+                console.error('[AdminLogin] Authentication failed:', errorMsg);
+            }
+
+            /* ============== SheetDB Backend (Legacy - Commented Out) ==============
             const qadminEmail = encodeURIComponent(adminEmail.trim().toLowerCase());
             const qadminPassword = encodeURIComponent(adminPassword);
             const response = await fetch(`${adminSheetdbUrl}/search?adminEmail=${qadminEmail}&adminPassword=${qadminPassword}`);
@@ -180,6 +260,8 @@ export default function Login() {
             } else {
                 setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Invalid admin credentials. Please try again.</div>');
             }
+            ============== End SheetDB Legacy Code ============== */
+
         } catch (error) {
             console.error("Admin login error:", error);
             setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Admin login service is temporarily unavailable.</div>');
@@ -241,7 +323,7 @@ export default function Login() {
                                             className="form-control"
                                             id="username"
                                             name="username"
-                                            placeholder="Enter your username"
+                                            placeholder="Enter your username (email address)"
                                             aria-describedby="username-addon"
                                             autoComplete="off"
                                             required
