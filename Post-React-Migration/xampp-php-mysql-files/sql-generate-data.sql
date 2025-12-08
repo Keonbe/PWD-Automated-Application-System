@@ -2,63 +2,8 @@
 -- Insert Sample Data into PWD_Registry Table
 -- TYPE: PROCEDURE
 -- ----------------------------------------------------------------
-EXEC sp_CreatePWDRecord
-    @regNumber = '973821289540',
-    @regDate = '2025-10-13',
-    @lastName = 'Karamazov',
-    @firstName = 'Ivan',
-    @middleName = 'Fyodor',
-    @disability = 'Learning Disability',
-    @street = 'b1 b2',
-    @barangay = 'sabang',
-    @municipality = 'dasma',
-    @province = 'cavite',
-    @region = 'iv a',
-    @tel = '1234567',
-    @mobile = '9123456789',
-    @email = 'ivan@email.com',
-    @dob = '2025-09-04',
-    @sex = 'Male',
-    @nationality = 'Filipino',
-    @blood = 'A+',
-    @civil = 'Single',
-    @emergencyName = 'Keanu Oneal',
-    @emergencyPhone = '9123456789',
-    @emergencyRelationship = 'Test',
-    @proofIdentity = 'sample-id.png',
-    @proofDisability = 'sample-medcert.png',
-    @password = '83185255',
-    @status = 'denied';
-GO
-
-EXEC sp_CreatePWDRecord
-    @regNumber = '973821289541',
-    @regDate = '2025-10-14',
-    @lastName = 'Dela Cruz',
-    @firstName = 'Juan',
-    @middleName = 'Santos',
-    @disability = 'Visual Impairment',
-    @street = '123 Main Street',
-    @barangay = 'Poblacion',
-    @municipality = 'Imus',
-    @province = 'Cavite',
-    @region = 'iv a',
-    @tel = '2345678',
-    @mobile = '9123456790',
-    @email = 'juan.delacruz@email.com',
-    @dob = '1990-05-15',
-    @sex = 'Male',
-    @nationality = 'Filipino',
-    @blood = 'O+',
-    @civil = 'Married',
-    @emergencyName = 'Maria Dela Cruz',
-    @emergencyPhone = '9123456791',
-    @emergencyRelationship = 'Spouse',
-    @proofIdentity = 'juan-id.png',
-    @proofDisability = 'juan-medcert.png',
-    @password = 'password123',
-    @status = 'accepted';
-GO
+-- Removed SQL Server-style procedure calls (EXEC/GO) to make this file MySQL-friendly.
+-- Use the INSERT statements below to add sample rows in MySQL/phpMyAdmin.
 
 
 -- ----------------------------------------------------------------
@@ -135,7 +80,7 @@ VALUES (
     'Spouse',                    -- emergencyRelationship
     'juan-id.png',               -- proofIdentity
     'juan-medcert.png',          -- proofDisability
-    'password123',               -- password
+    '12345678',               -- password
     'accepted'                   -- status
 );
 
@@ -179,7 +124,7 @@ VALUES (
     'Spouse',
     'sample-id.png',
     'sample-medcert.png',
-    'pass1234',
+    '23456789',
     'pending'
 );
 
@@ -215,7 +160,7 @@ VALUES (
     'Friend',
     'sample-id.png',
     'sample-medcert.png',
-    'securepass1',
+    '34567890',
     'accepted'
 );
 
@@ -252,7 +197,7 @@ VALUES (
     'Wife',
     'sample-id.png',
     'sample-medcert.png',
-    'passluis',
+    '45678901',
     'denied'
 );
 
@@ -288,7 +233,7 @@ VALUES (
     'Friend',
     'sample-id.png',
     'sample-medcert.png',
-    'mariapass',
+    '56789012',
     'accepted'
 );
 
@@ -324,7 +269,7 @@ VALUES (
     'Boss',
     'sample-id.png',
     'sample-medcert.png',
-    'josepass',
+    '67890123',
     'pending'
 );
 
