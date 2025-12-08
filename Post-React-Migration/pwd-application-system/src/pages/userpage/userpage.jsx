@@ -37,7 +37,7 @@ export default function UserPage() {
     if (s === 'pending' || s === 'under review') {
       return { label: 'Under Review', percent: 60, badgeClass: 'status-warning', fillClass: 'fill-warning' };
     }
-    if (s === 'accepted') {
+    if (s === 'accepted' || s === 'approved') {
       return { label: 'Accepted', percent: 100, badgeClass: 'status-success', fillClass: 'fill-success' };
     }
     if (s === 'denied' || s === 'rejected') {

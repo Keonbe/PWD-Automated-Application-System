@@ -4,8 +4,9 @@
 -- ===============================================================
 --              DATABASE AND TABLE CREATION
 -- ===============================================================
--- Create database
-CREATE DATABASE PWDRegistry;
+CREATE DATABASE PWDRegistry
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
 GO
 
 USE PWDRegistry;
@@ -67,7 +68,8 @@ CREATE TABLE IF NOT EXISTS pwd_users (
     status VARCHAR(20) NOT NULL DEFAULT 'pending',
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 GO
 
 -- ----------------------------------------------------------------
@@ -80,7 +82,8 @@ CREATE TABLE admin_users (
     adminPassword VARCHAR(255) NOT NULL,
     adminName VARCHAR(100),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- TYPE: QUERY
 -- Insert default admin (change password in production!)
