@@ -933,14 +933,28 @@ export default function Register() {
                 />
               </div>
               <div className="col-md-6">
-                <input
-                  type="text"
+                <select
                   name="emergencyRelationship"
-                  className="form-control"
-                  placeholder="Relationship to You"
+                  id="emergencyRelationship"
+                  className="form-select"
                   aria-label="Relationship to Emergency Contact"
                   required
-                />
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    Select Relationship
+                  </option>
+                  <option value="Family">Family</option>
+                  <option value="Parents">Parents</option>
+                  <option value="Spouse">Spouse</option>
+                  <option value="Children">Children</option>
+                  <option value="Siblings">Siblings</option>
+                  <option value="Friends">Friends</option>
+                  <option value="Neighbor">Neighbor</option>
+                  <option value="Caregiver">Caregiver</option>
+                  <option value="Relative">Relative</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
             </div>
             <div className="form-text">
