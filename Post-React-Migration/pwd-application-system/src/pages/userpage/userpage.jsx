@@ -1,6 +1,6 @@
 import '../../assets/styles/userpage-styles.css';
 import { useState, useEffect } from 'react';
-import { getCurrentUserData, logoutUser } from "../../api/userApi";
+import { getCurrentUserData, logoutUser, changeUserPassword } from "../../api/userApi";
 import { useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import logo from '../../assets/images/dasma-logo-only.png';
@@ -158,15 +158,72 @@ export default function UserPage() {
 
     // Handle navigation actions
     switch(index) {
-      case 1: // Help
+      case 1: // Change Password
+        // switch view handled by activeNav
+        break;
+      case 2: // Help
         showHelp();
         break;
-      case 2: // Logout
+      case 3: // Logout
         handleLogout();
         break;
       default:
         // no-op for other indices (e.g., 0 = Dashboard)
         break;
+    }
+  };
+
+  // Change password state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [changeMessage, setChangeMessage] = useState(null);
+  const [changeError, setChangeError] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const handleCloseConfirmModal = () => setShowConfirmModal(false);
+  const handleShowConfirmModal = () => setShowConfirmModal(true);
+
+  // Validate inputs and show confirmation modal
+  const handleChangePasswordSubmit = (e) => {
+    e.preventDefault();
+    setChangeMessage(null);
+    setChangeError(null);
+
+    if (!currentPassword || !newPassword) {
+      setChangeError('Please fill all fields.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setChangeError('New password and confirmation do not match.');
+      return;
+    }
+
+    // Show confirmation modal before making API call
+    handleShowConfirmModal();
+  };
+
+  // Actual API call executed when user confirms
+  const performChangePassword = async () => {
+    setChangeMessage(null);
+    setChangeError(null);
+    setShowConfirmModal(false);
+
+    try {
+      setChangingPassword(true);
+      const regNumber = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+      const res = await changeUserPassword(regNumber, currentPassword, newPassword);
+      if (res.success) {
+        setChangeMessage(res.message || 'Password changed successfully.');
+        setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
+      } else {
+        setChangeError(res.message || 'Failed to change password.');
+      }
+    } catch (err) {
+      setChangeError(err.message || 'Error changing password');
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -292,204 +349,274 @@ export default function UserPage() {
 
         {/* Main Content */}
         <main className="user-main-content">
-          <h2 className="user-page-title">Application Status</h2>
-          <p className="user-page-subtitle">Track your PWD ID application progress</p>
+          {activeNav === 1 ? (
+            <div className="user-card">
+              <h3 className="user-card-title">Change Password</h3>
+              <p className="user-card-subtitle">Update your account password</p>
 
-          {/* Application Summary */}
-          <div className="user-card">
-            <div className="d-flex justify-content-between align-items-start flex-wrap gap-3">
-              <div>
-                <h3 className="user-card-title">PWD ID Application</h3>
-                <p className="mb-2"><strong>Registration No:</strong> {userData.regNumber}</p>
-                {/* Dynamic status badge */}
+              {changeMessage && (
+                <div className="alert alert-success">{changeMessage}</div>
+              )}
+              {changeError && (
+                <div className="alert alert-danger">{changeError}</div>
+              )}
+
+              <form onSubmit={handleChangePasswordSubmit}>
+                <div className="mb-3">
+                  <label className="form-label">Current Password</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">New Password</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Confirm New Password</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <button type="submit" className="btn btn-primary" disabled={changingPassword}>
+                  {changingPassword ? 'Updating...' : 'Change Password'}
+                </button>
+              </form>
+            </div>
+          ) : (
+            <>
+              <h2 className="user-page-title">Application Status</h2>
+              <p className="user-page-subtitle">Track your PWD ID application progress</p>
+
+              {/* Application Summary */}
+              <div className="user-card">
+                <div className="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                  <div>
+                    <h3 className="user-card-title">PWD ID Application</h3>
+                    <p className="mb-2"><strong>Registration No:</strong> {userData.regNumber}</p>
+                    {/* Dynamic status badge */}
+                    {(() => {
+                      const info = getStatusInfo(userData.status);
+                      return (
+                        <span className={`user-status-badge ${info.badgeClass}`}>
+                          {info.label === 'Under Review' ? <i className="fas fa-clock"></i> : null}
+                          {info.label === 'Accepted' ? <i className="fas fa-check-circle"></i> : null}
+                          {info.label === 'Denied' ? <i className="fas fa-times-circle"></i> : null}
+                          {' '}{info.label}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                  <div className="text-end">
+                    <div className="user-info-label">Date Submitted</div>
+                    <div className="user-info-value">{userData.regDate}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress */}
+              <div className="user-card">
+                <h3 className="user-card-title">Application Progress</h3>
+                <div className="user-progress-container">
+                  <div className="user-progress-bar-wrapper">
+                    {(() => {
+                      const info = getStatusInfo(userData.status);
+                      return (
+                        <div className={`user-progress-fill ${info.fillClass}`} style={{width: `${info.percent}%`}} />
+                      );
+                    })()}
+                  </div>
+                  <div className="user-progress-steps">
+                    <span>Submitted</span>
+                    <span>Verification</span>
+                    <span>Review</span>
+                    <span>Approval</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Application Details */}
+              <div className="user-card">
+                <h3 className="user-card-title">Personal Information</h3>
+                <div className="user-info-row">
+                  <span className="user-info-label">Full Name</span>
+                  <span className="user-info-value">{userData.firstName} {userData.middleName} {userData.lastName}</span>
+                </div>
+                <div className="user-info-row">
+                  <span className="user-info-label">Date of Birth</span>
+                  <span className="user-info-value">{userData.dob}</span>
+                </div>
+                <div className="user-info-row">
+                  <span className="user-info-label">Sex</span>
+                  <span className="user-info-value">{userData.sex}</span>
+                </div>
+                <div className="user-info-row">
+                  <span className="user-info-label">Civil Status</span>
+                  <span className="user-info-value">{userData.civil}</span>
+                </div>
+                <div className="user-info-row">
+                  <span className="user-info-label">Nationality</span>
+                  <span className="user-info-value">{userData.nationality}</span>
+                </div>
+                <div className="user-info-row">
+                  <span className="user-info-label">Blood Type</span>
+                  <span className="user-info-value">{userData.blood}</span>
+                </div>
+              </div>
+
+              <div className="user-card">
+                <h3 className="user-card-title">Contact Information</h3>
+                <div className="user-info-row">
+                  <span className="user-info-label">Address</span>
+                  <span className="user-info-value">
+                    {userData.street}, {userData.barangay}, {userData.municipality}, {userData.province}, {userData.region}
+                  </span>
+                </div>
+                {userData.mobile && (
+                  <div className="user-info-row">
+                    <span className="user-info-label">Mobile Number</span>
+                    <span className="user-info-value">{userData.mobile}</span>
+                  </div>
+                )}
+                {userData.tel && (
+                  <div className="user-info-row">
+                    <span className="user-info-label">Telephone</span>
+                    <span className="user-info-value">{userData.tel}</span>
+                  </div>
+                )}
+                <div className="user-info-row">
+                  <span className="user-info-label">Email</span>
+                  <span className="user-info-value">{userData.email}</span>
+                </div>
+              </div>
+
+              <div className="user-card">
+                <h3 className="user-card-title">Emergency Contact</h3>
+                <div className="user-info-row">
+                  <span className="user-info-label">Name</span>
+                  <span className="user-info-value">{userData.emergencyName}</span>
+                </div>
+                <div className="user-info-row">
+                  <span className="user-info-label">Contact Number</span>
+                  <span className="user-info-value">{userData.emergencyPhone}</span>
+                </div>
+                <div className="user-info-row">
+                  <span className="user-info-label">Relationship</span>
+                  <span className="user-info-value">{userData.emergencyRelationship}</span>
+                </div>
+              </div>
+
+              <div className="user-card">
+                <h3 className="user-card-title">Disability Information</h3>
+                <div className="user-info-row">
+                  <span className="user-info-label">Type of Disability</span>
+                  <span className="user-info-value">{userData.disability}</span>
+                </div>
+              </div>
+
+              {/* Recent Activity */}
+              <div className="user-card">
+                <h3 className="user-card-title">Recent Activity</h3>
+                
+                {/* Dynamic activity based on status: Temporary/Not Complete or Not Final */}
                 {(() => {
-                  const info = getStatusInfo(userData.status);
-                  return (
-                    <span className={`user-status-badge ${info.badgeClass}`}>
-                      {info.label === 'Under Review' ? <i className="fas fa-clock"></i> : null}
-                      {info.label === 'Accepted' ? <i className="fas fa-check-circle"></i> : null}
-                      {info.label === 'Denied' ? <i className="fas fa-times-circle"></i> : null}
-                      {' '}{info.label}
-                    </span>
-                  );
+                  const status = userData.status?.toLowerCase();
+                  if (status === 'pending') {
+                    return (
+                      <div className="user-activity-item">
+                        <div className="user-activity-header">
+                          <span className="user-activity-title">Application Under Review</span>
+                          <span className="user-activity-time">Today, 10:30 AM</span>
+                        </div>
+                        <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
+                      </div>
+                    );
+                  } else if (status === 'accepted') {
+                    return (
+                      <div className="user-activity-item">
+                        <div className="user-activity-header">
+                          <span className="user-activity-title">Application Approved</span>
+                          <span className="user-activity-time">Today, 9:15 AM</span>
+                        </div>
+                        <p className="user-activity-desc">Congratulations! Your PWD application has been approved.</p>
+                      </div>
+                    );
+                  } else if (status === 'denied') {
+                    return (
+                      <div className="user-activity-item">
+                        <div className="user-activity-header">
+                          <span className="user-activity-title">Application Status Updated</span>
+                          <span className="user-activity-time">Today, 11:45 AM</span>
+                        </div>
+                        <p className="user-activity-desc">Your application status has been updated. Please contact support for details.</p>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div className="user-activity-item">
+                        <div className="user-activity-header">
+                          <span className="user-activity-title">Application Under Review</span>
+                          <span className="user-activity-time">Today, 10:30 AM</span>
+                        </div>
+                        <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
+                      </div>
+                    );
+                  }
                 })()}
-              </div>
-              <div className="text-end">
-                <div className="user-info-label">Date Submitted</div>
-                <div className="user-info-value">{userData.regDate}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Progress */}
-          <div className="user-card">
-            <h3 className="user-card-title">Application Progress</h3>
-            <div className="user-progress-container">
-              <div className="user-progress-bar-wrapper">
-                {(() => {
-                  const info = getStatusInfo(userData.status);
-                  return (
-                    <div className={`user-progress-fill ${info.fillClass}`} style={{width: `${info.percent}%`}} />
-                  );
-                })()}
-              </div>
-              <div className="user-progress-steps">
-                <span>Submitted</span>
-                <span>Verification</span>
-                <span>Review</span>
-                <span>Approval</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Application Details */}
-          <div className="user-card">
-            <h3 className="user-card-title">Personal Information</h3>
-            <div className="user-info-row">
-              <span className="user-info-label">Full Name</span>
-              <span className="user-info-value">{userData.firstName} {userData.middleName} {userData.lastName}</span>
-            </div>
-            <div className="user-info-row">
-              <span className="user-info-label">Date of Birth</span>
-              <span className="user-info-value">{userData.dob}</span>
-            </div>
-            <div className="user-info-row">
-              <span className="user-info-label">Sex</span>
-              <span className="user-info-value">{userData.sex}</span>
-            </div>
-            <div className="user-info-row">
-              <span className="user-info-label">Civil Status</span>
-              <span className="user-info-value">{userData.civil}</span>
-            </div>
-            <div className="user-info-row">
-              <span className="user-info-label">Nationality</span>
-              <span className="user-info-value">{userData.nationality}</span>
-            </div>
-            <div className="user-info-row">
-              <span className="user-info-label">Blood Type</span>
-              <span className="user-info-value">{userData.blood}</span>
-            </div>
-          </div>
-
-          <div className="user-card">
-            <h3 className="user-card-title">Contact Information</h3>
-            <div className="user-info-row">
-              <span className="user-info-label">Address</span>
-              <span className="user-info-value">
-                {userData.street}, {userData.barangay}, {userData.municipality}, {userData.province}, {userData.region}
-              </span>
-            </div>
-            {userData.mobile && (
-              <div className="user-info-row">
-                <span className="user-info-label">Mobile Number</span>
-                <span className="user-info-value">{userData.mobile}</span>
-              </div>
-            )}
-            {userData.tel && (
-              <div className="user-info-row">
-                <span className="user-info-label">Telephone</span>
-                <span className="user-info-value">{userData.tel}</span>
-              </div>
-            )}
-            <div className="user-info-row">
-              <span className="user-info-label">Email</span>
-              <span className="user-info-value">{userData.email}</span>
-            </div>
-          </div>
-
-          <div className="user-card">
-            <h3 className="user-card-title">Emergency Contact</h3>
-            <div className="user-info-row">
-              <span className="user-info-label">Name</span>
-              <span className="user-info-value">{userData.emergencyName}</span>
-            </div>
-            <div className="user-info-row">
-              <span className="user-info-label">Contact Number</span>
-              <span className="user-info-value">{userData.emergencyPhone}</span>
-            </div>
-            <div className="user-info-row">
-              <span className="user-info-label">Relationship</span>
-              <span className="user-info-value">{userData.emergencyRelationship}</span>
-            </div>
-          </div>
-
-          <div className="user-card">
-            <h3 className="user-card-title">Disability Information</h3>
-            <div className="user-info-row">
-              <span className="user-info-label">Type of Disability</span>
-              <span className="user-info-value">{userData.disability}</span>
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="user-card">
-            <h3 className="user-card-title">Recent Activity</h3>
-            
-            {/* Dynamic activity based on status: Temporary/Not Complete or Not Final */}
-            {(() => {
-              const status = userData.status?.toLowerCase();
-              if (status === 'pending') {
-                return (
-                  <div className="user-activity-item">
-                    <div className="user-activity-header">
-                      <span className="user-activity-title">Application Under Review</span>
-                      <span className="user-activity-time">Today, 10:30 AM</span>
-                    </div>
-                    <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
+                
+                <div className="user-activity-item">
+                  <div className="user-activity-header">
+                    <span className="user-activity-title">Documents Verified</span>
+                    <span className="user-activity-time">{userData.regDate}</span>
                   </div>
-                );
-              } else if (status === 'accepted') {
-                return (
-                  <div className="user-activity-item">
-                    <div className="user-activity-header">
-                      <span className="user-activity-title">Application Approved</span>
-                      <span className="user-activity-time">Today, 9:15 AM</span>
-                    </div>
-                    <p className="user-activity-desc">Congratulations! Your PWD application has been approved.</p>
-                  </div>
-                );
-              } else if (status === 'denied') {
-                return (
-                  <div className="user-activity-item">
-                    <div className="user-activity-header">
-                      <span className="user-activity-title">Application Status Updated</span>
-                      <span className="user-activity-time">Today, 11:45 AM</span>
-                    </div>
-                    <p className="user-activity-desc">Your application status has been updated. Please contact support for details.</p>
-                  </div>
-                );
-              } else {
-                return (
-                  <div className="user-activity-item">
-                    <div className="user-activity-header">
-                      <span className="user-activity-title">Application Under Review</span>
-                      <span className="user-activity-time">Today, 10:30 AM</span>
-                    </div>
-                    <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
-                  </div>
-                );
-              }
-            })()}
-            
-            <div className="user-activity-item">
-              <div className="user-activity-header">
-                <span className="user-activity-title">Documents Verified</span>
-                <span className="user-activity-time">{userData.regDate}</span>
-              </div>
-              <p className="user-activity-desc">All submitted documents have been verified.</p>
-            </div>
+                  <p className="user-activity-desc">All submitted documents have been verified.</p>
+                </div>
 
-            <div className="user-activity-item">
-              <div className="user-activity-header">
-                <span className="user-activity-title">Application Submitted</span>
-                <span className="user-activity-time">{userData.regDate}</span>
+                <div className="user-activity-item">
+                  <div className="user-activity-header">
+                    <span className="user-activity-title">Application Submitted</span>
+                    <span className="user-activity-time">{userData.regDate}</span>
+                  </div>
+                  <p className="user-activity-desc">Your PWD application has been successfully submitted.</p>
+                </div>
               </div>
-              <p className="user-activity-desc">Your PWD application has been successfully submitted.</p>
-            </div>
-          </div>
+            </>
+          )}
         </main>
+        {/* Confirm Change Password Modal */}
+        <Modal show={showConfirmModal} onHide={handleCloseConfirmModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Password Change</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Are you sure you want to change your password? This action will update your account credentials.</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseConfirmModal}>Cancel</Button>
+            <Button variant="danger" onClick={performChangePassword} disabled={changingPassword}>
+              {changingPassword ? 'Updating...' : 'Yes, change password'}
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
-      {/* Help Modal - Tried Using React-Bootstrap Modal */}
+        {/* Help Modal - Tried Using React-Bootstrap Modal */}
       <Modal show={showHelpModal} onHide={handleCloseHelpModal} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>

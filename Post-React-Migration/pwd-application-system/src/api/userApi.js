@@ -185,3 +185,35 @@ export const logoutUser = () => {
     sessionStorage.removeItem('userData');
     sessionStorage.clear();
 };
+
+/**
+ * @summary Change user's password via PHP backend.
+ * 
+ * @param {string} regNumber - User registration number.
+ * @param {string} currentPassword - Current password to verify.
+ * @param {string} newPassword - New password to set.
+ * 
+ * @returns {Promise<Object>} Result object with success and message.
+ */
+export const changeUserPassword = async (regNumber, currentPassword, newPassword) => {
+    try {
+        console.log('[userApi] changeUserPassword - starting for', regNumber);
+        const res = await api.post('/change-password.php', {
+            regNumber: regNumber,
+            currentPassword: currentPassword,
+            newPassword: newPassword
+        });
+
+        console.log('[userApi] changeUserPassword response:', res.data);
+
+        if (res.data.success) {
+            return { success: true, message: res.data.message || 'Password changed successfully' };
+        }
+
+        return { success: false, message: res.data.message || 'Failed to change password' };
+
+    } catch (error) {
+        console.error('[userApi] changeUserPassword error:', error);
+        return { success: false, message: error.response?.data?.message || error.message || 'Error connecting to backend' };
+    }
+};
