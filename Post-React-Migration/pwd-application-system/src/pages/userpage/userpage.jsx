@@ -165,7 +165,8 @@ export default function UserPage() {
         showHelp();
         break;
       case 3: // Logout
-        handleLogout();
+        // show confirmation modal before logging out
+        handleShowLogoutModal();
         break;
       default:
         // no-op for other indices (e.g., 0 = Dashboard)
@@ -184,6 +185,12 @@ export default function UserPage() {
 
   const handleCloseConfirmModal = () => setShowConfirmModal(false);
   const handleShowConfirmModal = () => setShowConfirmModal(true);
+
+  // Logout confirmation modal state
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const handleShowLogoutModal = () => setShowLogoutModal(true);
+  const handleCloseLogoutModal = () => setShowLogoutModal(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   // Validate inputs and show confirmation modal
   const handleChangePasswordSubmit = (e) => {
@@ -249,10 +256,16 @@ export default function UserPage() {
   const handleLogout = async () => {
     try {
       console.log('[UserPage] Logging out...');
+      // show perceived delay with spinner
+      setLoggingOut(true);
+      // wait 1.2s to simulate processing / give UX feedback
+      await new Promise((resolve) => setTimeout(resolve, 1200));
       logoutUser();
+      setLoggingOut(false);
       navigate('/login', { replace: true });
     } catch (err) {
       console.error('[UserPage] Logout error:', err);
+      setLoggingOut(false);
       // Force redirect even if error
       navigate('/login', { replace: true });
     }
@@ -616,6 +629,22 @@ export default function UserPage() {
           </Modal.Footer>
         </Modal>
 
+        {/* Logout Confirmation Modal */}
+        <Modal show={showLogoutModal} onHide={handleCloseLogoutModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Logout</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Are you sure you want to log out? You will be redirected to the login page.</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseLogoutModal}>Cancel</Button>
+            <Button variant="danger" onClick={() => { handleCloseLogoutModal(); handleLogout(); }}>
+              Yes, Log Out
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
         {/* Help Modal - Tried Using React-Bootstrap Modal */}
       <Modal show={showHelpModal} onHide={handleCloseHelpModal} size="lg">
         <Modal.Header closeButton>
@@ -659,6 +688,18 @@ export default function UserPage() {
         <Modal.Footer>
           <Button variant="primary" onClick={handleCloseHelpModal}>Okay</Button>
         </Modal.Footer>
+      </Modal>
+
+      {/* Logging out spinner (non-closable) */}
+      <Modal show={loggingOut} centered backdrop="static" keyboard={false}>
+        <Modal.Body className="text-center py-4">
+          <div className="d-flex flex-column align-items-center">
+            <div className="spinner-border text-primary mb-3" role="status">
+              <span className="visually-hidden">Logging out...</span>
+            </div>
+            <div>Logging out... Please wait</div>
+          </div>
+        </Modal.Body>
       </Modal>
 
       </div>
