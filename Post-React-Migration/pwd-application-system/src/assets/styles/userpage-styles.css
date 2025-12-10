@@ -476,3 +476,242 @@
 .user-overlay-active {
   display: block;
 }
+
+/* PWD ID Card Styles */
+.pwd-card-preview {
+  max-width: 800px;
+}
+
+.pwd-id-card {
+  border: 2px solid #2d7c2f;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pwd-card-header {
+  background: linear-gradient(135deg, #2d7c2f 0%, #1e5a1f 100%);
+  color: white;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pwd-card-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  background: white;
+  padding: 4px;
+}
+
+.pwd-card-header-text {
+  flex: 1;
+}
+
+.pwd-card-header-text h4 {
+  font-size: 0.85rem;
+  margin: 0;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.pwd-card-header-text h5 {
+  font-size: 1rem;
+  margin: 0.25rem 0;
+  font-weight: 600;
+}
+
+.pwd-card-header-text h6 {
+  font-size: 0.9rem;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.pwd-card-body {
+  display: flex;
+  padding: 1.5rem;
+  gap: 1.5rem;
+}
+
+.pwd-card-photo {
+  width: 120px;
+  height: 140px;
+  background: #e9ecef;
+  border: 2px dashed #adb5bd;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  flex-shrink: 0;
+}
+
+.pwd-card-photo i {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.photo-placeholder-text {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pwd-card-info {
+  flex: 1;
+}
+
+.pwd-card-row {
+  display: flex;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.pwd-label {
+  color: #666;
+  min-width: 130px;
+  flex-shrink: 0;
+}
+
+.pwd-value {
+  font-weight: 600;
+  color: #333;
+  word-break: break-word;
+}
+
+.pwd-card-footer {
+  background: #f8f9fa;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e9ecef;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.pwd-card-qr {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid #e9ecef;
+}
+
+.qr-placeholder {
+  width: 100px;
+  height: 100px;
+  background: #e9ecef;
+  border: 2px dashed #adb5bd;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+}
+
+.qr-placeholder i {
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.qr-placeholder span {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+/* PWD Status Colors in Card */
+.pwd-status-pending,
+.pwd-status-under\ review {
+  color: #856404;
+  background: #fff3cd;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.pwd-status-accepted,
+.pwd-status-approved {
+  color: #0f5132;
+  background: #d1e7dd;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.pwd-status-denied,
+.pwd-status-rejected {
+  color: #842029;
+  background: #f8d7da;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+/* Print Styles */
+@media print {
+  .user-dashboard-header,
+  .user-sidebar,
+  .user-overlay,
+  .btn,
+  .user-mobile-menu-btn {
+    display: none !important;
+  }
+
+  .user-dashboard-wrapper {
+    background: white;
+    padding: 0;
+  }
+
+  .user-main-content {
+    padding: 0;
+    margin: 0;
+  }
+
+  .pwd-card-preview {
+    max-width: 100%;
+    box-shadow: none;
+    border: none;
+  }
+
+  .pwd-id-card {
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+
+  .pwd-card-preview > .d-flex,
+  .pwd-card-preview > p,
+  .pwd-card-preview > .mt-4 > h5 {
+    display: none !important;
+  }
+}
+
+/* Mobile Responsiveness for PWD Card */
+@media (max-width: 576px) {
+  .pwd-card-body {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .pwd-card-info {
+    width: 100%;
+  }
+
+  .pwd-card-row {
+    flex-direction: column;
+    text-align: left;
+  }
+
+  .pwd-label {
+    min-width: auto;
+    font-size: 0.8rem;
+  }
+
+  .pwd-card-footer {
+    grid-template-columns: 1fr;
+  }
+}

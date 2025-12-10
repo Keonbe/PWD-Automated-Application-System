@@ -168,13 +168,16 @@ export default function UserPage() {
       case 1: // Edit Profile
         // switch view handled by activeNav
         break;
-      case 2: // Change Password
+      case 2: // View/Print ID
         // switch view handled by activeNav
         break;
-      case 3: // Help
+      case 3: // Change Password
+        // switch view handled by activeNav
+        break;
+      case 4: // Help
         showHelp();
         break;
-      case 4: // Logout
+      case 5: // Logout
         // show confirmation modal before logging out
         handleShowLogoutModal();
         break;
@@ -531,6 +534,120 @@ export default function UserPage() {
               </form>
             </div>
           ) : activeNav === 2 ? (
+            /* View/Print PWD ID Card */
+            <div className="user-card pwd-card-preview">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h3 className="user-card-title mb-0">PWD ID Application Card</h3>
+                <button 
+                  className="btn btn-success btn-sm"
+                  onClick={() => window.print()}
+                >
+                  <i className="fas fa-print me-2"></i>Print
+                </button>
+              </div>
+              <p className="text-muted small mb-4">Preview your PWD application details. Click Print to save or print this card.</p>
+
+              {/* PWD Card Layout */}
+              <div className="pwd-id-card">
+                <div className="pwd-card-header">
+                  <img src={logo} alt="City Logo" className="pwd-card-logo" />
+                  <div className="pwd-card-header-text">
+                    <h4>Republic of the Philippines</h4>
+                    <h5>City of Dasmariñas, Cavite</h5>
+                    <h6>Person with Disability (PWD) ID</h6>
+                  </div>
+                </div>
+
+                <div className="pwd-card-body">
+                  <div className="pwd-card-photo">
+                    <i className="fas fa-user"></i>
+                    <span className="photo-placeholder-text">Photo</span>
+                  </div>
+                  <div className="pwd-card-info">
+                    <div className="pwd-card-row">
+                      <span className="pwd-label">Registration No:</span>
+                      <span className="pwd-value">{userData.regNumber || '—'}</span>
+                    </div>
+                    <div className="pwd-card-row">
+                      <span className="pwd-label">Name:</span>
+                      <span className="pwd-value">
+                        {`${userData.lastName || ''}, ${userData.firstName || ''} ${userData.middleName || ''}`.trim() || '—'}
+                      </span>
+                    </div>
+                    <div className="pwd-card-row">
+                      <span className="pwd-label">Date of Birth:</span>
+                      <span className="pwd-value">{userData.dob || '—'}</span>
+                    </div>
+                    <div className="pwd-card-row">
+                      <span className="pwd-label">Sex:</span>
+                      <span className="pwd-value">{userData.sex || '—'}</span>
+                    </div>
+                    <div className="pwd-card-row">
+                      <span className="pwd-label">Disability:</span>
+                      <span className="pwd-value">{userData.disability || '—'}</span>
+                    </div>
+                    <div className="pwd-card-row">
+                      <span className="pwd-label">Address:</span>
+                      <span className="pwd-value">
+                        {`${userData.street || ''}, ${userData.barangay || ''}, ${userData.municipality || ''}, ${userData.province || ''}`.replace(/^, |, $/g, '') || '—'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pwd-card-footer">
+                  <div className="pwd-card-row">
+                    <span className="pwd-label">Blood Type:</span>
+                    <span className="pwd-value">{userData.blood || '—'}</span>
+                  </div>
+                  <div className="pwd-card-row">
+                    <span className="pwd-label">Emergency Contact:</span>
+                    <span className="pwd-value">{userData.emergencyName || '—'} ({userData.emergencyPhone || '—'})</span>
+                  </div>
+                  <div className="pwd-card-row">
+                    <span className="pwd-label">Date Registered:</span>
+                    <span className="pwd-value">{userData.regDate || '—'}</span>
+                  </div>
+                  <div className="pwd-card-row">
+                    <span className="pwd-label">Status:</span>
+                    <span className={`pwd-value pwd-status-${(userData.status || '').toLowerCase()}`}>
+                      {userData.status || 'Pending'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* QR Code Placeholder */}
+                <div className="pwd-card-qr">
+                  <div className="qr-placeholder">
+                    <i className="fas fa-qrcode"></i>
+                    <span>QR Code</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Details Section */}
+              <div className="mt-4">
+                <h5 className="mb-3">Application Details</h5>
+                <div className="row g-3">
+                  <div className="col-md-6">
+                    <div className="border rounded p-3">
+                      <h6 className="text-muted">Contact Information</h6>
+                      <p className="mb-1"><strong>Mobile:</strong> {userData.mobile || '—'}</p>
+                      <p className="mb-1"><strong>Tel:</strong> {userData.tel || '—'}</p>
+                      <p className="mb-0"><strong>Email:</strong> {userData.email || '—'}</p>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="border rounded p-3">
+                      <h6 className="text-muted">Documents Submitted</h6>
+                      <p className="mb-1"><strong>ID Document:</strong> {userData.proofIdentity || 'Not uploaded'}</p>
+                      <p className="mb-0"><strong>Medical Certificate:</strong> {userData.proofDisability || 'Not uploaded'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : activeNav === 3 ? (
             <div className="user-card">
               <h3 className="user-card-title">Change Password</h3>
               <p className="user-card-subtitle">Update your account password</p>
