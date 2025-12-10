@@ -217,3 +217,45 @@ export const changeUserPassword = async (regNumber, currentPassword, newPassword
         return { success: false, message: error.response?.data?.message || error.message || 'Error connecting to backend' };
     }
 };
+
+/**
+ * @summary Update user profile information via PHP backend.
+ * 
+ * @param {string} regNumber - User registration number.
+ * @param {Object} profileData - Profile data to update (address, contactNumber, emergencyContact, emergencyNumber).
+ * 
+ * @returns {Promise<Object>} Result object with success, message, and updated user data.
+ */
+export const updateUserProfile = async (regNumber, profileData) => {
+    try {
+        console.log('[userApi] updateUserProfile - starting for', regNumber);
+        console.log('[userApi] updateUserProfile - data:', profileData);
+        
+        const res = await api.post('/update-profile.php', {
+            regNumber: regNumber,
+            ...profileData
+        });
+
+        console.log('[userApi] updateUserProfile response:', res.data);
+
+        if (res.data.success) {
+            return { 
+                success: true, 
+                message: res.data.message || 'Profile updated successfully',
+                user: res.data.user 
+            };
+        }
+
+        return { 
+            success: false, 
+            message: res.data.message || 'Failed to update profile' 
+        };
+
+    } catch (error) {
+        console.error('[userApi] updateUserProfile error:', error);
+        return { 
+            success: false, 
+            message: error.response?.data?.message || error.message || 'Error connecting to backend' 
+        };
+    }
+};

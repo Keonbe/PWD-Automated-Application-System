@@ -1,6 +1,6 @@
 import '../../assets/styles/userpage-styles.css';
 import { useState, useEffect } from 'react';
-import { getCurrentUserData, logoutUser, changeUserPassword } from "../../api/userApi";
+import { getCurrentUserData, logoutUser, changeUserPassword, updateUserProfile } from "../../api/userApi";
 import { useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import logo from '../../assets/images/dasma-logo-only.png';
@@ -93,6 +93,13 @@ export default function UserPage() {
     loadUserData();
   }, [navigate]);
 
+  // Initialize edit profile form when switching to Edit Profile view
+  useEffect(() => {
+    if (activeNav === 1) {
+      initializeEditProfileForm();
+    }
+  }, [activeNav, userData]);
+
   /**
    * @summary Provides demo user data for development and fallback scenarios.
    * 
@@ -158,13 +165,16 @@ export default function UserPage() {
 
     // Handle navigation actions
     switch(index) {
-      case 1: // Change Password
+      case 1: // Edit Profile
         // switch view handled by activeNav
         break;
-      case 2: // Help
+      case 2: // Change Password
+        // switch view handled by activeNav
+        break;
+      case 3: // Help
         showHelp();
         break;
-      case 3: // Logout
+      case 4: // Logout
         // show confirmation modal before logging out
         handleShowLogoutModal();
         break;
@@ -185,6 +195,20 @@ export default function UserPage() {
 
   const handleCloseConfirmModal = () => setShowConfirmModal(false);
   const handleShowConfirmModal = () => setShowConfirmModal(true);
+
+  // Edit Profile state
+  const [editAddress, setEditAddress] = useState('');
+  const [editContactNumber, setEditContactNumber] = useState('');
+  const [editEmergencyContact, setEditEmergencyContact] = useState('');
+  const [editEmergencyNumber, setEditEmergencyNumber] = useState('');
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [editMessage, setEditMessage] = useState(null);
+  const [editError, setEditError] = useState(null);
+  const [showEditConfirmModal, setShowEditConfirmModal] = useState(false);
+  const [editChanges, setEditChanges] = useState({});
+
+  const handleCloseEditConfirmModal = () => setShowEditConfirmModal(false);
+  const handleShowEditConfirmModal = () => setShowEditConfirmModal(true);
 
   // Logout confirmation modal state
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -231,6 +255,88 @@ export default function UserPage() {
       setChangeError(err.message || 'Error changing password');
     } finally {
       setChangingPassword(false);
+    }
+  };
+
+  // Edit Profile - Initialize form with current data
+  const initializeEditProfileForm = () => {
+    if (userData) {
+      setEditAddress(userData.street || '');
+      setEditContactNumber(userData.mobile || '');
+      setEditEmergencyContact(userData.emergencyName || '');
+      setEditEmergencyNumber(userData.emergencyPhone || '');
+    }
+  };
+
+  // Edit Profile - Track changes
+  const handleEditProfileChange = (field, value) => {
+    switch(field) {
+      case 'address':
+        setEditAddress(value);
+        setEditChanges(prev => ({ ...prev, address: value }));
+        break;
+      case 'contactNumber':
+        setEditContactNumber(value);
+        setEditChanges(prev => ({ ...prev, contactNumber: value }));
+        break;
+      case 'emergencyContact':
+        setEditEmergencyContact(value);
+        setEditChanges(prev => ({ ...prev, emergencyContact: value }));
+        break;
+      case 'emergencyNumber':
+        setEditEmergencyNumber(value);
+        setEditChanges(prev => ({ ...prev, emergencyNumber: value }));
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Edit Profile - Validate and show confirmation
+  const handleEditProfileSubmit = (e) => {
+    e.preventDefault();
+    setEditMessage(null);
+    setEditError(null);
+
+    if (Object.keys(editChanges).length === 0) {
+      setEditError('No changes made.');
+      return;
+    }
+
+    // Show confirmation modal
+    handleShowEditConfirmModal();
+  };
+
+  // Edit Profile - Actual API call
+  const performEditProfile = async () => {
+    setEditMessage(null);
+    setEditError(null);
+    setShowEditConfirmModal(false);
+
+    try {
+      setEditingProfile(true);
+      const regNumber = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+      
+      const res = await updateUserProfile(regNumber, editChanges);
+      
+      if (res.success) {
+        setEditMessage(res.message || 'Profile updated successfully.');
+        // Update userData with new profile info
+        setUserData(prev => ({
+          ...prev,
+          street: editAddress || prev.street,
+          mobile: editContactNumber || prev.mobile,
+          emergencyName: editEmergencyContact || prev.emergencyName,
+          emergencyPhone: editEmergencyNumber || prev.emergencyPhone
+        }));
+        setEditChanges({});
+      } else {
+        setEditError(res.message || 'Failed to update profile.');
+      }
+    } catch (err) {
+      setEditError(err.message || 'Error updating profile');
+    } finally {
+      setEditingProfile(false);
     }
   };
 
@@ -363,6 +469,68 @@ export default function UserPage() {
         {/* Main Content */}
         <main className="user-main-content">
           {activeNav === 1 ? (
+            <div className="user-card">
+              <h3 className="user-card-title">Edit Profile</h3>
+              <p className="user-card-subtitle">Update your personal details</p>
+
+              {editMessage && (
+                <div className="alert alert-success">{editMessage}</div>
+              )}
+              {editError && (
+                <div className="alert alert-danger">{editError}</div>
+              )}
+
+              <form onSubmit={handleEditProfileSubmit}>
+                <div className="mb-3">
+                  <label className="form-label">Address (House No. and Street)</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={editAddress}
+                    onChange={(e) => handleEditProfileChange('address', e.target.value)}
+                    placeholder="Enter your street address"
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Contact Number</label>
+                  <input
+                    type="tel"
+                    className="form-control"
+                    value={editContactNumber}
+                    onChange={(e) => handleEditProfileChange('contactNumber', e.target.value)}
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Emergency Contact Name</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={editEmergencyContact}
+                    onChange={(e) => handleEditProfileChange('emergencyContact', e.target.value)}
+                    placeholder="Enter emergency contact name"
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Emergency Contact Number</label>
+                  <input
+                    type="tel"
+                    className="form-control"
+                    value={editEmergencyNumber}
+                    onChange={(e) => handleEditProfileChange('emergencyNumber', e.target.value)}
+                    placeholder="Enter emergency contact phone number"
+                  />
+                </div>
+
+                <button type="submit" className="btn btn-primary" disabled={editingProfile}>
+                  {editingProfile ? 'Updating...' : 'Save Changes'}
+                </button>
+              </form>
+            </div>
+          ) : activeNav === 2 ? (
             <div className="user-card">
               <h3 className="user-card-title">Change Password</h3>
               <p className="user-card-subtitle">Update your account password</p>
@@ -625,6 +793,44 @@ export default function UserPage() {
             <Button variant="secondary" onClick={handleCloseConfirmModal}>Cancel</Button>
             <Button variant="danger" onClick={performChangePassword} disabled={changingPassword}>
               {changingPassword ? 'Updating...' : 'Yes, change password'}
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Change Password Confirmation Modal */}
+        <Modal show={showConfirmModal} onHide={handleCloseConfirmModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Password Change</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Are you sure you want to change your password? Please make sure you enter your new password correctly.</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseConfirmModal}>Cancel</Button>
+            <Button variant="primary" onClick={() => { handleCloseConfirmModal(); performChangePassword(); }}>
+              Change Password
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Edit Profile Confirmation Modal */}
+        <Modal show={showEditConfirmModal} onHide={handleCloseEditConfirmModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Profile Changes</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Are you sure you want to update your profile with the following changes?</p>
+            <ul className="small">
+              {editChanges.address && <li>Address updated</li>}
+              {editChanges.contactNumber && <li>Contact number updated</li>}
+              {editChanges.emergencyContact && <li>Emergency contact name updated</li>}
+              {editChanges.emergencyNumber && <li>Emergency contact number updated</li>}
+            </ul>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseEditConfirmModal}>Cancel</Button>
+            <Button variant="primary" onClick={() => { handleCloseEditConfirmModal(); performEditProfile(); }}>
+              Save Changes
             </Button>
           </Modal.Footer>
         </Modal>
