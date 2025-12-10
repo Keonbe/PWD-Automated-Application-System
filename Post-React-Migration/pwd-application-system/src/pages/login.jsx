@@ -3,7 +3,7 @@ import '../assets/styles/login-styles.css';
 import logo from '../assets/images/dasma-logo-only.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
-import { userLogin, adminLogin } from '../api/loginApi'; // Import login API functions from xampp-php-mysql-files/api
+import { userLogin, adminLogin, forgotPassword } from '../api/loginApi'; // Import login API functions from xampp-php-mysql-files/api
 
 export default function Login() {
 
@@ -29,6 +29,13 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false); /**  @summary User login loading state for form submission. */
     const [adminIsLoading, setAdminIsLoading] = useState(false); /**  @summary Admin login loading state for form submission. */
     const [showAdminModal, setShowAdminModal] = useState(false); /**  @summary Admin modal visibility control state. */
+    const [showForgotModal, setShowForgotModal] = useState(false); /**  @summary Forgot password modal visibility control state. */
+    const [forgotRegNumber, setForgotRegNumber] = useState(''); /**  @summary Registration number input for forgot password form. */
+    const [forgotEmail, setForgotEmail] = useState(''); /**  @summary Email input for forgot password form. */
+    const [forgotNewPassword, setForgotNewPassword] = useState(''); /**  @summary New password input for forgot password form. */
+    const [forgotConfirmPassword, setForgotConfirmPassword] = useState(''); /**  @summary Confirm password input for forgot password form. */
+    const [forgotIsLoading, setForgotIsLoading] = useState(false); /**  @summary Forgot password loading state for form submission. */
+    const [forgotMessage, setForgotMessage] = useState(''); /**  @summary Forgot password status message display state. */
 
     /**
      * @summary SheetDB API URL for user authentication data (LEGACY - COMMENTED OUT).
@@ -291,6 +298,92 @@ export default function Login() {
         setAdminLoginMessage('');
     };
 
+    /**
+     * @summary Opens the forgot password modal dialog.
+     * 
+     * @remarks
+     * Triggered by "Forgot Password?" link click in the login form.
+     */
+    const handleShowForgotModal = () => setShowForgotModal(true);
+
+    /**
+     * @summary Closes the forgot password modal and resets form state.
+     * 
+     * @remarks
+     * Clears forgot password form fields and messages to ensure clean state on next open.
+     */
+    const handleCloseForgotModal = () => {
+        setShowForgotModal(false);
+        // Clear forgot password form when modal closes
+        setForgotRegNumber('');
+        setForgotEmail('');
+        setForgotNewPassword('');
+        setForgotConfirmPassword('');
+        setForgotMessage('');
+    };
+
+    /**
+     * @summary Handles forgot password form submission.
+     * 
+     * @param {Event} e - Form submission event object.
+     * 
+     * @returns {Promise<void>}
+     * 
+     * @remarks
+     * Validates form inputs, calls forgotPassword API, and displays result message.
+     * On success, closes modal and allows user to log in with new password.
+     */
+    const handleForgotPasswordSubmit = async (e) => {
+        e.preventDefault();
+        setForgotIsLoading(true);
+        setForgotMessage('');
+
+        // Validation
+        if (!forgotRegNumber || !forgotEmail || !forgotNewPassword || !forgotConfirmPassword) {
+            setForgotMessage('<div class="alert alert-danger">Please fill in all fields.</div>');
+            setForgotIsLoading(false);
+            return;
+        }
+
+        if (forgotNewPassword !== forgotConfirmPassword) {
+            setForgotMessage('<div class="alert alert-danger">Passwords do not match.</div>');
+            setForgotIsLoading(false);
+            return;
+        }
+
+        if (forgotNewPassword.length < 6) {
+            setForgotMessage('<div class="alert alert-danger">Password must be at least 6 characters long.</div>');
+            setForgotIsLoading(false);
+            return;
+        }
+
+        try {
+            console.log('[ForgotPassword] Attempting password reset...');
+            
+            // Call forgotPassword API from loginApi.js
+            const result = await forgotPassword(forgotRegNumber.trim(), forgotEmail.trim(), forgotNewPassword);
+            
+            if (result.success) {
+                console.log('[ForgotPassword] Password reset successful');
+                setForgotMessage('<div class="alert alert-success">Password reset successful! You can now log in with your new password.</div>');
+                
+                // Close modal after showing success message
+                setTimeout(() => {
+                    handleCloseForgotModal();
+                }, 2000);
+            } else {
+                const errorMsg = result.message || 'Password reset failed. Please try again.';
+                setForgotMessage(`<div class="alert alert-danger">${errorMsg}</div>`);
+                console.error('[ForgotPassword] Password reset failed:', errorMsg);
+            }
+        } catch (error) {
+            console.error('[ForgotPassword] Error:', error);
+            setForgotMessage('<div class="alert alert-danger">Password reset service is temporarily unavailable. Please try again later.</div>');
+        } finally {
+            setForgotIsLoading(false);
+        }
+    };
+
     return (
         <main className="container d-flex align-items-center justify-content-center py-5 login-section">
             <div className="row w-100 justify-content-center">
@@ -382,11 +475,20 @@ export default function Login() {
                                     &nbsp;|&nbsp; <a href="mailto:it@dasmarinas.gov.ph" aria-label="Email IT Department">it@dasmarinas.gov.ph</a>
                                 </div>
 
-                                {/* Links: Register & Admin */}
+                                {/* Links: Register, Forgot Password & Admin */}
                                 <div id="register-admin-links">
                                     <div className="register-section">
                                         <span className="small text-black">Not registered?</span>
                                         <Link to="/consent" className="small text-primary fw-semibold">Create an account</Link>
+                                    </div>
+                                    <div className="forgot-password-section">
+                                        <button 
+                                            type="button"
+                                            className="small text-primary fw-semibold border-0 bg-transparent p-0"
+                                            onClick={handleShowForgotModal}
+                                        >
+                                            Forgot password?
+                                        </button>
                                     </div>
                                     <div className="admin-section">
                                         <span className="small text-black">Are you an Admin?</span>
@@ -495,6 +597,95 @@ export default function Login() {
                 </Modal.Body>
                 <Modal.Footer className="flex-nowrap justify-content-around">
                     <Button variant="secondary" onClick={handleCloseAdminModal}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* React-Bootstrap Forgot Password Modal */}
+            <Modal show={showForgotModal} onHide={handleCloseForgotModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Reset Password</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form id="forgotPasswordForm" onSubmit={handleForgotPasswordSubmit} noValidate>
+                        <div className="mb-3">
+                            <label htmlFor="forgotRegNumber" className="form-label">Registration Number</label>
+                            <input 
+                                type="text" 
+                                className="form-control" 
+                                id="forgotRegNumber" 
+                                placeholder="Enter your registration number"
+                                required
+                                value={forgotRegNumber}
+                                onChange={(e) => setForgotRegNumber(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="forgotEmail" className="form-label">Email address</label>
+                            <input 
+                                type="email" 
+                                className="form-control" 
+                                id="forgotEmail" 
+                                placeholder="Enter your email address"
+                                required
+                                value={forgotEmail}
+                                onChange={(e) => setForgotEmail(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="forgotNewPassword" className="form-label">New Password</label>
+                            <input 
+                                type="password" 
+                                className="form-control" 
+                                id="forgotNewPassword" 
+                                placeholder="Enter your new password"
+                                required
+                                value={forgotNewPassword}
+                                onChange={(e) => setForgotNewPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="forgotConfirmPassword" className="form-label">Confirm Password</label>
+                            <input 
+                                type="password" 
+                                className="form-control" 
+                                id="forgotConfirmPassword" 
+                                placeholder="Confirm your new password"
+                                required
+                                value={forgotConfirmPassword}
+                                onChange={(e) => setForgotConfirmPassword(e.target.value)}
+                            />
+                        </div>
+                        <button 
+                            type="submit" 
+                            className="btn btn-success w-100" 
+                            id="forgotPasswordBtn"
+                            disabled={forgotIsLoading}
+                        >
+                            {forgotIsLoading ? (
+                                <>
+                                    <i className="fa fa-spinner fa-spin me-1" aria-hidden="true"></i> Resetting...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fa fa-key me-1" aria-hidden="true"></i> Reset Password
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    {/* Forgot password message display area */}
+                    <div 
+                        id="forgotPasswordMessage" 
+                        className="mt-3" 
+                        role="status" 
+                        aria-live="polite"
+                        dangerouslySetInnerHTML={{ __html: forgotMessage }}
+                    />
+                </Modal.Body>
+                <Modal.Footer className="flex-nowrap justify-content-around">
+                    <Button variant="secondary" onClick={handleCloseForgotModal}>
                         Close
                     </Button>
                 </Modal.Footer>
