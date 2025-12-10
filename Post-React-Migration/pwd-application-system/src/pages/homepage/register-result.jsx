@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { QRCodeSVG } from 'qrcode.react';
 import "../../assets/styles/register_result-styles.css";
 
 export default function RegisterResult() {
@@ -112,13 +113,37 @@ export default function RegisterResult() {
               <hr className="my-4" />
 
               <div className="row g-3">
-                <div className="col-12">
+                <div className="col-md-8">
                   <div className="border rounded p-3">
                     <h2 className="h6 text-black">Additional Details</h2>
                     <p className="mb-1"><strong>Sex:</strong> {display('sex','—')}</p>
                     <p className="mb-1"><strong>Date of Birth:</strong> {display('dob','—')}</p>
                     <p className="mb-1"><strong>Emergency Contact:</strong> {display('emergencyName','—')} — {display('emergencyPhone','—')} ({display('emergencyRelationship','—')})</p>
-                    {/* <p className="mb-0 text-muted small">This is a temporary client-side preview. No data has been submitted to a server.</p> */}
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="border rounded p-3 text-center" style={{ background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }}>
+                    <h2 className="h6 text-black mb-3">PWD ID QR Code</h2>
+                    <div role="region" aria-label="PWD Registration Verification QR Code">
+                      <span className="sr-only">QR Code containing PWD registration information for verification</span>
+                      <QRCodeSVG 
+                        value={`PWD ID: ${display('regNumber', 'N/A')}
+Name: ${display('lastName', '')}, ${display('firstName', '')} ${display('middleName', '')}
+Disability: ${display('disability', 'N/A')}
+Date: ${display('regDate', 'N/A')}
+City Government of Dasmariñas`}
+                        size={140}
+                        level="H"
+                        includeMargin={true}
+                        aria-hidden="true"
+                        style={{ borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                      />
+                    </div>
+                    <p className="mb-1 mt-3" style={{ color: '#2d7c2f', fontWeight: '600', fontSize: '0.875rem' }}>
+                      <i className="fas fa-qrcode me-1" aria-hidden="true"></i>
+                      Scan to Verify
+                    </p>
+                    <p className="mb-0 text-muted" style={{ fontSize: '0.75rem' }}>ID: {display('regNumber', 'N/A')}</p>
                   </div>
                 </div>
               </div>

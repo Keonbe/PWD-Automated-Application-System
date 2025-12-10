@@ -594,33 +594,49 @@
 }
 
 .pwd-card-qr {
-  padding: 1rem;
-  display: flex;
-  justify-content: center;
-  border-top: 1px solid #e9ecef;
-}
-
-.qr-placeholder {
-  width: 100px;
-  height: 100px;
-  background: #e9ecef;
-  border: 2px dashed #adb5bd;
-  border-radius: 8px;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  border-top: 2px solid #2d7c2f;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.pwd-card-qr svg {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pwd-qr-label {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2d7c2f;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.pwd-qr-sublabel {
+  display: block;
+  font-size: 0.75rem;
   color: #6c757d;
+  text-align: center;
+  margin-top: 0.25rem;
 }
 
-.qr-placeholder i {
-  font-size: 2rem;
-  margin-bottom: 0.25rem;
-}
-
-.qr-placeholder span {
-  font-size: 0.7rem;
-  text-transform: uppercase;
+/* Screen reader only - visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* PWD Status Colors in Card */

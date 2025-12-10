@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { getCurrentUserData, logoutUser, changeUserPassword, updateUserProfile } from "../../api/userApi";
 import { useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
+import { QRCodeSVG } from 'qrcode.react';
 import logo from '../../assets/images/dasma-logo-only.png';
 import UserSidebar from '../../components/usersidebar';
 
@@ -616,12 +617,25 @@ export default function UserPage() {
                   </div>
                 </div>
 
-                {/* QR Code Placeholder */}
-                <div className="pwd-card-qr">
-                  <div className="qr-placeholder">
-                    <i className="fas fa-qrcode"></i>
-                    <span>QR Code</span>
-                  </div>
+                {/* QR Code */}
+                <div className="pwd-card-qr" role="region" aria-label="PWD ID Verification QR Code">
+                  <span className="sr-only">QR Code containing PWD ID information for verification</span>
+                  <QRCodeSVG 
+                    value={`PWD ID: ${userData.regNumber || 'N/A'}
+Name: ${userData.lastName || ''}, ${userData.firstName || ''} ${userData.middleName || ''}
+Disability: ${userData.disability || 'N/A'}
+Status: ${userData.status || 'Pending'}
+City Government of Dasmariñas`}
+                    size={120}
+                    level="H"
+                    includeMargin={true}
+                    aria-hidden="true"
+                  />
+                  <span className="pwd-qr-label">
+                    <i className="fas fa-qrcode me-1" aria-hidden="true"></i>
+                    Scan to Verify
+                  </span>
+                  <span className="pwd-qr-sublabel">PWD ID: {userData.regNumber || 'N/A'}</span>
                 </div>
               </div>
 
