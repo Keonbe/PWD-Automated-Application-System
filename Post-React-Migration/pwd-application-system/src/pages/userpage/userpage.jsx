@@ -26,17 +26,10 @@ export default function UserPage() {
   const [filesLoading, setFilesLoading] = useState(false); /** @summary Loading state for file fetch. */
   const [filesError, setFilesError] = useState(null); /** @summary Error message for file operations. */
 
-  // Document preview modal state
-  const [showDocPreview, setShowDocPreview] = useState(false);
-  const [previewDoc, setPreviewDoc] = useState(null);
-  
-  const handleViewDocument = (file) => {
-    setPreviewDoc(file);
-    setShowDocPreview(true);
-  };
-  const handleCloseDocPreview = () => {
-    setShowDocPreview(false);
-    setPreviewDoc(null);
+  // View document in new tab
+  const handleViewDocument = (fileId) => {
+    const viewUrl = `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-view.php?fileId=${fileId}`;
+    window.open(viewUrl, '_blank');
   };
 
   /**
@@ -832,8 +825,8 @@ City Government of Dasmariñas`}
                               <button
                                 type="button"
                                 className="btn btn-outline-info"
-                                title="View document"
-                                onClick={() => handleViewDocument(file)}
+                                title="View document in new tab"
+                                onClick={() => handleViewDocument(file.id)}
                               >
                                 <i className="fas fa-eye"></i>
                               </button>
@@ -841,6 +834,7 @@ City Government of Dasmariñas`}
                                 href={`http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-download.php?fileId=${file.id}`}
                                 className="btn btn-outline-primary"
                                 title="Download document"
+                                download
                               >
                                 <i className="fas fa-download"></i>
                               </a>
@@ -1203,106 +1197,7 @@ City Government of Dasmariñas`}
         </Modal.Body>
       </Modal>
 
-      {/* Document Preview Modal */}
-      <Modal show={showDocPreview} onHide={handleCloseDocPreview} size="lg" centered>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <i className={`fas me-2 ${
-              previewDoc?.type === 'medical_certificate' 
-                ? 'fa-file-medical text-danger' 
-                : 'fa-id-card text-primary'
-            }`}></i>
-            {previewDoc?.type === 'medical_certificate' ? 'Medical Certificate' : 'Identity Proof'}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="p-0">
-          {previewDoc && (
-            <div className="document-preview">
-              {/* Document Info Bar */}
-              <div className="bg-light p-3 border-bottom">
-                <div className="row align-items-center">
-                  <div className="col">
-                    <small className="text-muted d-block">Filename</small>
-                    <strong>{previewDoc.originalFilename}</strong>
-                  </div>
-                  <div className="col-auto">
-                    <small className="text-muted d-block">Size</small>
-                    <strong>{(previewDoc.size / 1024).toFixed(1)} KB</strong>
-                  </div>
-                  <div className="col-auto">
-                    <small className="text-muted d-block">Status</small>
-                    <span className={`badge bg-${
-                      previewDoc.status === 'approved' ? 'success' :
-                      previewDoc.status === 'rejected' ? 'danger' :
-                      'warning'
-                    }`}>
-                      {previewDoc.status.charAt(0).toUpperCase() + previewDoc.status.slice(1)}
-                    </span>
-                  </div>
-                  <div className="col-auto">
-                    <small className="text-muted d-block">Uploaded</small>
-                    <strong>{new Date(previewDoc.uploadedAt).toLocaleDateString()}</strong>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Document Preview Area */}
-              <div className="text-center p-4" style={{ minHeight: '400px', backgroundColor: '#f8f9fa' }}>
-                {previewDoc.mimeType?.startsWith('image/') ? (
-                  <img 
-                    src={`http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/${previewDoc.filePath}`}
-                    alt={previewDoc.originalFilename}
-                    className="img-fluid rounded shadow"
-                    style={{ maxHeight: '500px' }}
-                  />
-                ) : previewDoc.mimeType === 'application/pdf' ? (
-                  <div>
-                    <iframe
-                      src={`http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/${previewDoc.filePath}`}
-                      title={previewDoc.originalFilename}
-                      width="100%"
-                      height="500px"
-                      style={{ border: 'none' }}
-                    />
-                    <p className="text-muted mt-2">
-                      <small>
-                        <i className="fas fa-info-circle me-1"></i>
-                        If the PDF doesn't load, use the download button below.
-                      </small>
-                    </p>
-                  </div>
-                ) : (
-                  <div className="py-5">
-                    <i className="fas fa-file fa-5x text-muted mb-3"></i>
-                    <p className="text-muted">Preview not available for this file type.</p>
-                    <p className="text-muted"><small>Please download the file to view it.</small></p>
-                  </div>
-                )}
-              </div>
 
-              {/* Admin Notes (if rejected) */}
-              {previewDoc.status === 'rejected' && previewDoc.adminNotes && (
-                <div className="alert alert-danger m-3 mb-0">
-                  <i className="fas fa-exclamation-triangle me-2"></i>
-                  <strong>Rejection Reason:</strong> {previewDoc.adminNotes}
-                </div>
-              )}
-            </div>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <a 
-            href={`http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-download.php?fileId=${previewDoc?.id}`}
-            className="btn btn-primary"
-          >
-            <i className="fas fa-download me-2"></i>
-            Download
-          </a>
-          <Button variant="secondary" onClick={handleCloseDocPreview}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
 
       </div>
     </div>
