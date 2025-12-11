@@ -29,6 +29,7 @@ export default function UserSidebar({ userData, activeNav, isSidebarActive, onNa
     { icon: 'fas fa-user-edit', text: 'Edit Profile' },
     { icon: 'fas fa-id-card', text: 'View/Print ID' },
     { icon: 'fas fa-key', text: 'Change Password' },
+    { icon: 'fas fa-folder-open', text: 'My Documents' },
     { icon: 'fas fa-question-circle', text: 'Help' },
     { icon: 'fas fa-sign-out-alt', text: 'Logout' }
     ];

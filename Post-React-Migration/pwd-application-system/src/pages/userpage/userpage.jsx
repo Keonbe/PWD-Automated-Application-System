@@ -21,6 +21,24 @@ export default function UserPage() {
   const handleCloseHelpModal = () => setShowHelpModal(false); /** @summary Closes the help modal dialog.  @remarks Handler function for modal close events and cancel actions. */
   const handleShowHelpModal = () => setShowHelpModal(true); /** @summary Opens the help modal dialog. @remarks Triggered when user clicks the help navigation item or help button. */
 
+  // File list state
+  const [userFiles, setUserFiles] = useState([]); /** @summary Uploaded files list for current user. */
+  const [filesLoading, setFilesLoading] = useState(false); /** @summary Loading state for file fetch. */
+  const [filesError, setFilesError] = useState(null); /** @summary Error message for file operations. */
+
+  // Document preview modal state
+  const [showDocPreview, setShowDocPreview] = useState(false);
+  const [previewDoc, setPreviewDoc] = useState(null);
+  
+  const handleViewDocument = (file) => {
+    setPreviewDoc(file);
+    setShowDocPreview(true);
+  };
+  const handleCloseDocPreview = () => {
+    setShowDocPreview(false);
+    setPreviewDoc(null);
+  };
+
   /**
    * @summary Computes status display information based on application status.
    * 
@@ -93,6 +111,34 @@ export default function UserPage() {
 
     loadUserData();
   }, [navigate]);
+
+  // Fetch user files when userData is available
+  useEffect(() => {
+    if (userData?.regNumber) {
+      const fetchFiles = async () => {
+        setFilesLoading(true);
+        setFilesError(null);
+        try {
+          const response = await fetch(
+            `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/files.php?regNumber=${userData.regNumber}`
+          );
+          const data = await response.json();
+          if (data.success) {
+            setUserFiles(data.files);
+          } else {
+            setFilesError(data.error || 'Failed to load files');
+          }
+        } catch (error) {
+          console.error('[UserPage] Error fetching files:', error);
+          setFilesError('Could not load files');
+        } finally {
+          setFilesLoading(false);
+        }
+      };
+
+      fetchFiles();
+    }
+  }, [userData?.regNumber]);
 
   // Initialize edit profile form when switching to Edit Profile view
   useEffect(() => {
@@ -175,10 +221,13 @@ export default function UserPage() {
       case 3: // Change Password
         // switch view handled by activeNav
         break;
-      case 4: // Help
+      case 4: // My Documents
+        // switch view handled by activeNav
+        break;
+      case 5: // Help
         showHelp();
         break;
-      case 5: // Logout
+      case 6: // Logout
         // show confirmation modal before logging out
         handleShowLogoutModal();
         break;
@@ -712,6 +761,121 @@ City Government of Dasmariñas`}
                 </button>
               </form>
             </div>
+          ) : activeNav === 4 ? (
+            /* My Documents */
+            <div className="user-card">
+              <h3 className="user-card-title">My Documents</h3>
+              <p className="user-card-subtitle">View and manage your uploaded documents</p>
+
+              {filesError && (
+                <div className="alert alert-danger">
+                  <i className="fas fa-exclamation-circle me-2"></i>
+                  {filesError}
+                </div>
+              )}
+
+              {filesLoading ? (
+                <div className="text-center py-5">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading documents...</span>
+                  </div>
+                </div>
+              ) : userFiles.length === 0 ? (
+                <div className="alert alert-info">
+                  <i className="fas fa-info-circle me-2"></i>
+                  No documents uploaded yet. Please upload your documents during registration.
+                </div>
+              ) : (
+                <div className="table-responsive">
+                  <table className="table table-hover">
+                    <thead className="table-light">
+                      <tr>
+                        <th>Document Type</th>
+                        <th>Filename</th>
+                        <th>Size</th>
+                        <th>Status</th>
+                        <th>Uploaded</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {userFiles.map(file => (
+                        <tr key={file.id}>
+                          <td>
+                            <i className={`fas me-2 ${
+                              file.type === 'medical_certificate' 
+                                ? 'fa-file-medical text-danger' 
+                                : 'fa-id-card text-primary'
+                            }`}></i>
+                            {file.type === 'medical_certificate' ? 'Medical Certificate' : 'Identity Proof'}
+                          </td>
+                          <td>
+                            <small>{file.originalFilename}</small>
+                          </td>
+                          <td>
+                            <small>{(file.size / 1024).toFixed(1)} KB</small>
+                          </td>
+                          <td>
+                            <span className={`badge bg-${
+                              file.status === 'approved' ? 'success' :
+                              file.status === 'rejected' ? 'danger' :
+                              'warning'
+                            }`}>
+                              {file.status.charAt(0).toUpperCase() + file.status.slice(1)}
+                            </span>
+                          </td>
+                          <td>
+                            <small>{new Date(file.uploadedAt).toLocaleDateString()}</small>
+                          </td>
+                          <td>
+                            <div className="btn-group btn-group-sm" role="group" aria-label="Document actions">
+                              <button
+                                type="button"
+                                className="btn btn-outline-info"
+                                title="View document"
+                                onClick={() => handleViewDocument(file)}
+                              >
+                                <i className="fas fa-eye"></i>
+                              </button>
+                              <a 
+                                href={`http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-download.php?fileId=${file.id}`}
+                                className="btn btn-outline-primary"
+                                title="Download document"
+                              >
+                                <i className="fas fa-download"></i>
+                              </a>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Upload Status Summary */}
+              <div className="mt-4 p-3 bg-light rounded">
+                <h6 className="mb-2"><i className="fas fa-chart-pie me-2"></i>Upload Status</h6>
+                <div className="row">
+                  <div className="col-sm-6 col-md-3">
+                    <small className="text-muted">Total Documents</small>
+                    <p className="h5 mb-0 text-primary">{userFiles.length}</p>
+                  </div>
+                  <div className="col-sm-6 col-md-3">
+                    <small className="text-muted">Approved</small>
+                    <p className="h5 mb-0 text-success">{userFiles.filter(f => f.status === 'approved').length}</p>
+                  </div>
+                  <div className="col-sm-6 col-md-3">
+                    <small className="text-muted">Pending</small>
+                    <p className="h5 mb-0 text-warning">{userFiles.filter(f => f.status === 'pending').length}</p>
+                  </div>
+                  <div className="col-sm-6 col-md-3">
+                    <small className="text-muted">Rejected</small>
+                    <p className="h5 mb-0 text-danger">{userFiles.filter(f => f.status === 'rejected').length}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           ) : (
             <>
               <h2 className="user-page-title">Application Status</h2>
@@ -1037,6 +1201,107 @@ City Government of Dasmariñas`}
             <div>Logging out... Please wait</div>
           </div>
         </Modal.Body>
+      </Modal>
+
+      {/* Document Preview Modal */}
+      <Modal show={showDocPreview} onHide={handleCloseDocPreview} size="lg" centered>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <i className={`fas me-2 ${
+              previewDoc?.type === 'medical_certificate' 
+                ? 'fa-file-medical text-danger' 
+                : 'fa-id-card text-primary'
+            }`}></i>
+            {previewDoc?.type === 'medical_certificate' ? 'Medical Certificate' : 'Identity Proof'}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-0">
+          {previewDoc && (
+            <div className="document-preview">
+              {/* Document Info Bar */}
+              <div className="bg-light p-3 border-bottom">
+                <div className="row align-items-center">
+                  <div className="col">
+                    <small className="text-muted d-block">Filename</small>
+                    <strong>{previewDoc.originalFilename}</strong>
+                  </div>
+                  <div className="col-auto">
+                    <small className="text-muted d-block">Size</small>
+                    <strong>{(previewDoc.size / 1024).toFixed(1)} KB</strong>
+                  </div>
+                  <div className="col-auto">
+                    <small className="text-muted d-block">Status</small>
+                    <span className={`badge bg-${
+                      previewDoc.status === 'approved' ? 'success' :
+                      previewDoc.status === 'rejected' ? 'danger' :
+                      'warning'
+                    }`}>
+                      {previewDoc.status.charAt(0).toUpperCase() + previewDoc.status.slice(1)}
+                    </span>
+                  </div>
+                  <div className="col-auto">
+                    <small className="text-muted d-block">Uploaded</small>
+                    <strong>{new Date(previewDoc.uploadedAt).toLocaleDateString()}</strong>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Document Preview Area */}
+              <div className="text-center p-4" style={{ minHeight: '400px', backgroundColor: '#f8f9fa' }}>
+                {previewDoc.mimeType?.startsWith('image/') ? (
+                  <img 
+                    src={`http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/${previewDoc.filePath}`}
+                    alt={previewDoc.originalFilename}
+                    className="img-fluid rounded shadow"
+                    style={{ maxHeight: '500px' }}
+                  />
+                ) : previewDoc.mimeType === 'application/pdf' ? (
+                  <div>
+                    <iframe
+                      src={`http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/${previewDoc.filePath}`}
+                      title={previewDoc.originalFilename}
+                      width="100%"
+                      height="500px"
+                      style={{ border: 'none' }}
+                    />
+                    <p className="text-muted mt-2">
+                      <small>
+                        <i className="fas fa-info-circle me-1"></i>
+                        If the PDF doesn't load, use the download button below.
+                      </small>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="py-5">
+                    <i className="fas fa-file fa-5x text-muted mb-3"></i>
+                    <p className="text-muted">Preview not available for this file type.</p>
+                    <p className="text-muted"><small>Please download the file to view it.</small></p>
+                  </div>
+                )}
+              </div>
+
+              {/* Admin Notes (if rejected) */}
+              {previewDoc.status === 'rejected' && previewDoc.adminNotes && (
+                <div className="alert alert-danger m-3 mb-0">
+                  <i className="fas fa-exclamation-triangle me-2"></i>
+                  <strong>Rejection Reason:</strong> {previewDoc.adminNotes}
+                </div>
+              )}
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <a 
+            href={`http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-download.php?fileId=${previewDoc?.id}`}
+            className="btn btn-primary"
+          >
+            <i className="fas fa-download me-2"></i>
+            Download
+          </a>
+          <Button variant="secondary" onClick={handleCloseDocPreview}>
+            Close
+          </Button>
+        </Modal.Footer>
       </Modal>
 
       </div>
