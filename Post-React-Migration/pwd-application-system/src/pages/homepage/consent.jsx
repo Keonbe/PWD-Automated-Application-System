@@ -64,28 +64,44 @@ export default function Consent() {
 
         {/* Questions Section */}
         <section className="my-4">
-            <p className="lead">Lorem ipsum dolor sit amet?</p>
+            <p className="lead">What is the PWD ID Application System?</p>
             <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-            sollicitudin suscipit urna, vel feugiat ex aliquet a. Sed dapibus nisi
-            mauris, nec aliquet dui posuere dictum. In nisi risus, vulputate
-            posuere sagittis et, scelerisque iaculis enim.
+            The PWD ID Application System is an online platform designed to streamline 
+            the registration process for Persons with Disabilities (PWD) in the City of 
+            Dasmariñas, Cavite. This system allows you to submit your application for a 
+            PWD Identification Card, which provides access to various benefits and services 
+            mandated by Republic Act No. 7277, also known as the Magna Carta for Persons 
+            with Disabilities.
             </p>
 
-            <p className="lead">Lorem ipsum dolor sit amet?</p>
+            <p className="lead">What information will be collected?</p>
             <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-            sollicitudin suscipit urna, vel feugiat ex aliquet a. Sed dapibus nisi
-            mauris, nec aliquet dui posuere dictum. In nisi risus, vulputate
-            posuere sagittis et, scelerisque iaculis enim.
+            During registration, we will collect your personal information including your 
+            full name, date of birth, address, contact details, type of disability, and 
+            emergency contact information. You will also be required to upload supporting 
+            documents such as a valid government-issued ID and a medical certificate or 
+            proof of disability. All information collected will be used solely for the 
+            purpose of processing your PWD ID application.
             </p>
 
-            <p className="lead">Lorem ipsum dolor sit amet?</p>
+            <p className="lead">How will my data be protected?</p>
             <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-            sollicitudin suscipit urna, vel feugiat ex aliquet a. Sed dapibus nisi
-            mauris, nec aliquet dui posuere dictum. In nisi risus, vulputate
-            posuere sagittis et, scelerisque iaculis enim.
+            Your personal data will be handled in accordance with the Data Privacy Act of 
+            2012 (Republic Act No. 10173). We are committed to protecting your privacy and 
+            ensuring the security of your personal information. Your data will only be 
+            accessed by authorized personnel of the City Social Welfare and Development 
+            Office (CSWDO) and will not be shared with third parties without your consent, 
+            except as required by law.
+            </p>
+
+            <p className="lead">What are my rights as a data subject?</p>
+            <p>
+            Under the Data Privacy Act, you have the right to be informed about how your 
+            data is being processed, to access your personal data, to correct inaccurate 
+            information, to object to certain types of processing, and to request deletion 
+            of your data under certain circumstances. If you have any concerns about your 
+            data privacy, you may contact our Data Protection Officer through the contact 
+            information provided on this website.
             </p>
         </section>
 

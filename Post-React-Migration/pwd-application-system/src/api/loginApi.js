@@ -129,3 +129,50 @@ export const adminLogin = async (adminEmail, adminPassword) => {
         };
     }
 };
+
+/**
+ * @summary Reset user password via forgot password flow.
+ *
+ * @param {string} regNumber - User's registration number.
+ * @param {string} email - User's email address (verification).
+ * @param {string} newPassword - New password to set.
+ *
+ * @returns {Promise<Object>} Result object with success status and message.
+ */
+export const forgotPassword = async (regNumber, email, newPassword) => {
+    try {
+        console.log('[forgotPassword] Attempting password reset...');
+        console.log('[forgotPassword] RegNumber:', regNumber);
+        
+        // POST to forgot-password.php endpoint
+        const res = await api.post('/forgot-password.php', {
+            regNumber: regNumber.trim(),
+            email: email.trim().toLowerCase(),
+            newPassword: newPassword
+        });
+        
+        console.log('[forgotPassword] Response received:', res.data);
+        
+        if (res.data.success) {
+            console.log('[forgotPassword] SUCCESS - Password reset');
+            return {
+                success: true,
+                message: res.data.message || "Password reset successfully. Please log in with your new password."
+            };
+        } else {
+            console.error('[forgotPassword] FAILED - Reset rejected');
+            return {
+                success: false,
+                message: res.data.message || "Password reset failed. Please check your registration number and email."
+            };
+        }
+        
+    } catch (error) {
+        console.error("[forgotPassword] ERROR - Reset failed");
+        console.error("[forgotPassword] Error details:", error);
+        return {
+            success: false,
+            message: error.response?.data?.message || "Error connecting to backend. Please try again later."
+        };
+    }
+};
