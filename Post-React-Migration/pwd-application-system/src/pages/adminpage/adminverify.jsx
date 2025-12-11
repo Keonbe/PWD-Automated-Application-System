@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../../components/adminsidebar";
+import {
+  getPendingApplication,
+  updateApplicationStatus,
+} from "../../api/adminApi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../assets/styles/adminpage.css";
-
-//const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
-const SHEETDB_URL ="https://sheetdb.io/api/v1/ljqq6umrhu60o"; //Backup SheetsDB
 
 const AdminVerify = () => {
   const navigate = useNavigate();
 
   const [applicant, setApplicant] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
+  const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [otherReason, setOtherReason] = useState("");
 
   /**
    * @summary Normalizes applicant status values for consistent display and processing.
-   * 
+   *
    * @param {string} status - Raw status value from applicant data.
    * @returns {string} Normalized status value: 'accepted', 'pending', 'denied', or 'unknown'.
-   * 
+   *
    * @remarks
    * Handles variations in status formatting from different data sources.
    * Ensures consistent color coding and display logic across the application.
@@ -35,11 +38,11 @@ const AdminVerify = () => {
 
   /**
    * @summary Fetches the oldest pending applicant from the database queue.
-   * 
+   *
    * @returns {Promise<void>}
-   * 
+   *
    * @throws {Error} Throws error if API request fails or data format is invalid.
-   * 
+   *
    * @remarks
    * Retrieves the first applicant with 'pending' status for review processing.
    * Sets loading state appropriately and handles empty result scenarios.
@@ -47,9 +50,12 @@ const AdminVerify = () => {
   // Fetch the oldest pending applicant
   const fetchOldestPending = async () => {
     try {
-      const res = await fetch(`${SHEETDB_URL}/search?status=pending`);
-      const data = await res.json();
-      setApplicant(data[0] || null);
+      const res = await getPendingApplication();
+      if (res.success) {
+        setApplicant(res.user || null);
+      } else {
+        setApplicant(null);
+      }
     } catch (err) {
       console.error("Error fetching applicant:", err);
     } finally {
@@ -57,10 +63,9 @@ const AdminVerify = () => {
     }
   };
 
-
   /**
    * @summary Effect hook for loading initial applicant data on component mount.
-   * 
+   *
    * @remarks
    * Automatically fetches the first pending applicant when component loads.
    * Only runs once on initial render to prevent unnecessary API calls.
@@ -71,41 +76,45 @@ const AdminVerify = () => {
 
   /**
    * @summary Updates applicant status and loads next pending applicant.
-   * 
+   *
    * @param {string} newStatus - The new status to assign: 'accepted' or 'denied'.
    * @returns {Promise<void>}
-   * 
+   *
    * @throws {Error} Throws error if API update fails or applicant data is missing.
-   * 
+   *
    * @remarks
    * Updates current applicant status via PATCH request and automatically fetches next applicant.
    * Provides user feedback via alerts and maintains application workflow continuity.
    */
-  const updateStatus = async (newStatus) => {
+  const updateStatus = async (newStatus, rejectionReason = "") => {
     if (!applicant) return;
-    setUpdating(true);
+    setLoading(true);
     try {
-      await fetch(`${SHEETDB_URL}/email/${applicant.email}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: { status: newStatus } }),
-      });
+      const res = await updateApplicationStatus(
+        applicant.regNumber,
+        newStatus,
+        rejectionReason
+      );
 
-      alert(`Status updated to: ${newStatus}`);
+      if (res.success) {
+        alert(`Status updated to: ${newStatus}`);
+        if (newStatus === "denied") {
+          setShowRejectionModal(false);
+          setRejectionReason("");
+          setOtherReason("");
+        }
 
-      // Load the next pending applicant
-      const res = await fetch(`${SHEETDB_URL}/search?status=pending`);
-      const data = await res.json();
-      if (data.length > 0) {
-        setApplicant(data[0]);
+        // Wait a moment for the backend to update, then fetch the next applicant.
+        setTimeout(() => {
+          fetchOldestPending();
+        }, 500);
       } else {
-        setApplicant(null);
+        throw new Error(res.message || "Failed to update status.");
       }
     } catch (err) {
       console.error("Error updating status:", err);
       alert("Failed to update status.");
-    } finally {
-      setUpdating(false);
+      setLoading(false); // Ensure loading is turned off on error
     }
   };
 
@@ -118,7 +127,8 @@ const AdminVerify = () => {
           <h4 className="text-muted">No pending applicants found.</h4>
           <button
             className="btn btn-secondary mt-3"
-            onClick={() => navigate("/adminpage")}>
+            onClick={() => navigate("/adminpage")}
+          >
             <i className="fas fa-arrow-left me-2"></i> Back to Dashboard
           </button>
         </main>
@@ -132,7 +142,7 @@ const AdminVerify = () => {
       : normalized === "denied"
       ? "#dc3545"
       : "#ffc107";
-
+  const uploadsUrl = "http://localhost/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/uploads/";
   return (
     <div className="admin-page">
       <AdminSidebar />
@@ -153,7 +163,8 @@ const AdminVerify = () => {
               style={{
                 backgroundColor: statusColor,
                 color: normalized === "pending" ? "#212529" : "#fff",
-              }}>
+              }}
+            >
               {normalized}
             </span>
           </h5>
@@ -221,10 +232,11 @@ const AdminVerify = () => {
                 <strong>Proof of Disability:</strong>{" "}
                 {applicant.proofDisability ? (
                   <a
-                    href={applicant.proofDisability}
+                    href={`${uploadsUrl}${applicant.proofDisability}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn btn-outline-primary btn-sm">
+                    className="btn btn-outline-primary btn-sm"
+                  >
                     View
                   </a>
                 ) : (
@@ -252,10 +264,11 @@ const AdminVerify = () => {
             <h6>Proof of Identity</h6>
             {applicant.proofIdentity ? (
               <a
-                href={applicant.proofIdentity}
+                href={`${uploadsUrl}${applicant.proofIdentity}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-outline-primary btn-sm">
+                className="btn btn-outline-primary btn-sm"
+              >
                 View ID
               </a>
             ) : (
@@ -265,29 +278,154 @@ const AdminVerify = () => {
 
           <div
             className="d-flex justify-content-center mt-4"
-            style={{ gap: "1rem" }}>
+            style={{ gap: "1rem" }}
+          >
             <button
               className="btn btn-success"
-              disabled={updating}
-              onClick={() => updateStatus("accepted")}>
+              disabled={loading}
+              onClick={() => updateStatus("accepted")}
+            >
               <i className="fas fa-check-circle me-2"></i> Accept
             </button>
             <button
               className="btn btn-danger"
-              disabled={updating}
-              onClick={() => updateStatus("denied")}>
+              disabled={loading}
+              onClick={() => setShowRejectionModal(true)}
+            >
               <i className="fas fa-times-circle me-2"></i> Deny
             </button>
             <button
               className="btn btn-secondary"
-              onClick={() => navigate("/adminpage")}>
+              onClick={() => navigate("/adminpage")}
+            >
               <i className="fas fa-arrow-left me-2"></i> Back
             </button>
           </div>
         </section>
+
+        {showRejectionModal && (
+          <div
+            className="modal"
+            style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
+          >
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Reason for Rejection</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => {
+                      setShowRejectionModal(false);
+                      setRejectionReason("");
+                      setOtherReason("");
+                    }}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="rejectionReason"
+                      id="reason1"
+                      value="Incomplete or incorrect documents"
+                      onChange={(e) => setRejectionReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="reason1">
+                      Incomplete or incorrect documents
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="rejectionReason"
+                      id="reason2"
+                      value="Information mismatch"
+                      onChange={(e) => setRejectionReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="reason2">
+                      Information mismatch
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="rejectionReason"
+                      id="reason3"
+                      value="Not a resident of the area"
+                      onChange={(e) => setRejectionReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="reason3">
+                      Not a resident of the area
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="rejectionReason"
+                      id="reason4"
+                      value="Others"
+                      onChange={(e) => setRejectionReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="reason4">
+                      Others
+                    </label>
+                  </div>
+                  {rejectionReason === "Others" && (
+                    <div className="mt-2">
+                      <textarea
+                        className="form-control"
+                        rows="3"
+                        placeholder="Please specify"
+                        value={otherReason}
+                        onChange={(e) => setOtherReason(e.target.value)}
+                      ></textarea>
+                    </div>
+                  )}
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setShowRejectionModal(false);
+                      setRejectionReason("");
+                      setOtherReason("");
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    disabled={loading}
+                    onClick={() => {
+                      const finalReason =
+                        rejectionReason === "Others"
+                          ? otherReason
+                          : rejectionReason;
+                      if (!finalReason) {
+                        alert("Please select a reason for rejection.");
+                        return;
+                      }
+                      updateStatus("denied", finalReason);
+                    }}
+                  >
+                    Confirm Rejection
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
 };
 
 export default AdminVerify;
+
