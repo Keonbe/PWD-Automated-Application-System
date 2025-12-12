@@ -1,9 +1,10 @@
 -- ===============================================================
 --    PWD AUTOMATED APPLICATION SYSTEM - MASTER SETUP SCRIPT
+--    NOTE: CHRONOLOGICAL STEP-BY-STEP DATABASE CREATION    
 -- ===============================================================
 -- Description: Complete database setup for PWD Registry System
--- Version: 1.0
--- Date: December 11, 2025
+-- Version: 2.0
+-- Date: December 12, 2025
 -- Database: PWDRegistry
 -- Charset: utf8mb4 (Unicode support)
 -- Collation: utf8mb4_unicode_ci
@@ -17,10 +18,17 @@
 --
 -- This script includes:
 -- - Database creation with UTF-8 support
--- - User tables (pwd_users, admin_users)
--- - File upload tables (pwd_file_uploads)
+-- - Users tables (pwd_users with rejectionReason column, admin_users)
+-- - File upload tables (pwd_file_uploads with admin review fields)
 -- - Sample data for testing
 -- - Indexes for performance
+-- - Data sync for historical records
+--
+-- CHANGELOG for revamp DBv2:
+-- - Added rejectionReason column to pwd_users table
+-- - Added admin_notes, reviewed_by, reviewed_at to pwd_file_uploads
+-- - Added sync script for historical data
+-- - Updated sample data to match new schema
 -- ===============================================================
 
 -- ===============================================================
@@ -44,6 +52,7 @@ USE PWDRegistry;
 
 -- ----------------------------------------------------------------
 -- TABLE 1: pwd_users (PWD Registration and User Management)
+-- TYPE: QUERY
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS pwd_users (
     -- Primary Key
@@ -108,6 +117,7 @@ CREATE TABLE IF NOT EXISTS pwd_users (
 
 -- ----------------------------------------------------------------
 -- TABLE 2: admin_users (Admin Authentication)
+-- TYPE: QUERY
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS admin_users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -121,6 +131,7 @@ CREATE TABLE IF NOT EXISTS admin_users (
 
 -- ----------------------------------------------------------------
 -- TABLE 3: pwd_file_uploads (Document Upload Management)
+-- TYPE: QUERY
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS pwd_file_uploads (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -137,6 +148,7 @@ CREATE TABLE IF NOT EXISTS pwd_file_uploads (
     reviewed_by VARCHAR(100),
     reviewed_at TIMESTAMP NULL,
     
+    --- Indexes and Foreign Key to pwd_users for data integrity linking to regNumber
     FOREIGN KEY (regNumber) REFERENCES pwd_users(regNumber) ON DELETE CASCADE,
     INDEX idx_regNumber (regNumber),
     INDEX idx_status (status),
@@ -234,7 +246,7 @@ INSERT INTO pwd_users (
 );
 
 -- ===============================================================
---              SECTION 5: SAMPLE FILE UPLOAD DATA
+-- SECTION 5: SAMPLE FILE UPLOAD DATA (WITH SECTION 4 SAMPLE DATA)
 -- ===============================================================
 -- Create sample file upload records for testing
 
@@ -263,9 +275,46 @@ VALUES
  'uploads/identity/identity_proof_1765448853_9wibtq.png', 1006198, 'image/png', 'pending', '2025-12-11 18:27:33');
 
 -- ===============================================================
---              SECTION 6: VERIFICATION QUERIES
+--     SECTION 6: SYNC HISTORICAL DATA (FOR EXISTING DATABASES)
+-- ===============================================================
+-- This section syncs admin review data from pwd_users to pwd_file_uploads
+-- NOTES: Only needed if you have existing data that was created before the admin review fields were added
+
+-- Update pwd_file_uploads for all denied/rejected applications
+-- that have rejection reasons in pwd_users but not in pwd_file_uploads
+UPDATE pwd_file_uploads pf
+INNER JOIN pwd_users pu ON pf.regNumber = pu.regNumber
+SET 
+    pf.status = CASE 
+        WHEN pu.status = 'denied' THEN 'rejected'
+        WHEN pu.status = 'accepted' THEN 'approved'
+        ELSE pf.status
+    END,
+    pf.admin_notes = CASE 
+        WHEN pu.status = 'denied' AND pu.rejectionReason IS NOT NULL 
+        THEN pu.rejectionReason
+        ELSE pf.admin_notes
+    END,
+    pf.reviewed_by = CASE 
+        WHEN pu.status IN ('denied', 'accepted') AND pf.reviewed_by IS NULL 
+        THEN 'System Administrator'
+        ELSE pf.reviewed_by
+    END,
+    pf.reviewed_at = CASE 
+        WHEN pu.status IN ('denied', 'accepted') AND pf.reviewed_at IS NULL 
+        THEN pu.updatedAt
+        ELSE pf.reviewed_at
+    END
+WHERE pu.status IN ('denied', 'accepted') 
+  AND pf.reviewed_by IS NULL;
+
+-- ===============================================================
+--              SECTION 7: VERIFICATION QUERIES
 -- ===============================================================
 -- Run these queries to verify the setup was successful
+-- NOTES: RUN THESE SQL QUERIES ON SECTION 7 UNDER THE "Server: 127.0.0.1 -> Database: pwdregistry"
+-- ON TOP BAR, TO THE RIGHT OF LEFT PANEL WITH PHPMYADMIN LOGO. 
+-- TO BE QUERIED NOT INSIDE TABLES BUT QUERIED UNDER THE DATABASE: "pwdregistry"
 
 -- Check database charset
 SELECT DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME 
@@ -283,22 +332,37 @@ UNION ALL
 SELECT 'pwd_file_uploads', COUNT(*) FROM pwd_file_uploads;
 
 -- View sample user data
-SELECT regNumber, firstName, lastName, email, status 
+SELECT regNumber, firstName, lastName, email, status, rejectionReason
 FROM pwd_users 
 ORDER BY regDate DESC;
 
--- View file upload summary
+-- View file upload summary with review status
 SELECT u.regNumber, 
-       CONCAT(u.firstName, ' ', u.lastName) as fullName,
-       COUNT(f.id) as file_count,
-       GROUP_CONCAT(f.file_type) as file_types
+    CONCAT(u.firstName, ' ', u.lastName) as fullName,
+    u.status as user_status,
+    COUNT(f.id) as file_count,
+    SUM(CASE WHEN f.status = 'approved' THEN 1 ELSE 0 END) as approved_files,
+    SUM(CASE WHEN f.status = 'rejected' THEN 1 ELSE 0 END) as rejected_files,
+    SUM(CASE WHEN f.status = 'pending' THEN 1 ELSE 0 END) as pending_files
 FROM pwd_users u
 LEFT JOIN pwd_file_uploads f ON u.regNumber = f.regNumber
-GROUP BY u.regNumber, u.firstName, u.lastName
+GROUP BY u.regNumber, u.firstName, u.lastName, u.status
 ORDER BY u.regDate DESC;
 
+-- View file review details
+SELECT pf.regNumber,
+    CONCAT(pu.firstName, ' ', pu.lastName) as fullName,
+    pf.file_type,
+    pf.status as file_status,
+    pf.admin_notes,
+    pf.reviewed_by,
+    pf.reviewed_at
+FROM pwd_file_uploads pf
+INNER JOIN pwd_users pu ON pf.regNumber = pu.regNumber
+ORDER BY pf.regNumber, pf.file_type;
+
 -- ===============================================================
---              SECTION 7: USEFUL MAINTENANCE QUERIES
+--              SECTION 8: USEFUL MAINTENANCE QUERIES
 -- ===============================================================
 
 -- Get application statistics by status
@@ -309,7 +373,7 @@ ORDER BY u.regDate DESC;
 -- Get recent applications (last 10)
 -- SELECT regNumber, 
 --        CONCAT(firstName, ' ', lastName) as fullName,
---        email, status, createdAt
+--        email, status, rejectionReason, createdAt
 -- FROM pwd_users
 -- ORDER BY createdAt DESC
 -- LIMIT 10;
@@ -323,6 +387,51 @@ ORDER BY u.regDate DESC;
 -- GROUP BY u.regNumber, u.firstName, u.lastName
 -- HAVING COUNT(f.id) < 2;
 
+-- Get denied applications with rejection reasons
+-- SELECT regNumber,
+--        CONCAT(firstName, ' ', lastName) as fullName,
+--        email,
+--        rejectionReason,
+--        updatedAt as denied_at
+-- FROM pwd_users
+-- WHERE status = 'denied'
+-- ORDER BY updatedAt DESC;
+
+-- Get file upload statistics
+-- SELECT 
+--     file_type,
+--     status,
+--     COUNT(*) as count
+-- FROM pwd_file_uploads
+-- GROUP BY file_type, status
+-- ORDER BY file_type, status;
+
+-- ===============================================================
+--              SECTION 9: UTF-8 COLLATION FIX (IF NEEDED)
+-- ===============================================================
+-- If you experience login authentication issues due to character encoding,
+-- uncomment and run these commands to convert the database to UTF-8
+
+-- ALTER DATABASE PWDRegistry 
+-- CHARACTER SET utf8mb4 
+-- COLLATE utf8mb4_unicode_ci;
+
+-- ALTER TABLE pwd_users 
+-- CONVERT TO CHARACTER SET utf8mb4 
+-- COLLATE utf8mb4_unicode_ci;
+
+-- ALTER TABLE admin_users 
+-- CONVERT TO CHARACTER SET utf8mb4 
+-- COLLATE utf8mb4_unicode_ci;
+
+-- ALTER TABLE pwd_file_uploads 
+-- CONVERT TO CHARACTER SET utf8mb4 
+-- COLLATE utf8mb4_unicode_ci;
+
+-- NOTE: After conversion, you may need to re-insert data if existing records
+-- were stored with incorrect encoding. Clear tables with TRUNCATE and re-run
+-- Sections 3, 4, and 5 to re-insert data with proper UTF-8 encoding.
+
 -- ===============================================================
 --                    SETUP COMPLETE
 -- ===============================================================
@@ -330,11 +439,24 @@ ORDER BY u.regDate DESC;
 -- 
 -- Default Login Credentials:
 -- Admin: admin@dasma.gov.ph / admin123
--- Test User: john.delasalle@email.com / password123
+-- Test Users:
+--   - john.delasalle@email.com / password123 (Pending)
+--   - michel.montaigne@email.com / password123 (Pending)
+--   - shinji.ikari@email.com / password123 (Pending)
+--   - juan.delacruz@email.com / 12345678 (Accepted)
+--   - ivan@email.com / 83185255 (Denied)
+--
+-- Database Features:
+-- ✓ UTF-8 support for international characters
+-- ✓ User registration and authentication
+-- ✓ Admin authentication and review system
+-- ✓ File upload management with admin review
+-- ✓ Application status tracking with rejection reasons
+-- ✓ Indexes for optimized query performance
 --
 -- Next Steps:
 -- 1. Update admin password in production
 -- 2. Create uploads directory structure (certificates, identity, thumbnails)
 -- 3. Configure config.php with database credentials
--- 4. Test the application
+-- 4. Test the application with fresh install or sync existing data
 -- ===============================================================
