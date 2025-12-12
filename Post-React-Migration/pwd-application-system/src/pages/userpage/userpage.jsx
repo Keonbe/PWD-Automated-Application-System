@@ -1,5 +1,5 @@
 import '../../assets/styles/userpage-styles.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getCurrentUserData, logoutUser, changeUserPassword, updateUserProfile } from "../../api/userApi";
 import { useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
@@ -105,40 +105,53 @@ export default function UserPage() {
     loadUserData();
   }, [navigate]);
 
+  // Extract file fetching logic to a reusable function using useCallback
+  const fetchUserFiles = useCallback(async () => {
+    if (!userData?.regNumber) return;
+    
+    setFilesLoading(true);
+    setFilesError(null);
+    try {
+      const response = await fetch(
+        `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/files.php?regNumber=${userData.regNumber}`
+      );
+      const data = await response.json();
+      if (data.success) {
+        setUserFiles(data.files);
+      } else {
+        setFilesError(data.error || 'Failed to load files');
+      }
+    } catch (error) {
+      console.error('[UserPage] Error fetching files:', error);
+      setFilesError('Could not load files');
+    } finally {
+      setFilesLoading(false);
+    }
+  }, [userData?.regNumber]);
+
   // Fetch user files when userData is available
   useEffect(() => {
     if (userData?.regNumber) {
-      const fetchFiles = async () => {
-        setFilesLoading(true);
-        setFilesError(null);
-        try {
-          const response = await fetch(
-            `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/files.php?regNumber=${userData.regNumber}`
-          );
-          const data = await response.json();
-          if (data.success) {
-            setUserFiles(data.files);
-          } else {
-            setFilesError(data.error || 'Failed to load files');
-          }
-        } catch (error) {
-          console.error('[UserPage] Error fetching files:', error);
-          setFilesError('Could not load files');
-        } finally {
-          setFilesLoading(false);
-        }
-      };
-
-      fetchFiles();
+      fetchUserFiles();
     }
-  }, [userData?.regNumber]);
+  }, [userData?.regNumber, fetchUserFiles]);
+
+  // Edit Profile - Initialize form with current data
+  const initializeEditProfileForm = useCallback(() => {
+    if (userData) {
+      setEditAddress(userData.street || '');
+      setEditContactNumber(userData.mobile || '');
+      setEditEmergencyContact(userData.emergencyName || '');
+      setEditEmergencyNumber(userData.emergencyPhone || '');
+    }
+  }, [userData]);
 
   // Initialize edit profile form when switching to Edit Profile view
   useEffect(() => {
     if (activeNav === 1) {
       initializeEditProfileForm();
     }
-  }, [activeNav, userData]);
+  }, [activeNav, userData, initializeEditProfileForm]);
 
   /**
    * @summary Provides demo user data for development and fallback scenarios.
@@ -301,16 +314,6 @@ export default function UserPage() {
       setChangeError(err.message || 'Error changing password');
     } finally {
       setChangingPassword(false);
-    }
-  };
-
-  // Edit Profile - Initialize form with current data
-  const initializeEditProfileForm = () => {
-    if (userData) {
-      setEditAddress(userData.street || '');
-      setEditContactNumber(userData.mobile || '');
-      setEditEmergencyContact(userData.emergencyName || '');
-      setEditEmergencyNumber(userData.emergencyPhone || '');
     }
   };
 
@@ -757,8 +760,21 @@ City Government of Dasmariñas`}
           ) : activeNav === 4 ? (
             /* My Documents */
             <div className="user-card">
-              <h3 className="user-card-title">My Documents</h3>
-              <p className="user-card-subtitle">View and manage your uploaded documents</p>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h3 className="user-card-title mb-1">My Documents</h3>
+                  <p className="user-card-subtitle mb-0">View and manage your uploaded documents</p>
+                </div>
+                <button 
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={fetchUserFiles}
+                  disabled={filesLoading}
+                  title="Refresh document list"
+                >
+                  <i className={`fas fa-sync-alt me-2 ${filesLoading ? 'fa-spin' : ''}`}></i>
+                  Refresh
+                </button>
+              </div>
 
               {filesError && (
                 <div className="alert alert-danger">
