@@ -16,6 +16,26 @@ const AdminVerify = () => {
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [otherReason, setOtherReason] = useState("");
+  const [applicantFiles, setApplicantFiles] = useState([]);
+  const [filesLoading, setFilesLoading] = useState(false);
+
+  /**
+   * @summary Opens document in new browser tab for viewing.
+   * 
+   * @param {number} fileId - File ID from pwd_file_uploads table
+   * 
+   * @remarks
+   * Uses file-view.php endpoint to serve files inline for browser viewing.
+   * Opens in new tab using browser's native viewer (PDF, images, etc.)
+   */
+  const handleViewDocument = (fileId) => {
+    if (!fileId) {
+      alert('No file available to view');
+      return;
+    }
+    const viewUrl = `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-view.php?fileId=${fileId}`;
+    window.open(viewUrl, '_blank');
+  };
 
   /**
    * @summary Normalizes applicant status values for consistent display and processing.
@@ -39,40 +59,52 @@ const AdminVerify = () => {
   /**
    * @summary Fetches the oldest pending applicant from the database queue.
    *
-   * @returns {Promise<void>}
-   *
-   * @throws {Error} Throws error if API request fails or data format is invalid.
-   *
    * @remarks
    * Retrieves the first applicant with 'pending' status for review processing.
-   * Sets loading state appropriately and handles empty result scenarios.
+   * Sets loading state and handles empty result scenarios.
    */
-  // Fetch the oldest pending applicant
   const fetchOldestPending = async () => {
     try {
       const res = await getPendingApplication();
-      if (res.success) {
-        setApplicant(res.user || null);
-      } else {
-        setApplicant(null);
-      }
+      setApplicant(res.success ? res.user || null : null);
     } catch (err) {
       console.error("Error fetching applicant:", err);
+      setApplicant(null);
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * @summary Effect hook for loading initial applicant data on component mount.
-   *
-   * @remarks
-   * Automatically fetches the first pending applicant when component loads.
-   * Only runs once on initial render to prevent unnecessary API calls.
-   */
+  // Load initial applicant on mount
   useEffect(() => {
     fetchOldestPending();
   }, []);
+
+  // Fetch files when applicant changes
+  useEffect(() => {
+    if (applicant?.regNumber) {
+      setFilesLoading(true);
+      setApplicantFiles([]);
+      fetch(
+        `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/files.php?regNumber=${applicant.regNumber}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success && Array.isArray(data.files)) {
+            setApplicantFiles(data.files);
+          } else {
+            setApplicantFiles([]);
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching applicant files:', error);
+          setApplicantFiles([]);
+        })
+        .finally(() => {
+          setFilesLoading(false);
+        });
+    }
+  }, [applicant?.regNumber]);
 
   /**
    * @summary Updates applicant status and loads next pending applicant.
@@ -142,7 +174,7 @@ const AdminVerify = () => {
       : normalized === "denied"
       ? "#dc3545"
       : "#ffc107";
-  const uploadsUrl = "http://localhost/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/uploads/";
+  
   return (
     <div className="admin-page">
       <AdminSidebar />
@@ -228,21 +260,6 @@ const AdminVerify = () => {
                 <strong>Type of Disability:</strong>{" "}
                 {applicant.disability || "N/A"}
               </p>
-              <p>
-                <strong>Proof of Disability:</strong>{" "}
-                {applicant.proofDisability ? (
-                  <a
-                    href={`${uploadsUrl}${applicant.proofDisability}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-outline-primary btn-sm"
-                  >
-                    View
-                  </a>
-                ) : (
-                  "Not uploaded"
-                )}
-              </p>
             </div>
 
             <div className="col-md-6">
@@ -261,18 +278,68 @@ const AdminVerify = () => {
           </div>
 
           <div className="mt-4">
-            <h6>Proof of Identity</h6>
-            {applicant.proofIdentity ? (
-              <a
-                href={`${uploadsUrl}${applicant.proofIdentity}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-outline-primary btn-sm"
-              >
-                View ID
-              </a>
+            <h6>Uploaded Documents</h6>
+            {filesLoading ? (
+              <p className="text-muted">Loading documents...</p>
+            ) : applicantFiles.length > 0 ? (
+              <div className="table-responsive">
+                <table className="table table-sm table-hover">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Document Type</th>
+                      <th>Filename</th>
+                      <th>Size</th>
+                      <th>Status</th>
+                      <th>Uploaded</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {applicantFiles.map((file) => (
+                      <tr key={file.id}>
+                        <td>
+                          <i className={`fas ${
+                            file.type === 'medical_certificate'
+                              ? 'fa-file-medical text-danger'
+                              : 'fa-id-card text-primary'
+                          }`}></i>{' '}
+                          {file.type === 'medical_certificate' ? 'Medical Certificate' : 'Identity Proof'}
+                        </td>
+                        <td>
+                          <small>{file.originalFilename}</small>
+                        </td>
+                        <td>
+                          <small>{(file.size / 1024).toFixed(1)} KB</small>
+                        </td>
+                        <td>
+                          <span className={`badge bg-${
+                            file.status === 'approved' ? 'success' :
+                            file.status === 'rejected' ? 'danger' :
+                            'warning'
+                          }`}>
+                            {file.status.charAt(0).toUpperCase() + file.status.slice(1)}
+                          </span>
+                        </td>
+                        <td>
+                          <small>{new Date(file.uploadedAt).toLocaleDateString()}</small>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-info"
+                            title="View document"
+                            onClick={() => handleViewDocument(file.id)}
+                          >
+                            <i className="fas fa-eye"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             ) : (
-              <p className="text-muted">No proof of identity uploaded.</p>
+              <p className="text-muted">No documents uploaded.</p>
             )}
           </div>
 

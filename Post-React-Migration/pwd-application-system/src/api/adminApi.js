@@ -41,10 +41,23 @@ export const getPendingApplication = async () => {
  */
 export const updateApplicationStatus = async (regNumber, status, rejectionReason = null) => {
     try {
+        // Get admin name from sessionStorage
+        let adminName = 'System Administrator'; // Default fallback
+        try {
+            const adminData = sessionStorage.getItem('adminData');
+            if (adminData) {
+                const admin = JSON.parse(adminData);
+                adminName = admin.adminName || 'System Administrator';
+            }
+        } catch (e) {
+            console.warn('Could not retrieve admin name from sessionStorage:', e);
+        }
+        
         const res = await api.post('/update-application-status.php', {
             regNumber,
             status,
             rejectionReason,
+            adminName,
         });
         return res.data;
     } catch (error) {
