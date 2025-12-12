@@ -834,6 +834,126 @@ The PWD Automated Application System was chosen out of 3 titles presented to our
 
 ### Final Term
 
+#### Backend Integration & PHP/MySQL Implementation (October-December 2025)
+
+**1. Database Schema Migration to MySQL**
+- Migrated from SheetDB API to MySQL (PWDRegistry database)
+- Implemented 3 core tables: `pwd_users`, `admin_users`, `pwd_file_uploads`
+- UTF-8 collation fix applied for proper character encoding
+- Created comprehensive master-setup.sql (v2.0) with 9 sections for complete database initialization
+
+**2. PHP/XAMPP Backend Implementation**
+- Deployed PHP 8.2 backend on XAMPP with MySQLi for database connectivity
+- Created 18 production-ready API endpoints:
+  - **Authentication:** `user-login.php`, `admin-login.php`, `forgot-password.php`
+  - **User Management:** `register.php`, `get-user-data.php`, `update-profile.php`, `change-password.php`
+  - **Admin Functions:** `get-all-applications.php`, `get-pending-application.php`, `update-application-status.php`, `check-email.php`, `check-regnumber.php`
+  - **File Operations:** `files.php`, `file-upload.php`, `file-view.php`, `file-download.php`, `update-all-files-status.php`
+- All endpoints use prepared statements for SQL injection prevention
+- Comprehensive error handling and response formatting
+
+**3. Admin Review Tracking Implementation**
+- Fixed null values issue in `admin_notes`, `reviewed_by`, `reviewed_at` columns
+- Modified `update-application-status.php` to accept and store admin name with timestamp
+- Created `sql-sync-file-reviews.sql` to backfill 6 historical records with proper audit data
+- Implemented complete audit trail for all admin verification activities
+
+**4. Frontend-to-Backend API Integration**
+- Updated React components to call PHP endpoints instead of SheetDB:
+  - `login.jsx` → `user-login.php` / `admin-login.php`
+  - `register.jsx` → `register.php` with validation
+  - `userpage.jsx` → `get-user-data.php`, `files.php`, `file-download.php`
+  - `adminpage.jsx` → `get-all-applications.php`, `update-application-status.php`
+- Added `useCallback` hook to prevent unnecessary re-renders
+- Implemented Refresh button for manual data reload in user dashboard
+- Fixed React Hook dependency warnings
+
+**5. Session Management & Security**
+- Implemented server-side PHP `$_SESSION` for authenticated users
+- Client-side sessionStorage used for temporary UI state (non-sensitive)
+- Admin name properly tracked from session storage to backend
+- Prepared foundation for future HTTP-only secure cookies
+
+**6. API Wrapper Module Updates**
+- **loginApi.js** - Updated for PHP backend authentication
+- **registrationApi.js** - Connected to `register.php` with backend validation
+- **userApi.js** - Modified for MySQL-based user data retrieval
+- **adminApi.js** - Implemented full admin application management workflow
+- All modules use async/await pattern with proper error handling
+
+**7. File Upload & Management System**
+- Created `pwd_file_uploads` table tracking all user documents
+- Implemented file status workflow: Pending → Under Review → Accepted/Rejected
+- Files stored on server with proper access controls
+- File download functionality with integrity verification
+- Admin ability to view and update file status with review comments
+
+**8. Comprehensive Documentation Updates**
+- **database-documentation.md** - MySQL schema with Mermaid ER diagram, setup guide, troubleshooting
+- **php-api-documentation.md** - All 18 endpoints with request/response examples and frontend integration mapping
+- **api-documentation.md** - Updated with PHP/MySQL overview, SheetDB marked [DEPRECATED] ⛔
+- **function-documentation.md** - Reorganized with current implementations on top, legacy code archived with deprecation markers
+- **DOCUMENTATION-REORGANIZATION-COMPLETE.md** - Complete project summary and status
+
+**9. Legacy Code Deprecation & Documentation**
+- Marked 25+ legacy SheetDB functions with [DEPRECATED] ⛔ emoji
+- Created clear migration path from SheetDB to PHP/MySQL
+- Preserved all legacy code for historical reference
+- Added cross-references linking deprecated functions to current equivalents
+- All documentation now clearly separates current (v2.0) from legacy code
+
+**10. Code Quality & Testing**
+- Fixed all React Hook warnings and ESLint errors
+- Validated all 18 PHP endpoints with proper request/response handling
+- Tested file upload and download workflows
+- Verified admin review tracking and timestamp recording
+- Confirmed proper session management across user and admin flows
+
+**11. Production Readiness**
+- master-setup.sql v2.0 ready for fresh database initialization
+- All PHP endpoints validated and documented
+- React frontend properly integrated with backend
+- Error handling implemented across all API calls
+- Session management secured with authentication checks
+
+**Current Status (Final Term Completion):**
+- ✅ MySQL database fully implemented and optimized
+- ✅ 18 PHP API endpoints production-ready
+- ✅ React frontend fully integrated with PHP backend
+- ✅ Admin review tracking with audit trail
+- ✅ File upload/download system operational
+- ✅ Session management implemented server-side
+- ✅ Complete documentation (6 major doc files)
+- ✅ All legacy code identified and archived
+- ✅ Security foundations in place (prepared statements, input validation)
+- ⏳ Future: HTTP-only secure cookies migration
+
+**Key Achievements Summary:**
+
+| Category | Achievement | Status |
+|----------|------------|--------|
+| Database | MySQL with 3 optimized tables | ✅ Complete |
+| Backend | 18 PHP endpoints with full validation | ✅ Complete |
+| Frontend | React SPA fully integrated | ✅ Complete |
+| API Integration | Frontend → PHP → MySQL workflow | ✅ Complete |
+| Admin Features | Review tracking with audit trail | ✅ Complete |
+| File Management | Upload/download/status tracking | ✅ Complete |
+| Documentation | 6 comprehensive doc files | ✅ Complete |
+| Code Quality | All warnings fixed, tested | ✅ Complete |
+| Security | Prepared statements, input validation | ✅ Complete |
+
+**Migration Completion:**
+- **From:** SheetDB API + sessionStorage → **To:** PHP/MySQL + Server Sessions
+- **Code Status:** All current functions documented and working; Legacy code archived
+- **Team Readiness:** Full documentation available for new developers
+- **Deployment Ready:** Yes - XAMPP setup and master-setup.sql v2.0 tested
+
+**For Detailed Information:**
+- **API Reference:** See `documentation/php-api-documentation.md`
+- **Database Setup:** See `documentation/database-documentation.md`
+- **Function Guide:** See `documentation/function-documentation.md`
+- **Complete Summary:** See `documentation/DOCUMENTATION-REORGANIZATION-COMPLETE.md`
+
 ---
 
 ## ⚛️ Legacy (HTML/CSS/JS) to React JS Migration Guide
