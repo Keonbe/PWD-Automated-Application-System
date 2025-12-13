@@ -189,7 +189,7 @@ WHERE adminEmail = 'admin@dasma.gov.ph';
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
 | `id` | INT | PRIMARY KEY, AUTO_INCREMENT | Unique file identifier |
-| `regNumber` | VARCHAR(50) | FOREIGN KEY → pwd_users.regNumber | Links to applicant |
+| `regNumber` | VARCHAR(20) | FOREIGN KEY → pwd_users.regNumber | Links to applicant |
 | `file_type` | ENUM | 'medical_certificate', 'identity_proof' | Document type |
 | `original_filename` | VARCHAR(255) | NOT NULL | Original upload filename |
 | `stored_filename` | VARCHAR(255) | NOT NULL | Server-stored filename |
@@ -210,6 +210,7 @@ WHERE adminEmail = 'admin@dasma.gov.ph';
 - `idx_regNumber` - Fast applicant file lookup
 - `idx_status` - Status filtering
 - `idx_file_type` - Document type filtering
+- `idx_uploaded_at` - Date-based sorting and filtering
 - `idx_uploaded_at` - Date-based sorting
 
 **Sample Query:**

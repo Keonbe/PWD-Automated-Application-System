@@ -8,6 +8,8 @@ A **PWD Automated Application System** built using **React**, **HTML, CSS, & Jav
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Tech Stack](#tech-stack)
+    - [Current Production Stack (v2.0)](#current-production-stack-v20)
+    - [Architecture Diagram](#architecture-diagram)
   - [Project Structure (Partial Example)](#project-structure-partial-example)
   - [Setup Instructions](#setup-instructions)
     - [⚠️ About node\_modules](#️-about-node_modules)
@@ -24,17 +26,24 @@ A **PWD Automated Application System** built using **React**, **HTML, CSS, & Jav
   - [Migration Strategy](#migration-strategy)
     - [Phase 1: Component Creation](#phase-1-component-creation)
     - [Phase 2: Styling Migration](#phase-2-styling-migration)
-    - [Phase 3: State Management](#phase-3-state-management)
-    - [Phase 4: Backend Integration](#phase-4-backend-integration)
+    - [Phase 3: State Management \& Frontend API Integration](#phase-3-state-management--frontend-api-integration)
+    - [Phase 4: Backend Implementation with PHP/MySQL](#phase-4-backend-implementation-with-phpmysql)
+    - [Migration Flow Diagram](#migration-flow-diagram)
   - [Dependencies Installed](#dependencies-installed)
+    - [Frontend (React) Dependencies](#frontend-react-dependencies)
+    - [Backend (PHP) Requirements](#backend-php-requirements)
+    - [Installed Package Versions (package.json)](#installed-package-versions-packagejson)
+    - [Optional (Not Currently Used)](#optional-not-currently-used)
   - [Development Life Cycle Documentation](#development-life-cycle-documentation)
     - [All Team Members involved](#all-team-members-involved)
     - [Background](#background)
     - [Midterm](#midterm)
       - [Project Setup \& Initial Development (September-October 2025)](#project-setup--initial-development-september-october-2025)
     - [Final Term](#final-term)
-  - [⚛️ Legacy (HTML/CSS/JS) to React JS Migration Guide](#️-legacy-htmlcssjs-to-react-js-migration-guide)
-    - [Complete React Migration Guide](#complete-react-migration-guide)
+      - [Backend Integration \& PHP/MySQL Implementation (October-December 2025)](#backend-integration--phpmysql-implementation-october-december-2025)
+  - [🔴 \[DEPRECATED\] Legacy (HTML/CSS/JS) to React JS Migration Guide ⛔](#-deprecated-legacy-htmlcssjs-to-react-js-migration-guide-)
+    - [Status: ARCHIVED - Reference Only](#status-archived---reference-only)
+    - [Complete React Migration Guide (ARCHIVED)](#complete-react-migration-guide-archived)
       - [Phase 1: Routing \& Navigation Setup](#phase-1-routing--navigation-setup)
         - [1.1 Initial Route Configuration](#11-initial-route-configuration)
         - [1.2 Header Navigation Updates (`src/components/header.jsx`)](#12-header-navigation-updates-srccomponentsheaderjsx)
@@ -99,10 +108,44 @@ This system is designed to:
 ---
 
 ## Tech Stack
-* **Frontend:** `ReactJS`, `Bootstrap`, `HTML`/`CSS`/`JS`
-* **Backend:** `Laravel` (Not yet implemented)
-* **Database:** (Not yet implemented)
-* **Tools:** `Visual Studio Code`, `Chrome DevTools`,`SheetDB` for Database API, `Postman` for API Testing.
+
+### Current Production Stack (v2.0)
+* **Frontend:** `ReactJS 18+`, `Bootstrap 5`, `HTML5`/`CSS3`/`JavaScript`
+* **Backend:** `PHP 8.2` on XAMPP with MySQLi
+* **Database:** `MySQL` (PWDRegistry database with utf8mb4 collation)
+* **Tools:** `Visual Studio Code`, `Chrome DevTools`, `Postman` for API Testing
+
+### Architecture Diagram
+```mermaid
+graph TB
+    subgraph Frontend["Frontend (React SPA)"]
+        UI["React Components<br/>(Login, Register, Dashboard)<br/>Port 3000"]
+        Router["React Router v6<br/>(11+ Routes)"]
+        API["API Wrapper Modules<br/>(loginApi, registrationApi,<br/>userApi, adminApi)"]
+    end
+    
+    subgraph Backend["Backend (PHP/MySQL)"]
+        XAMPP["XAMPP<br/>(Apache + PHP 8.2)<br/>Port 80"]
+        AUTH["18 PHP API Endpoints<br/>(Authentication, User,<br/>Admin, File Mgmt)"]
+        DB[("MySQL Database<br/>(PWDRegistry)<br/>3 Core Tables")]
+    end
+    
+    subgraph Storage["File Storage"]
+        FILES["File Server<br/>(Certificates,<br/>Identity Proofs)"]
+    end
+    
+    UI --> Router
+    Router --> API
+    API -->|"HTTP Requests"| XAMPP
+    XAMPP --> AUTH
+    AUTH -->|"MySQLi Prepared<br/>Statements"| DB
+    AUTH --> FILES
+    
+    style UI fill:#61dafb,stroke:#333,color:#000
+    style DB fill:#336791,stroke:#333,color:#fff
+    style XAMPP fill:#777bb4,stroke:#333,color:#fff
+    style AUTH fill:#777bb4,stroke:#333,color:#fff
+```
 
 
 ## Project Structure (Partial Example)
@@ -493,39 +536,149 @@ npm run build
 2. Integrate Bootstrap with React-Bootstrap
 3. Ensure responsive design
 
-### Phase 3: State Management
-1. Add form handling
-2. Implement API integration with SheetDB
-3. Add client-side validation
+### Phase 3: State Management & Frontend API Integration
+1. Add form handling with validation
+2. Implement API integration with backend
+3. Add client-side state management (sessionStorage for non-sensitive data)
 
-### Phase 4: Backend Integration
-1. Connect to Laravel API endpoints
-2. Implement authentication
-3. Add error handling
+### Phase 4: Backend Implementation with PHP/MySQL
+1. **Database Setup:** MySQL database with optimized schema (PWDRegistry)
+   - ✅ `pwd_users` table for user registrations with profile data
+   - ✅ `admin_users` table for admin accounts and verification
+   - ✅ `pwd_file_uploads` table for document tracking with status workflow
+   - ✅ UTF-8mb4 collation fix for proper character encoding
+   - ✅ master-setup.sql v2.0 created for complete database initialization
+
+2. **PHP/XAMPP API Development:** 18 production-ready endpoints completed
+   - ✅ **Authentication:** `user-login.php`, `admin-login.php`, `forgot-password.php`
+   - ✅ **User Management:** `register.php`, `get-user-data.php`, `update-profile.php`, `change-password.php`
+   - ✅ **Admin Functions:** `get-all-applications.php`, `get-pending-application.php`, `update-application-status.php`
+   - ✅ **File Operations:** `files.php`, `file-upload.php`, `file-view.php`, `file-download.php`
+   - ✅ **Utilities:** `check-email.php`, `check-regnumber.php`, `update-all-files-status.php`
+
+3. **Security Implementation:** COMPLETED
+   - ✅ Prepared statements for SQL injection prevention (MySQLi)
+   - ✅ Input validation and sanitization on all endpoints
+   - ✅ Admin name tracking with timestamps for audit trail
+   - ✅ File access controls and integrity verification
+   - ✅ Session management with server-side PHP `$_SESSION`
+
+4. **Frontend-to-Backend Connection:** COMPLETED
+   - ✅ Updated React API modules to call PHP endpoints
+   - ✅ `loginApi.js` → PHP authentication endpoints
+   - ✅ `registrationApi.js` → `register.php` with backend validation
+   - ✅ `userApi.js` → MySQL-based user data retrieval
+   - ✅ `adminApi.js` → Full admin application management workflow
+   - ✅ Added loading states, error handling, and user feedback
+   - ✅ Implemented `useCallback` hook for performance optimization
+   - ✅ Added Refresh button for manual data reload
+
+5. **Documentation:** COMPLETED
+   - ✅ `database-documentation.md` - MySQL schema with ER diagram
+   - ✅ `php-api-documentation.md` - All 18 endpoints documented
+   - ✅ `api-documentation.md` - Updated with PHP overview
+   - ✅ `function-documentation.md` - Reorganized with current/legacy separation
+   - ✅ `DOCUMENTATION-REORGANIZATION-COMPLETE.md` - Complete summary
+
+### Migration Flow Diagram
+```mermaid
+graph LR
+    A["Phase 1:<br/>Components<br/>(Sept 2025)"] --> B["Phase 2:<br/>Styling<br/>(Sept 2025)"]
+    B --> C["Phase 3:<br/>Frontend API<br/>(Oct 2025)"]
+    C --> D["Phase 4:<br/>Backend PHP/MySQL<br/>(Oct-Dec 2025)"]
+    D --> E["Phase 5:<br/>Testing & Docs<br/>(Dec 2025)"]
+    E --> F["✅ Production<br/>Ready<br/>(v2.0)"]
+    
+    style A fill:#61dafb,stroke:#333,color:#000
+    style B fill:#61dafb,stroke:#333,color:#000
+    style C fill:#61dafb,stroke:#333,color:#000
+    style D fill:#4CAF50,stroke:#333,color:#fff
+    style E fill:#4CAF50,stroke:#333,color:#fff
+    style F fill:#2196F3,stroke:#333,color:#fff
+```
 
 ## Dependencies Installed
 
-```bash
-# Make sure you `cd` to the react project before using `npm install`, otherwise, node_modules/dependencies are installed outside of the react project.
+### Frontend (React) Dependencies
 
-# Core React
+**Note:** Make sure you `cd` to the React project before running `npm install`. Dependencies install to that directory.
+
+```bash
+# Core React (v18.3.1)
 npm install react react-dom
 
-# Routing
+# Routing - React Router v6 (v6.20.0+)
 npm install react-router-dom
 
-# UI Framework
+# UI Framework - Bootstrap 5 with React-Bootstrap (v5.3.3 / v2.10.7)
 npm install react-bootstrap bootstrap
 
-# Hash link or Anchor link (Scrolls to a certain element with a certain ID)
+# Hash link/Anchor scrolling (Smooth scroll to sections)
 npm install react-router-hash-link
 
-# Font Awesome Icons and Fonts
-npm install @fortawesome/fontawesome-free --save # Defunct Command: npm install @fortawesome/fontawesome-free; Doesn't save to package.json
+# Icons - Font Awesome 6 Free
+npm install @fortawesome/fontawesome-free --save
 
-# Recharts
+# Charts & Data Visualization - Recharts
 npm install recharts
-npm install rechart
+
+# Axios (HTTP client - alternative to fetch)
+npm install axios
+```
+
+### Backend (PHP) Requirements
+
+**Server Stack:**
+- **XAMPP 8.2.12** (Apache 2.4 + PHP 8.2 + MySQL)
+- **PHP 8.2** with MySQLi extension enabled
+- **MySQL 8.0+** with utf8mb4 collation support
+- **Node.js 23+** and npm (for frontend development)
+
+**PHP Extensions Required:**
+```
+✅ mysqli (MySQLi - enabled by default)
+✅ json (enabled by default)
+✅ file_get_contents() support (enabled)
+✅ session support (enabled)
+```
+
+### Installed Package Versions (package.json)
+
+```json
+{
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.20.0",
+    "react-bootstrap": "^2.10.7",
+    "bootstrap": "^5.3.3",
+    "react-router-hash-link": "^2.4.3",
+    "@fortawesome/fontawesome-free": "^6.5.1",
+    "recharts": "^2.10.0"
+  },
+  "devDependencies": {
+    "react-scripts": "5.0.1"
+  }
+}
+```
+
+### Optional (Not Currently Used)
+
+```bash
+# Redux (state management - if complex app scaling needed)
+npm install @reduxjs/toolkit react-redux
+
+# Form handling (Advanced form management)
+npm install react-hook-form
+
+# Date utilities
+npm install date-fns
+
+# Toast notifications
+npm install react-hot-toast
+
+# Type checking (TypeScript - optional)
+npm install typescript @types/react @types/react-dom
 ```
 
 ---
@@ -956,11 +1109,22 @@ The PWD Automated Application System was chosen out of 3 titles presented to our
 
 ---
 
-## ⚛️ Legacy (HTML/CSS/JS) to React JS Migration Guide
+## 🔴 [DEPRECATED] Legacy (HTML/CSS/JS) to React JS Migration Guide ⛔
 
-### Complete React Migration Guide
+### Status: ARCHIVED - Reference Only
 
-This comprehensive guide covers the complete process of migrating legacy HTML/CSS/JS pages to a React single-page application (SPA), including routing setup, navigation patterns, and common issues.
+> **⚠️ DEPRECATED:** This section documents the Pre-React to React migration completed in Midterm (September-October 2025). This information is preserved for historical reference and understanding the project evolution. 
+>
+> **Current Implementation:** See [Final Term - Backend Integration & PHP/MySQL Implementation](#backend-integration--phpmysql-implementation-october-december-2025) for the current production system.
+>
+> **Current Documentation:** 
+> - Frontend functions: [function-documentation.md](function-documentation.md) (top sections)
+> - Backend APIs: [php-api-documentation.md](php-api-documentation.md)
+> - Database setup: [database-documentation.md](database-documentation.md)
+
+### Complete React Migration Guide (ARCHIVED)
+
+This section documents the migration process from legacy HTML/CSS/JS pages to a React single-page application (SPA), completed during Midterm phase. The frontend is now fully integrated with PHP/MySQL backend as of Final Term.
 
 ---
 

@@ -2,7 +2,19 @@
 
 ## Overview
 
-The PWD Automated Application System includes a file upload feature that allows users to submit required documents (Identity Proof and Medical Certificate) during registration and view their uploaded files in the user dashboard. Files are validated on the frontend, uploaded to the server after successful registration, and stored with proper database relationships.
+The PWD Automated Application System includes a comprehensive file upload feature that allows users to submit required documents (Identity Proof and Medical Certificate) during registration and view their uploaded files in the user dashboard. Files are validated on both frontend and backend, uploaded to the server after successful registration, and stored with proper database relationships.
+
+### Key Features
+
+- **Dual Validation**: Frontend validation for immediate feedback + backend MIME type and extension validation
+- **Secure Upload**: Files linked to users via `regNumber` foreign key, preventing orphan files
+- **Automatic Directory Management**: Upload directories created automatically if missing
+- **Database Tracking**: Complete audit trail with file metadata, status, and review information
+- **User Dashboard Integration**: "My Documents" section for viewing uploaded files and their status
+- **Download Support**: Secure file download with proper headers and content types
+
+### Last Updated
+**December 13, 2025** - Documentation reflects current production implementation (v2.0)
 
 ---
 
@@ -341,7 +353,7 @@ define('MAX_FILE_SIZE', 5242880); // 5MB
 define('ALLOWED_TYPES', ['application/pdf', 'image/jpeg', 'image/png']);
 define('UPLOAD_DIR', __DIR__ . '/../uploads/');
 
-// Validate file
+// Validate file with dual MIME type and extension checking
 function validateFile($file) {
     if ($file['error'] !== UPLOAD_ERR_OK) {
         return ['valid' => false, 'error' => 'Upload error: ' . $file['error']];
@@ -351,16 +363,27 @@ function validateFile($file) {
         return ['valid' => false, 'error' => 'File too large (max 5MB)'];
     }
     
-    // Get actual MIME type
+    // Verify MIME type using finfo
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
     
-    if (!in_array($mime, ALLOWED_TYPES)) {
-        return ['valid' => false, 'error' => 'Invalid file type. Only PDF, JPG, PNG allowed'];
+    // Also check file extension as backup
+    $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    
+    // Accept if MIME type matches OR extension is valid (some files have incorrect MIME detection)
+    $mimeValid = in_array($mime, ALLOWED_TYPES);
+    $extValid = in_array($extension, ['pdf', 'jpg', 'jpeg', 'png']);
+    
+    if (!$mimeValid && !$extValid) {
+        return [
+            'valid' => false, 
+            'error' => 'Invalid file type. Only PDF, JPG, PNG allowed',
+            'debug' => ['detected_mime' => $mime, 'extension' => $extension]
+        ];
     }
     
-    return ['valid' => true, 'mime' => $mime];
+    return ['valid' => true, 'mime' => $mime, 'extension' => $extension];
 }
 
 // Main upload logic
@@ -654,13 +677,12 @@ Response: Binary file with headers:
 
 | Rule | Implementation | Purpose |
 |------|----------------|---------|
-| Size Check | `$file['size'] > MAX_FILE_SIZE` | Prevent large uploads |
-| MIME Check | `finfo_file()` | Verify actual file type (not just extension) |
-| Extension Check | `pathinfo()` | Generate safe filename |
-
----
-
-## File Storage
+| Size Check | `$file['size'] > MAX_FILE_SIZE` | Prevent large uploads (max 5MB) |
+| MIME Check | `finfo_file()` | Verify actual file type using file signature |
+| Extension Check | `pathinfo()` | Fallback validation + safe filename generation |
+| Dual Validation | MIME OR Extension | Handle files with incorrect MIME detection |
+| Directory Check | `file_exists()` + `mkdir()` | Auto-create upload directories |
+| SQL Injection Protection | MySQLi `bind_param()` | Secure database operations |
 
 ### Directory Structure
 
@@ -746,33 +768,110 @@ post_max_size = 10M
 
 ---
 
-## Features Not Yet Implemented
+## Current Implementation Status
+
+### ✅ Completed Features (Production Ready)
+
+**File Upload & Validation:**
+- ✅ File upload during registration with validation (size + type)
+- ✅ Dual validation: MIME type detection + file extension fallback
+- ✅ Automatic upload directory creation
+- ✅ Database integration with `pwd_file_uploads` table
+- ✅ MySQLi prepared statements for security
+- ✅ Debug information in error responses
+- ✅ CORS headers for React integration
+
+**User Features:**
+- ✅ User dashboard "My Documents" section
+- ✅ File download functionality
+- ✅ File status tracking (pending/approved/rejected)
+- ✅ View uploaded documents with status indicators
+
+**Admin Features:**
+- ✅ Admin file review functionality in adminverify.jsx
+- ✅ Admin can view uploaded documents (`handleViewDocument()`)
+- ✅ Admin approval/rejection workflow with status updates
+- ✅ Individual file status update API (`update-file-status.php`)
+- ✅ Batch file status updates API (`update-all-files-status.php`)
+- ✅ Admin notes for rejection reasons
+- ✅ Reviewer tracking (reviewed_by, reviewed_at fields)
+
+### 🚧 Features Not Yet Implemented
 
 The following are planned but NOT yet applied:
 
-- ❌ Admin file review functionality
-- ❌ Admin verification page enhancements
-- ❌ Image preview modal in admin
-- ❌ Admin approval/rejection workflow
-- ❌ Status update from "pending" to "approved/rejected"
-- ❌ Image thumbnail generation
+- ❌ Image thumbnail generation for faster previews
 - ❌ Re-upload functionality for rejected files
+- ❌ File versioning system
+- ❌ Inline PDF viewer modal (currently opens in new tab)
+- ❌ Bulk file operations in admin dashboard
+- ❌ File history audit log
 
 ---
 
+## API Integration Notes
+
+### Frontend API Calls
+
+The file upload feature integrates with the PHP backend through direct fetch calls:
+
+```javascript
+// Upload API endpoint
+const API_BASE = 'http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api';
+
+// Upload file after registration
+await fetch(`${API_BASE}/upload.php`, {
+  method: 'POST',
+  body: formData // Contains file, fileType, regNumber
+});
+
+// Fetch user files
+await fetch(`${API_BASE}/files.php?regNumber=${regNumber}`);
+
+// Download file
+window.open(`${API_BASE}/file-download.php?fileId=${fileId}`);
+```
+
+### Error Handling
+
+The API returns detailed error messages for debugging:
+
+```json
+{
+  "success": false,
+  "error": "Invalid file type. Only PDF, JPG, PNG allowed.",
+  "debug": {
+    "detected_mime": "application/octet-stream",
+    "extension": "pdf"
+  }
+}
+```
+
 ## Related Files
 
+### Frontend Components
 | File | Description |
 |------|-------------|
-| `src/pages/homepage/register.jsx` | Registration with file upload |
-| `src/pages/userpage/userpage.jsx` | User dashboard with My Documents |
-| `xampp-php-mysql-files/api/upload.php` | File upload endpoint |
+| `src/pages/homepage/register.jsx` | Registration with file upload (lines 500-540) |
+| `src/pages/userpage/userpage.jsx` | User dashboard with My Documents section |
+| `src/pages/adminpage/adminverify.jsx` | Admin verification page with file review |
+
+### Backend API Endpoints
+| File | Description |
+|------|-------------|
+| `xampp-php-mysql-files/api/upload.php` | File upload endpoint with dual validation |
 | `xampp-php-mysql-files/api/files.php` | Get user files endpoint |
-| `xampp-php-mysql-files/api/file-download.php` | File download endpoint |
-| `xampp-php-mysql-files/sql-file-uploads.sql` | Database migration |
-| `Post-React-Migration/documentation/FILE-UPLOAD-IMPLEMENTATION.md` | Detailed implementation notes |
-| `Post-React-Migration/documentation/FILE-UPLOAD-QUICKSTART.md` | Quick setup guide |
-| `Post-React-Migration/documentation/FILE-UPLOAD-SETUP.md` | Complete setup guide |
+| `xampp-php-mysql-files/api/file-view.php` | View file inline in browser |
+| `xampp-php-mysql-files/api/file-download.php` | Download file endpoint |
+| `xampp-php-mysql-files/api/update-file-status.php` | Update individual file status |
+| `xampp-php-mysql-files/api/update-all-files-status.php` | Batch update all files for a user |
+
+### Database & Documentation
+| File | Description |
+|------|-------------|
+| `xampp-php-mysql-files/sql-file-uploads.sql` | Database migration for file uploads table |
+| `documentation/php-api-documentation.md` | Complete PHP API reference (18+ endpoints) |
+| `documentation/database-documentation.md` | Database schema with ER diagrams |
 
 ---
 
@@ -785,3 +884,7 @@ The following are planned but NOT yet applied:
 | 2024-12-11 | Created PHP upload, files, and download endpoints |
 | 2024-12-11 | Added userpage.jsx "My Documents" section |
 | 2024-12-11 | Created database migration sql-file-uploads.sql |
+| 2025-12-12 | Updated upload.php with improved MIME type validation |
+| 2025-12-12 | Added extension fallback for files with incorrect MIME detection |
+| 2025-12-12 | Enhanced file upload error messages with debug information |
+| 2025-12-13 | Documentation updated with current production implementation |
