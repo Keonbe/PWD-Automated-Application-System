@@ -20,7 +20,7 @@ AFTER:   React App  →  PHP API      →  MySQL Database (Local)
 ## 📋 Migration Checklist
 
 ### Phase 1: Setup Environment
-- [x] Install XAMPP (Apache + MySQL + PHP)
+- [ ] Install XAMPP (Apache + MySQL + PHP)
 - [ ] Create symbolic link from `htdocs` to repo's PHP folder
 - [ ] Configure CORS for React ↔ PHP communication
 

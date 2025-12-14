@@ -92,6 +92,44 @@ A **PWD Automated Application System** built using **React**, **HTML, CSS, & Jav
         - [5.11 Post-Migration Follow-Ups](#511-post-migration-follow-ups)
         - [5.12 Common Test Failures \& Solutions](#512-common-test-failures--solutions)
         - [5.13 Monitoring Production Issues](#513-monitoring-production-issues)
+  - [🟢 XAMPP PHP/MySQL Backend Documentation (v2.0)](#-xampp-phpmysql-backend-documentation-v20)
+    - [Backend Overview](#backend-overview)
+    - [XAMPP Setup Guide](#xampp-setup-guide)
+      - [1. Install XAMPP](#1-install-xampp)
+      - [2. Start Services](#2-start-services)
+      - [3. Verify Installation](#3-verify-installation)
+    - [Database Setup](#database-setup)
+      - [1. Create Database](#1-create-database)
+      - [2. Run Master Setup Script](#2-run-master-setup-script)
+      - [3. Verify Tables](#3-verify-tables)
+    - [PHP API Structure](#php-api-structure)
+      - [Directory Layout](#directory-layout)
+      - [Configuration File (config.php)](#configuration-file-configphp)
+      - [CORS Headers](#cors-headers)
+    - [API Endpoints Reference](#api-endpoints-reference)
+      - [Authentication APIs](#authentication-apis)
+      - [User Management APIs](#user-management-apis)
+      - [Admin Management APIs](#admin-management-apis)
+      - [File Management APIs](#file-management-apis)
+      - [Utility APIs](#utility-apis)
+    - [Database Schema](#database-schema)
+      - [pwd\_users Table](#pwd_users-table)
+      - [admin\_users Table](#admin_users-table)
+      - [pwd\_file\_uploads Table](#pwd_file_uploads-table)
+    - [File Upload System](#file-upload-system)
+      - [Upload Directory Structure](#upload-directory-structure)
+      - [Supported File Types](#supported-file-types)
+      - [Upload Flow](#upload-flow)
+    - [Frontend-Backend Integration](#frontend-backend-integration)
+      - [API Wrapper Modules](#api-wrapper-modules)
+      - [Session Management](#session-management)
+      - [Error Handling](#error-handling)
+    - [Security Considerations](#security-considerations)
+    - [Common Backend Operations](#common-backend-operations)
+      - [Adding a New API Endpoint](#adding-a-new-api-endpoint)
+      - [Database Queries](#database-queries)
+      - [Testing APIs](#testing-apis)
+    - [Troubleshooting Backend Issues](#troubleshooting-backend-issues)
   - [Follow-Up Resources](#follow-up-resources)
     - [Official Documentation](#official-documentation)
     - [Migration Tools](#migration-tools)
@@ -2566,6 +2604,883 @@ window.addEventListener('unhandledrejection', (event) => {
 - Add feedback button in footer
 - Implement bug report form
 - Monitor console errors in production
+
+---
+
+## 🟢 XAMPP PHP/MySQL Backend Documentation (v2.0)
+
+> **Status:** CURRENT PRODUCTION IMPLEMENTATION  
+> **Last Updated:** December 14, 2025  
+> **Version:** 2.0
+
+This section provides comprehensive documentation for the PHP/MySQL backend that powers the PWD Automated Application System. The backend runs on XAMPP and handles all data persistence, authentication, file uploads, and application processing.
+
+---
+
+### Backend Overview
+
+The backend architecture follows a simple RESTful API pattern:
+
+```mermaid
+flowchart TB
+    subgraph Frontend["React Frontend (localhost:3000)"]
+        React["React SPA"]
+    end
+    
+    subgraph APILayer["API Wrapper Modules"]
+        loginApi["loginApi.js"]
+        regApi["registrationApi.js"]
+        userApi["userApi.js"]
+        adminApi["adminApi.js"]
+    end
+    
+    subgraph Backend["PHP API Endpoints"]
+        direction LR
+        PHPEndpoints["xampp-php-mysql-files/api/*.php<br/>(18 endpoints)"]
+    end
+    
+    subgraph Database["MySQL Database (PWDRegistry)"]
+        direction LR
+        pwd_users[("pwd_users")]
+        admin_users[("admin_users")]
+        pwd_file_uploads[("pwd_file_uploads")]
+    end
+    
+    React -->|"HTTP Requests<br/>(fetch/axios)"| APILayer
+    APILayer -->|"JSON Payloads"| PHPEndpoints
+    PHPEndpoints -->|"MySQLi<br/>Prepared Statements"| Database
+```
+
+**Key Characteristics:**
+- **RESTful Design:** POST for mutations, GET for queries
+- **JSON Communication:** All requests/responses use JSON format
+- **CORS Enabled:** Allows cross-origin requests from React dev server
+- **Prepared Statements:** SQL injection protection via MySQLi
+- **Session-Based Auth:** Frontend stores session data in sessionStorage
+
+---
+
+### XAMPP Setup Guide
+
+#### 1. Install XAMPP
+
+1. Download XAMPP from [apachefriends.org](https://www.apachefriends.org/)
+2. Install to `C:\xampp` (default) or your preferred location
+3. Select components: **Apache**, **MySQL**, **PHP**
+4. Complete installation wizard
+
+**Recommended XAMPP Version:** 8.2.x (PHP 8.2)
+
+#### 2. Start Services
+
+1. Open **XAMPP Control Panel** (run as Administrator)
+2. Start **Apache** → Should show port 80, 443
+3. Start **MySQL** → Should show port 3306
+4. Both should show green "Running" status
+
+```mermaid
+block-beta
+    columns 4
+    block:header:4
+        title["XAMPP Control Panel"]
+    end
+    col1["Module"] col2["PID(s)"] col3["Port(s)"] col4["Status"]
+    Apache["Apache"] pid1["1234"] port1["80, 443"] status1["🟢 Running"]
+    MySQL["MySQL"] pid2["5678"] port2["3306"] status2["🟢 Running"]
+    
+    style title fill:#4051b5,color:#fff
+    style status1 fill:#28a745,color:#fff
+    style status2 fill:#28a745,color:#fff
+```
+
+> **Note:** Both Apache and MySQL should show green "Running" status in the XAMPP Control Panel.
+
+#### 3. Verify Installation
+
+1. **Test Apache:** Open `http://localhost` → Should show XAMPP dashboard
+2. **Test phpMyAdmin:** Open `http://localhost/phpmyadmin` → Database manager
+3. **Test PHP:** Create `C:\xampp\htdocs\test.php` with:
+   ```php
+   <?php phpinfo(); ?>
+   ```
+   Then visit `http://localhost/test.php`
+
+---
+
+### Database Setup
+
+#### 1. Create Database
+
+Open phpMyAdmin (`http://localhost/phpmyadmin`) and create the database:
+
+```sql
+CREATE DATABASE IF NOT EXISTS PWDRegistry
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+```
+
+Or use the SQL tab in phpMyAdmin to run the command.
+
+#### 2. Run Master Setup Script
+
+The master setup script creates all tables and inserts sample data:
+
+**Option A: Using phpMyAdmin**
+1. Select `PWDRegistry` database
+2. Go to "SQL" tab
+3. Copy and paste contents of `Post-React-Migration/xampp-php-mysql-files/master-setup.sql`
+4. Click "Go" to execute
+
+**Option B: Using MySQL Command Line**
+```bash
+mysql -u root PWDRegistry < Post-React-Migration/xampp-php-mysql-files/master-setup.sql
+```
+
+**Option C: Using PowerShell (Windows)**
+```powershell
+cd "C:\xampp\mysql\bin"
+.\mysql.exe -u root PWDRegistry < "C:\path\to\master-setup.sql"
+```
+
+#### 3. Verify Tables
+
+After running the script, verify tables exist:
+
+```sql
+USE PWDRegistry;
+SHOW TABLES;
+```
+
+Expected output:
+```
++------------------------+
+| Tables_in_PWDRegistry  |
++------------------------+
+| admin_users            |
+| pwd_file_uploads       |
+| pwd_users              |
++------------------------+
+```
+
+Verify sample data:
+```sql
+SELECT COUNT(*) as user_count FROM pwd_users;
+SELECT COUNT(*) as admin_count FROM admin_users;
+```
+
+---
+
+### PHP API Structure
+
+#### Directory Layout
+
+```
+Post-React-Migration/
+└── xampp-php-mysql-files/
+    ├── config.php                    # Database configuration
+    ├── master-setup.sql              # Database initialization
+    ├── sql-*.sql                     # Additional SQL scripts
+    ├── api/                          # API endpoints
+    │   ├── admin-login.php           # Admin authentication
+    │   ├── change-password.php       # Password change
+    │   ├── check-email.php           # Email validation
+    │   ├── check-regnumber.php       # RegNumber validation
+    │   ├── file-download.php         # Secure file download
+    │   ├── file-view.php             # File viewing
+    │   ├── file-view-path.php        # File path resolution
+    │   ├── files.php                 # File upload handling
+    │   ├── forgot-password.php       # Password recovery
+    │   ├── get-all-applications.php  # Admin: list all applications
+    │   ├── get-pending-application.php # Admin: pending apps
+    │   ├── get-user-data.php         # User profile data
+    │   ├── get-user-files.php        # User uploaded files
+    │   ├── register.php              # User registration
+    │   ├── update-all-files-status.php # Bulk file status update
+    │   ├── update-application-status.php # Application approval/denial
+    │   ├── update-file-status.php    # Single file status update
+    │   └── user-login.php            # User authentication
+    └── uploads/                      # Uploaded files storage
+        ├── certificates/             # Medical certificates
+        ├── identity/                 # Identity proofs
+        └── thumbnails/               # (Future: image thumbnails)
+```
+
+#### Configuration File (config.php)
+
+```php
+<?php
+/**
+ * Database Configuration
+ * PWD Automated Application System v2.0
+ */
+
+// Database credentials
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'PWDRegistry');
+define('DB_USER', 'root');           // Default XAMPP user
+define('DB_PASS', '');               // Default XAMPP has no password
+
+/**
+ * Get database connection using MySQLi
+ * @return mysqli Database connection object
+ */
+function getDBConnection() {
+    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    
+    if ($conn->connect_error) {
+        http_response_code(500);
+        die(json_encode([
+            'success' => false,
+            'message' => 'Database connection failed'
+        ]));
+    }
+    
+    // Set charset to UTF-8
+    $conn->set_charset('utf8mb4');
+    
+    return $conn;
+}
+?>
+```
+
+#### CORS Headers
+
+All API endpoints include these headers for cross-origin access:
+
+```php
+<?php
+// Standard CORS headers (add to top of each API file)
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Content-Type: application/json");
+
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+?>
+```
+
+---
+
+### API Endpoints Reference
+
+#### Authentication APIs
+
+| Endpoint | Method | Purpose | Request Body |
+|----------|--------|---------|--------------|
+| `user-login.php` | POST | User authentication | `{email, password}` |
+| `admin-login.php` | POST | Admin authentication | `{adminEmail, adminPassword}` |
+| `forgot-password.php` | POST | Password recovery | `{email}` |
+| `change-password.php` | POST | Change password | `{userId, oldPassword, newPassword}` |
+
+**Example: User Login**
+```javascript
+// Request
+POST /api/user-login.php
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+// Response (Success)
+{
+  "success": true,
+  "message": "Login successful",
+  "user": {
+    "id": 1,
+    "regNumber": "PWD-2024-00001",
+    "firstName": "Juan",
+    "lastName": "Dela Cruz",
+    "email": "user@example.com",
+    "status": "pending"
+  }
+}
+
+// Response (Error)
+{
+  "success": false,
+  "message": "Invalid email or password"
+}
+```
+
+#### User Management APIs
+
+| Endpoint | Method | Purpose | Request Body / Params |
+|----------|--------|---------|----------------------|
+| `register.php` | POST | Create new user | Full user profile JSON |
+| `get-user-data.php` | GET | Get user profile | `?userId=1` |
+| `check-email.php` | POST | Validate email uniqueness | `{email}` |
+| `check-regnumber.php` | POST | Validate regNumber uniqueness | `{regNumber}` |
+
+**Example: User Registration**
+```javascript
+// Request
+POST /api/register.php
+{
+  "regNumber": "PWD-2024-00002",
+  "regDate": "2024-12-14",
+  "firstName": "Maria",
+  "lastName": "Santos",
+  "middleName": "Garcia",
+  "email": "maria@example.com",
+  "password": "securepass123",
+  "disability": "Visual Impairment",
+  "street": "123 Main St",
+  "barangay": "San Agustin",
+  "municipality": "Dasmariñas",
+  "province": "Cavite",
+  "region": "IV-A",
+  "mobile": "09123456789",
+  "dob": "1990-05-15",
+  "sex": "Female",
+  "nationality": "Filipino",
+  "blood": "O+",
+  "civil": "Single",
+  "emergencyName": "Pedro Santos",
+  "emergencyPhone": "09187654321",
+  "emergencyRelationship": "Father",
+  "status": "pending"
+}
+
+// Response
+{
+  "success": true,
+  "message": "Registration successful",
+  "regNumber": "PWD-2024-00002"
+}
+```
+
+#### Admin Management APIs
+
+| Endpoint | Method | Purpose | Request Body / Params |
+|----------|--------|---------|----------------------|
+| `get-all-applications.php` | GET | List all PWD applications | None |
+| `get-pending-application.php` | GET | List pending applications | None |
+| `update-application-status.php` | POST | Approve/Deny application | `{regNumber, status, rejectionReason?, adminName}` |
+
+**Example: Update Application Status**
+```javascript
+// Request (Approve)
+POST /api/update-application-status.php
+{
+  "regNumber": "PWD-2024-00001",
+  "status": "accepted",
+  "adminName": "System Administrator"
+}
+
+// Request (Deny)
+POST /api/update-application-status.php
+{
+  "regNumber": "PWD-2024-00001",
+  "status": "denied",
+  "rejectionReason": "Incomplete medical documentation",
+  "adminName": "System Administrator"
+}
+
+// Response
+{
+  "success": true,
+  "message": "Application status updated successfully"
+}
+```
+
+#### File Management APIs
+
+| Endpoint | Method | Purpose | Request Body / Params |
+|----------|--------|---------|----------------------|
+| `files.php` | POST | Upload file | FormData (multipart) |
+| `get-user-files.php` | GET | Get user's uploaded files | `?regNumber=PWD-2024-00001` |
+| `file-download.php` | GET | Download file | `?id=1` |
+| `file-view.php` | GET | View file inline | `?id=1` |
+| `update-file-status.php` | POST | Update single file status | `{fileId, status, adminNotes, reviewedBy}` |
+| `update-all-files-status.php` | POST | Bulk file status update | `{regNumber, status, adminNotes, reviewedBy}` |
+
+**Example: File Upload**
+```javascript
+// Request (using FormData)
+const formData = new FormData();
+formData.append('file', fileObject);
+formData.append('regNumber', 'PWD-2024-00001');
+formData.append('fileType', 'medical_certificate'); // or 'identity_proof'
+
+POST /api/files.php
+Content-Type: multipart/form-data
+[FormData payload]
+
+// Response
+{
+  "success": true,
+  "message": "File uploaded successfully",
+  "fileId": 15,
+  "filename": "medical_cert_PWD-2024-00001_1702540800.pdf"
+}
+```
+
+#### Utility APIs
+
+| Endpoint | Method | Purpose | Request Body / Params |
+|----------|--------|---------|----------------------|
+| `file-view-path.php` | GET | Get file path for viewing | `?id=1` |
+
+---
+
+### Database Schema
+
+#### pwd_users Table
+
+Primary table storing all PWD applicant information.
+
+```sql
+CREATE TABLE pwd_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    regNumber VARCHAR(20) NOT NULL UNIQUE,
+    regDate DATE NOT NULL,
+    lastName VARCHAR(100) NOT NULL,
+    firstName VARCHAR(100) NOT NULL,
+    middleName VARCHAR(100),
+    disability VARCHAR(100) NOT NULL,
+    street VARCHAR(200) NOT NULL,
+    barangay VARCHAR(100) NOT NULL,
+    municipality VARCHAR(100) NOT NULL DEFAULT 'Dasmariñas',
+    province VARCHAR(100) NOT NULL DEFAULT 'Cavite',
+    region VARCHAR(50) NOT NULL DEFAULT 'IV-A',
+    tel VARCHAR(20),
+    mobile VARCHAR(20) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    dob DATE NOT NULL,
+    sex VARCHAR(10) NOT NULL,
+    nationality VARCHAR(50) NOT NULL DEFAULT 'Filipino',
+    blood VARCHAR(5),
+    civil VARCHAR(20) NOT NULL,
+    emergencyName VARCHAR(150) NOT NULL,
+    emergencyPhone VARCHAR(20) NOT NULL,
+    emergencyRelationship VARCHAR(50) NOT NULL,
+    proofIdentity VARCHAR(200),
+    proofDisability VARCHAR(200),
+    password VARCHAR(100) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    rejectionReason TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_status (status),
+    INDEX idx_regDate (regDate),
+    INDEX idx_email (email)
+);
+```
+
+**Status Values:**
+- `pending` - Awaiting admin review
+- `accepted` - Application approved
+- `denied` - Application rejected (see rejectionReason)
+
+#### admin_users Table
+
+Stores administrator accounts.
+
+```sql
+CREATE TABLE admin_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    adminEmail VARCHAR(150) NOT NULL UNIQUE,
+    adminPassword VARCHAR(255) NOT NULL,
+    adminName VARCHAR(100),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_email (adminEmail)
+);
+
+-- Default admin account (change password in production!)
+INSERT INTO admin_users (adminEmail, adminPassword, adminName)
+VALUES ('admin@dasma.gov.ph', 'admin123', 'System Administrator');
+```
+
+#### pwd_file_uploads Table
+
+Manages uploaded documents with admin review workflow.
+
+```sql
+CREATE TABLE pwd_file_uploads (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    regNumber VARCHAR(20) NOT NULL,
+    file_type ENUM('medical_certificate', 'identity_proof') NOT NULL,
+    original_filename VARCHAR(255) NOT NULL,
+    stored_filename VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_size INT NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
+    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    admin_notes TEXT,
+    reviewed_by VARCHAR(100),
+    reviewed_at DATETIME,
+    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (regNumber) REFERENCES pwd_users(regNumber) 
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    INDEX idx_regNumber (regNumber),
+    INDEX idx_status (status),
+    INDEX idx_file_type (file_type),
+    INDEX idx_uploaded_at (uploaded_at)
+);
+```
+
+---
+
+### File Upload System
+
+#### Upload Directory Structure
+
+```
+xampp-php-mysql-files/
+└── uploads/
+    ├── certificates/           # Medical certificates
+    │   ├── medical_cert_PWD-2024-00001_1702540800.pdf
+    │   └── medical_cert_PWD-2024-00002_1702541000.jpg
+    ├── identity/               # Government IDs
+    │   ├── identity_PWD-2024-00001_1702540801.pdf
+    │   └── identity_PWD-2024-00002_1702541001.png
+    └── thumbnails/             # (Future: resized images)
+```
+
+**File Naming Convention:**
+```
+{type}_{regNumber}_{timestamp}.{extension}
+```
+- `type`: `medical_cert` or `identity`
+- `regNumber`: User's PWD registration number
+- `timestamp`: Unix timestamp of upload
+- `extension`: Original file extension
+
+#### Supported File Types
+
+| Type | MIME Types | Extensions | Max Size |
+|------|------------|------------|----------|
+| PDF | `application/pdf` | `.pdf` | 5 MB |
+| JPEG | `image/jpeg` | `.jpg`, `.jpeg` | 5 MB |
+| PNG | `image/png` | `.png` | 5 MB |
+
+**Validation Code:**
+```php
+$allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+$allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+$maxSize = 5 * 1024 * 1024; // 5MB
+```
+
+#### Upload Flow
+
+```mermaid
+flowchart TD
+    subgraph Step1["1. Frontend Validation"]
+        A1["User selects file"] --> A2{"Valid?"}
+        A2 -->|"Check size ≤5MB"| A3{"Size OK?"}
+        A3 -->|"Check type PDF/JPG/PNG"| A4{"Type OK?"}
+        A4 -->|Yes| A5["Store in memory"]
+        A2 -->|No| A6["Show error"]
+        A3 -->|No| A6
+        A4 -->|No| A6
+    end
+    
+    subgraph Step2["2. User Registration"]
+        B1["Submit registration form"] --> B2["API creates user"]
+        B2 --> B3["Returns regNumber"]
+    end
+    
+    subgraph Step3["3. File Upload"]
+        C1["Create FormData<br/>file + regNumber"] --> C2["POST to files.php"]
+        C2 --> C3["Backend validates<br/>MIME + extension"]
+        C3 --> C4["Generate unique filename"]
+        C4 --> C5["Save to uploads/"]
+        C5 --> C6[("Create DB record")]
+    end
+    
+    subgraph Step4["4. Admin Review"]
+        D1["Admin views files"] --> D2{"Decision"}
+        D2 -->|"Approve"| D3["Status: Approved"]
+        D2 -->|"Reject"| D4["Status: Rejected<br/>+ Notes"]
+        D3 --> D5["update-file-status.php"]
+        D4 --> D5
+    end
+    
+    A5 --> B1
+    B3 --> C1
+    C6 --> D1
+    
+    style Step1 fill:#e3f2fd
+    style Step2 fill:#e8f5e9
+    style Step3 fill:#fff3e0
+    style Step4 fill:#fce4ec
+```
+
+---
+
+### Frontend-Backend Integration
+
+#### API Wrapper Modules
+
+The React frontend uses wrapper modules for clean API access:
+
+**File Locations:**
+```
+src/api/
+├── loginApi.js         # Authentication APIs
+├── registrationApi.js  # Registration + validation
+├── userApi.js          # User profile + files
+└── adminApi.js         # Admin dashboard APIs
+```
+
+**Example: loginApi.js**
+```javascript
+import api from './api'; // Axios instance with base URL
+
+// User login
+export const userLogin = async (email, password) => {
+    const response = await api.post('/user-login.php', {
+        email: email.toLowerCase().trim(),
+        password
+    });
+    return response.data;
+};
+
+// Admin login
+export const adminLogin = async (adminEmail, adminPassword) => {
+    const response = await api.post('/admin-login.php', {
+        adminEmail: adminEmail.toLowerCase().trim(),
+        adminPassword
+    });
+    return response.data;
+};
+
+// Forgot password
+export const forgotPassword = async (email) => {
+    const response = await api.post('/forgot-password.php', {
+        email: email.toLowerCase().trim()
+    });
+    return response.data;
+};
+```
+
+**Example: Axios Base Configuration (api.js)**
+```javascript
+import axios from 'axios';
+
+const api = axios.create({
+    baseURL: 'http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
+
+export default api;
+```
+
+#### Session Management
+
+The frontend uses `sessionStorage` for session persistence:
+
+```javascript
+// After successful login
+sessionStorage.setItem('userId', response.user.id);
+sessionStorage.setItem('userData', JSON.stringify(response.user));
+
+// For admin login
+sessionStorage.setItem('adminLoggedIn', response.admin.adminEmail);
+sessionStorage.setItem('adminData', JSON.stringify(response.admin));
+
+// Check login status
+const isLoggedIn = sessionStorage.getItem('userId') !== null;
+const isAdminLoggedIn = sessionStorage.getItem('adminLoggedIn') !== null;
+
+// Logout
+sessionStorage.removeItem('userId');
+sessionStorage.removeItem('userData');
+```
+
+#### Error Handling
+
+Standard error handling pattern:
+
+```javascript
+try {
+    setLoading(true);
+    const response = await loginApi.userLogin(email, password);
+    
+    if (response.success) {
+        // Handle success
+        sessionStorage.setItem('userId', response.user.id);
+        navigate('/userpage');
+    } else {
+        // Handle API error
+        setError(response.message);
+    }
+} catch (err) {
+    // Handle network/unexpected errors
+    console.error('Login error:', err);
+    setError('Connection error. Please try again.');
+} finally {
+    setLoading(false);
+}
+```
+
+---
+
+### Security Considerations
+
+| Area | Implementation | Status |
+|------|----------------|--------|
+| **SQL Injection** | MySQLi prepared statements | ✅ Protected |
+| **CORS** | Configured for localhost:3000 | ✅ Enabled |
+| **Password Storage** | Plain text (dev) | ⚠️ Hash in production |
+| **Input Validation** | Server-side validation | ✅ Implemented |
+| **File Upload** | MIME + extension validation | ✅ Protected |
+| **XSS Prevention** | JSON responses only | ✅ Protected |
+| **Session Security** | SessionStorage (client-side) | ⚠️ Use HttpOnly cookies in prod |
+
+**Production Recommendations:**
+1. **Hash passwords** using `password_hash()` and `password_verify()`
+2. **Use HttpOnly cookies** instead of sessionStorage for auth tokens
+3. **Implement rate limiting** for login attempts
+4. **Add CSRF tokens** for mutation requests
+5. **Use HTTPS** in production
+6. **Restrict CORS** to specific domains
+
+---
+
+### Common Backend Operations
+
+#### Adding a New API Endpoint
+
+1. **Create PHP file** in `xampp-php-mysql-files/api/`:
+
+```php
+<?php
+// api/new-endpoint.php
+
+// CORS Headers
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Content-Type: application/json");
+
+// Handle preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
+}
+
+// Include database config
+require_once '../config.php';
+
+// Get database connection
+$conn = getDBConnection();
+
+// Get request data
+$data = json_decode(file_get_contents('php://input'), true);
+
+// Your logic here...
+
+// Return response
+echo json_encode([
+    'success' => true,
+    'message' => 'Operation completed',
+    'data' => $result
+]);
+
+$conn->close();
+?>
+```
+
+2. **Add wrapper function** in appropriate `src/api/*.js` file
+3. **Call from React component** with proper error handling
+
+#### Database Queries
+
+**SELECT with prepared statement:**
+```php
+$stmt = $conn->prepare("SELECT * FROM pwd_users WHERE email = ? LIMIT 1");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+```
+
+**INSERT with prepared statement:**
+```php
+$stmt = $conn->prepare("INSERT INTO pwd_users (regNumber, firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)");
+$stmt->bind_param("sssss", $regNumber, $firstName, $lastName, $email, $password);
+$stmt->execute();
+$newId = $conn->insert_id;
+```
+
+**UPDATE with prepared statement:**
+```php
+$stmt = $conn->prepare("UPDATE pwd_users SET status = ?, rejectionReason = ? WHERE regNumber = ?");
+$stmt->bind_param("sss", $status, $reason, $regNumber);
+$stmt->execute();
+$affected = $stmt->affected_rows;
+```
+
+#### Testing APIs
+
+**Using Postman:**
+1. Set method (GET/POST)
+2. Enter URL: `http://localhost/webdev_finals/.../api/endpoint.php`
+3. For POST: Body → raw → JSON
+4. Send and check response
+
+**Using cURL:**
+```bash
+# GET request
+curl http://localhost/webdev_finals/.../api/get-all-applications.php
+
+# POST request
+curl -X POST http://localhost/webdev_finals/.../api/user-login.php \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"test123"}'
+```
+
+**Using Browser DevTools:**
+1. Open Network tab
+2. Perform action in React app
+3. Click on API request to see details
+4. Check Request/Response payloads
+
+---
+
+### Troubleshooting Backend Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| **CORS errors** | Missing headers | Add CORS headers to PHP file |
+| **500 Internal Server Error** | PHP syntax error | Check Apache error log: `C:\xampp\apache\logs\error.log` |
+| **Connection refused** | Apache not running | Start Apache in XAMPP Control Panel |
+| **Database connection failed** | Wrong credentials | Check `config.php` DB settings |
+| **Table doesn't exist** | Missing migration | Run `master-setup.sql` |
+| **File upload fails** | Directory permissions | Create `uploads/` folders manually |
+| **JSON parse error** | PHP outputting HTML | Check for PHP errors/warnings |
+| **Empty response** | No `echo` statement | Add `echo json_encode($response)` |
+
+**Debug Checklist:**
+1. ✅ XAMPP Apache is running
+2. ✅ XAMPP MySQL is running
+3. ✅ Database `PWDRegistry` exists
+4. ✅ All tables created via `master-setup.sql`
+5. ✅ Upload directories exist and are writable
+6. ✅ API endpoint file exists and has no syntax errors
+7. ✅ CORS headers present in API file
+8. ✅ React API base URL is correct
+
+**Check Apache Error Log:**
+```powershell
+Get-Content "C:\xampp\apache\logs\error.log" -Tail 50
+```
+
+**Check PHP Errors Directly:**
+```php
+// Add to top of PHP file for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+```
 
 ---
 
