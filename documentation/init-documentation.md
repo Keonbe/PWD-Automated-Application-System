@@ -148,7 +148,7 @@ This system is designed to:
 ## Tech Stack
 
 ### Current Production Stack (v2.0)
-* **Frontend:** `ReactJS 18+`, `Bootstrap 5`, `HTML5`/`CSS3`/`JavaScript`
+* **Frontend:** `ReactJS 19`, `Bootstrap 5`, `HTML5`/`CSS3`/`JavaScript`
 * **Backend:** `PHP 8.2` on XAMPP with MySQLi
 * **Database:** `MySQL` (PWDRegistry database with utf8mb4 collation)
 * **Tools:** `Visual Studio Code`, `Chrome DevTools`, `Postman` for API Testing
@@ -642,13 +642,13 @@ graph LR
 **Note:** Make sure you `cd` to the React project before running `npm install`. Dependencies install to that directory.
 
 ```bash
-# Core React (v18.3.1)
+# Core React (v19.2.0)
 npm install react react-dom
 
-# Routing - React Router v6 (v6.20.0+)
+# Routing - React Router v7 (v7.9.3)
 npm install react-router-dom
 
-# UI Framework - Bootstrap 5 with React-Bootstrap (v5.3.3 / v2.10.7)
+# UI Framework - Bootstrap 5 with React-Bootstrap (v5.3.8 / v2.10.10)
 npm install react-bootstrap bootstrap
 
 # Hash link/Anchor scrolling (Smooth scroll to sections)
@@ -662,6 +662,9 @@ npm install recharts
 
 # Axios (HTTP client - alternative to fetch)
 npm install axios
+
+# QR Code Generation
+npm install qrcode.react
 ```
 
 ### Backend (PHP) Requirements
@@ -685,17 +688,25 @@ npm install axios
 ```json
 {
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.20.0",
-    "react-bootstrap": "^2.10.7",
-    "bootstrap": "^5.3.3",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.13.2",
+    "bootstrap": "^5.3.8",
+    "qrcode.react": "^4.2.0",
+    "react": "^19.2.0",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.3",
     "react-router-hash-link": "^2.4.3",
-    "@fortawesome/fontawesome-free": "^6.5.1",
-    "recharts": "^2.10.0"
+    "react-scripts": "5.0.1",
+    "recharts": "^3.2.1",
+    "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-    "react-scripts": "5.0.1"
+    "cross-env": "^10.1.0"
   }
 }
 ```
@@ -762,9 +773,9 @@ The PWD Automated Application System was chosen out of 3 titles presented to our
 **4. React Application Bootstrap**
 - Initialized React project using Create-React-App
 - Configured `package.json` with necessary dependencies:
-  - React & React DOM (v18.3.1)
-  - React Router DOM (v6.28.0) for SPA routing
-  - React Bootstrap & Bootstrap (v2.10.7 / v5.3.3) for UI components
+  - React & React DOM (v19.2.0)
+  - React Router DOM (v7.9.3) for SPA routing
+  - React Bootstrap & Bootstrap (v2.10.10 / v5.3.8) for UI components
 
 **5. Project Architecture & Routing**
 - Implemented comprehensive routing structure with React Router:
