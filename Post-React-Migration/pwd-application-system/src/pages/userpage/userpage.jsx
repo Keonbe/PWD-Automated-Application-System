@@ -1021,59 +1021,84 @@ export default function UserPage() {
               <div className="user-card">
                 <h3 className="user-card-title">Recent Activity</h3>
                 
-                {/* Dynamic activity based on status: Temporary/Not Complete or Not Final */}
+                {/* Dynamic activity based on status */}
                 {(() => {
                   const status = userData.status?.toLowerCase();
+                  // Format updatedAt for status changes (fallback to regDate if not available)
+                  const statusUpdateDate = userData.updatedAt 
+                    ? new Date(userData.updatedAt).toLocaleDateString()
+                    : userData.regDate;
+                  
+                  // Get latest document review date from userFiles
+                  const latestReviewDate = userFiles.length > 0 
+                    ? userFiles
+                        .filter(f => f.reviewedAt)
+                        .sort((a, b) => new Date(b.reviewedAt) - new Date(a.reviewedAt))[0]?.reviewedAt
+                    : null;
+                  const documentsVerifiedDate = latestReviewDate 
+                    ? new Date(latestReviewDate).toLocaleDateString()
+                    : userData.regDate;
+                  
                   if (status === 'pending') {
                     return (
                       <div className="user-activity-item">
                         <div className="user-activity-header">
                           <span className="user-activity-title">Application Under Review</span>
-                          <span className="user-activity-time">Today, 10:30 AM</span>
+                          <span className="user-activity-time">{userData.regDate}</span>
                         </div>
                         <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
                       </div>
                     );
                   } else if (status === 'accepted') {
                     return (
-                      <div className="user-activity-item">
-                        <div className="user-activity-header">
-                          <span className="user-activity-title">Application Approved</span>
-                          <span className="user-activity-time">Today, 9:15 AM</span>
+                      <>
+                        <div className="user-activity-item">
+                          <div className="user-activity-header">
+                            <span className="user-activity-title">Application Approved</span>
+                            <span className="user-activity-time">{statusUpdateDate}</span>
+                          </div>
+                          <p className="user-activity-desc">Congratulations! Your PWD application has been approved.</p>
                         </div>
-                        <p className="user-activity-desc">Congratulations! Your PWD application has been approved.</p>
-                      </div>
+                        <div className="user-activity-item">
+                          <div className="user-activity-header">
+                            <span className="user-activity-title">Documents Verified</span>
+                            <span className="user-activity-time">{documentsVerifiedDate}</span>
+                          </div>
+                          <p className="user-activity-desc">All submitted documents have been verified.</p>
+                        </div>
+                      </>
                     );
                   } else if (status === 'denied') {
                     return (
-                      <div className="user-activity-item">
-                        <div className="user-activity-header">
-                          <span className="user-activity-title">Application Status Updated</span>
-                          <span className="user-activity-time">Today, 11:45 AM</span>
+                      <>
+                        <div className="user-activity-item">
+                          <div className="user-activity-header">
+                            <span className="user-activity-title">Application Status Updated</span>
+                            <span className="user-activity-time">{statusUpdateDate}</span>
+                          </div>
+                          <p className="user-activity-desc">Your application status has been updated. Please contact support for details.</p>
                         </div>
-                        <p className="user-activity-desc">Your application status has been updated. Please contact support for details.</p>
-                      </div>
+                        <div className="user-activity-item">
+                          <div className="user-activity-header">
+                            <span className="user-activity-title">Documents Verified</span>
+                            <span className="user-activity-time">{documentsVerifiedDate}</span>
+                          </div>
+                          <p className="user-activity-desc">All submitted documents have been verified.</p>
+                        </div>
+                      </>
                     );
                   } else {
                     return (
                       <div className="user-activity-item">
                         <div className="user-activity-header">
                           <span className="user-activity-title">Application Under Review</span>
-                          <span className="user-activity-time">Today, 10:30 AM</span>
+                          <span className="user-activity-time">{userData.regDate}</span>
                         </div>
                         <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
                       </div>
                     );
                   }
                 })()}
-                
-                <div className="user-activity-item">
-                  <div className="user-activity-header">
-                    <span className="user-activity-title">Documents Verified</span>
-                    <span className="user-activity-time">{userData.regDate}</span>
-                  </div>
-                  <p className="user-activity-desc">All submitted documents have been verified.</p>
-                </div>
 
                 <div className="user-activity-item">
                   <div className="user-activity-header">

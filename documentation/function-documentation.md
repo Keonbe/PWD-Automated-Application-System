@@ -2440,7 +2440,10 @@ const getDemoUserData = () => {
       generatedPassword: '12345678',
       password: '12345678',
       // Default status used by the registration form
-      status: 'Pending'
+      status: 'Pending',
+      // Timestamps from database
+      createdAt: '2025-01-15 10:30:00',
+      updatedAt: '2025-01-15 10:30:00'
     };
 };
 ```

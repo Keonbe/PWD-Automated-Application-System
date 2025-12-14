@@ -719,7 +719,7 @@ if (!$regNumber) {
 }
 
 $stmt = $conn->prepare(
-    "SELECT id, file_type, original_filename, stored_filename, file_path, file_size, mime_type, status, admin_notes, uploaded_at 
+    "SELECT id, file_type, original_filename, stored_filename, file_path, file_size, mime_type, status, admin_notes, uploaded_at, reviewed_at, reviewed_by 
     FROM pwd_file_uploads 
     WHERE regNumber = ? 
     ORDER BY uploaded_at DESC"
@@ -741,7 +741,9 @@ while ($row = $result->fetch_assoc()) {
         'mimeType' => $row['mime_type'],
         'status' => $row['status'],
         'adminNotes' => $row['admin_notes'],
-        'uploadedAt' => $row['uploaded_at']
+        'uploadedAt' => $row['uploaded_at'],
+        'reviewedAt' => $row['reviewed_at'],
+        'reviewedBy' => $row['reviewed_by']
     ];
 }
 
@@ -901,9 +903,11 @@ Success Response:
       "filePath": "uploads/identity/identity_proof_1702251234_abc123.jpg",
       "size": 245670,
       "mimeType": "image/jpeg",
-      "status": "pending",
-      "adminNotes": null,
-      "uploadedAt": "2025-12-11 10:30:45"
+      "status": "approved",
+      "adminNotes": "ID verified successfully",
+      "uploadedAt": "2025-12-11 10:30:45",
+      "reviewedAt": "2025-12-12 14:20:00",
+      "reviewedBy": "admin@dasma.gov.ph"
     }
   ]
 }

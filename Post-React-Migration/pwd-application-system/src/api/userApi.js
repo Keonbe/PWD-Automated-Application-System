@@ -85,6 +85,8 @@ export const getCurrentUserData = async () => {
                 password: userData.password || '',
                 generatedPassword: userData.password || '', // Use same password
                 status: userData.status || 'Pending',
+                createdAt: userData.createdAt || '',
+                updatedAt: userData.updatedAt || '',
                 _raw: userData // Keep original for debugging
             };
             

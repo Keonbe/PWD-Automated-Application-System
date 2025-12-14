@@ -13,7 +13,7 @@ if (!$regNumber) {
 }
 
 $stmt = $conn->prepare(
-    "SELECT id, file_type, original_filename, stored_filename, file_path, file_size, mime_type, status, admin_notes, uploaded_at 
+    "SELECT id, file_type, original_filename, stored_filename, file_path, file_size, mime_type, status, admin_notes, uploaded_at, reviewed_at, reviewed_by 
     FROM pwd_file_uploads 
     WHERE regNumber = ? 
     ORDER BY uploaded_at DESC"
@@ -35,7 +35,9 @@ while ($row = $result->fetch_assoc()) {
         'mimeType' => $row['mime_type'],
         'status' => $row['status'],
         'adminNotes' => $row['admin_notes'],
-        'uploadedAt' => $row['uploaded_at']
+        'uploadedAt' => $row['uploaded_at'],
+        'reviewedAt' => $row['reviewed_at'],
+        'reviewedBy' => $row['reviewed_by']
     ];
 }
 

@@ -851,7 +851,9 @@ GET /files.php?regNumber=371771933783
       "mimeType": "image/png",
       "status": "pending",
       "adminNotes": null,
-      "uploadedAt": "2025-11-15 12:30:00"
+      "uploadedAt": "2025-11-15 12:30:00",
+      "reviewedAt": null,
+      "reviewedBy": null
     },
     {
       "id": 2,
@@ -861,9 +863,11 @@ GET /files.php?regNumber=371771933783
       "filePath": "uploads/identity/identity_proof_1702651900_b2c3d4e5.jpg",
       "size": 1024000,
       "mimeType": "image/jpeg",
-      "status": "pending",
-      "adminNotes": null,
-      "uploadedAt": "2025-11-15 12:35:00"
+      "status": "approved",
+      "adminNotes": "ID verified successfully",
+      "uploadedAt": "2025-11-15 12:35:00",
+      "reviewedAt": "2025-11-16 09:15:00",
+      "reviewedBy": "admin@dasma.gov.ph"
     }
   ]
 }
@@ -872,7 +876,8 @@ GET /files.php?regNumber=371771933783
 #### Database Query
 ```php
 SELECT id, file_type, original_filename, stored_filename, file_path,
-       file_size, mime_type, status, admin_notes, uploaded_at
+       file_size, mime_type, status, admin_notes, uploaded_at,
+       reviewed_at, reviewed_by
 FROM pwd_file_uploads
 WHERE regNumber = ?
 ORDER BY uploaded_at DESC
