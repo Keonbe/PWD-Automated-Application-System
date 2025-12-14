@@ -942,6 +942,7 @@ export default function Register() {
                   <option value="Fatima I">Fatima I</option>
                   <option value="Fatima II">Fatima II</option>
                   <option value="Fatima III">Fatima III</option>
+                  <option value="H-2">H-2</option>
                   <option value="Langkaan I">Langkaan I</option>
                   <option value="Langkaan II">Langkaan II</option>
                   <option value="Luzviminda I">Luzviminda I</option>

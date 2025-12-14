@@ -667,10 +667,10 @@ export default function UserPage() {
                   <span className="sr-only">QR Code containing PWD ID information for verification</span>
                   <QRCodeSVG 
                     value={`PWD ID: ${userData.regNumber || 'N/A'}
-Name: ${userData.lastName || ''}, ${userData.firstName || ''} ${userData.middleName || ''}
-Disability: ${userData.disability || 'N/A'}
-Status: ${userData.status || 'Pending'}
-City Government of Dasmariñas`}
+                    Name: ${userData.lastName || ''}, ${userData.firstName || ''} ${userData.middleName || ''}
+                    Disability: ${userData.disability || 'N/A'}
+                    Status: ${userData.status || 'Pending'}
+                    City Government of Dasmariñas`}
                     size={120}
                     level="H"
                     includeMargin={true}

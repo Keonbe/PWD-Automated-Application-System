@@ -420,11 +420,25 @@
   display: inline-flex;
   align-items: center;
   padding: 0.5rem 1rem;
-  background-color: #ffc107;
-  color: #000;
   border-radius: 6px;
   font-weight: 500;
   font-size: 0.875rem;
+}
+
+/* Status-specific colors for user-status-badge */
+.user-status-badge.status-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.user-status-badge.status-success {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.user-status-badge.status-danger {
+  background-color: #f8d7da;
+  color: #842029;
 }
 
 .user-status-badge i {
