@@ -354,7 +354,7 @@ PWD-Automated-Application-System/
 |----------|-------------|
 | [Init Documentation](documentation/init-documentation.md) | Complete project setup guide |
 | [Database Documentation](documentation/database-documentation.md) | MySQL schema and ER diagram |
-| [PHP API Documentation](documentation/php-api-documentation.md) | All 18 API endpoints |
+| [PHP API Documentation](documentation/php-api-documentation.md) | All 19 API endpoints |
 | [Function Documentation](documentation/function-documentation.md) | React function reference |
 | [File Upload Documentation](documentation/file-upload-feature-documentation.md) | File upload system guide |
 | [API Documentation](documentation/api-documentation.md) | Frontend API integration |
