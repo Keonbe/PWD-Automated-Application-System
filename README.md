@@ -1,7 +1,8 @@
 # PWD-Automated-Application-System
-**A project for whole semester for ITWB311 “Web Development” subject**
 
-A **PWD Automated Application System** built using **React**, **HTML, CSS, & Javascript** for midterm, and later on for the final term **Laravel**, structured for academic purposes. In partial fulfillment to ***ITWB311 “Web Development” subject***
+**A project for ITWB311 "Web Development" subject — Final Term v2.0**
+
+A **PWD Automated Application System** built using **React 19**, **PHP 8.2**, and **MySQL** — a full-stack web application for managing PWD (Persons with Disabilities) registrations in Dasmariñas City.
 
 <p align="center">
   <img src="https://img.shields.io/github/last-commit/Keonbe/PWD-Automated-Application-System?style=plastic" alt="Last Commit">
@@ -11,218 +12,364 @@ A **PWD Automated Application System** built using **React**, **HTML, CSS, & Jav
   <img src="/documentation/images/homepage-screenshot.png" alt="Homepage Screenshot" width="600"/>
 </p>
 
-Note: This repository contains a mixed codebase: *a legacy static site* `(Pre-React-Migration/)` and an in-progress *React migration* `(Post-React-Migration/pwd-application-system)`. The React code lives in `Post-React-Migration/pwd-application-system` — that's the main project to run and  we will work on.
+> **Version 2.0** — Production-ready with PHP/MySQL backend, 18 API endpoints, file upload system, and admin review workflow.
 
-Contents
-- **Overview**
-- **Tech Stack**
-- **Prerequisites**
-- **Install**
-- **Run (development)**
-- **Build (production**)
-- **What to test (quick checklist**)
-- **Project structure & important files**
-- **Migration notes and temporary artifacts**
-- **How to contribute (PR process)**
-- **Contributors**
-- **Documentation Guide**
+---
+
+## Contents
+
+- [PWD-Automated-Application-System](#pwd-automated-application-system)
+  - [Contents](#contents)
+  - [Overview](#overview)
+  - [Key Features](#key-features)
+  - [Tech Stack](#tech-stack)
+    - [Frontend](#frontend)
+    - [Backend](#backend)
+    - [Database](#database)
+    - [Tools](#tools)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+    - [1. Clone the Repository](#1-clone-the-repository)
+    - [2. Install Frontend Dependencies](#2-install-frontend-dependencies)
+    - [3. Set Up PHP Backend](#3-set-up-php-backend)
+  - [Database Setup](#database-setup)
+    - [1. Start XAMPP Services](#1-start-xampp-services)
+    - [2. Create Database](#2-create-database)
+    - [3. Run Setup Script](#3-run-setup-script)
+  - [Run Development](#run-development)
+    - [Start Frontend (React)](#start-frontend-react)
+    - [Start Backend (XAMPP)](#start-backend-xampp)
+  - [Build Production](#build-production)
+  - [Project Structure](#project-structure)
+  - [API Endpoints](#api-endpoints)
+    - [Authentication](#authentication)
+    - [User Management](#user-management)
+    - [Admin Management](#admin-management)
+    - [File Management](#file-management)
+  - [How to Contribute](#how-to-contribute)
+  - [Contributors](#contributors)
+      - [All Team Members](#all-team-members)
+  - [Documentation Guide](#documentation-guide)
+    - [Getting Started](#getting-started)
+    - [Documentation Links](#documentation-links)
+  - [License](#license)
+
+---
 
 ## Overview
+
 This system is designed to:
-* PWD Accessible website for ease of application process
-* Streamlined user experience for both applicants and administrators
-* Improved accessibility features for users with disabilities
-* Efficient data management solutions
-* User-friendly interface with intuitive navigation
-* Responsive design for various devices
-* Separate dedicated pages for Admin/Employees and User
+* Provide an accessible PWD registration platform for Dasmariñas City
+* Streamline the application process for persons with disabilities
+* Enable administrators to review and manage applications efficiently
+* Support document uploads (medical certificates, identity proofs)
+* Generate QR codes for PWD ID verification
+* Provide responsive design for all devices
 
-## Functionality
+---
 
-This React-based frontend (located in `Post-React-Migration/pwd-application-system/src`) implements the user-first functionality for the PWD Automated Application System. The summary below describes the main pages, shared components, API wrappers, and the typical flow through the app.
+## Key Features
 
-- Pages & routes (what the user sees):
-  - **Public pages**: Home, News, FAQ, Resources, Contact — located under `src/pages/homepage` and its children.
-  - **Authentication**: 
-    - `src/pages/login.jsx` provides login. 
-    - Registration and registration result pages are `src/pages/homepage/register.jsx` and `register-result.jsx`.
-  - **User area**: `src/pages/userpage/userpage.jsx` — the authenticated user dashboard.
-  - **Admin area**: `src/pages/adminpage/adminpage.jsx` and `src/pages/adminpage/adminverify.jsx` for admin-specific views and verification.
+| Feature | Description |
+|---------|-------------|
+| **User Registration** | Complete PWD application form with validation |
+| **File Upload** | Upload medical certificates and identity proofs (PDF/JPG/PNG, max 5MB) |
+| **User Dashboard** | View application status, uploaded documents, and PWD ID card |
+| **QR Code Generation** | Scannable verification codes on PWD ID cards |
+| **Admin Dashboard** | Statistics, charts, application list, and management tools |
+| **Admin Review** | Approve/reject applications with notes and document review |
+| **Status Tracking** | Color-coded status badges (Pending/Accepted/Denied) |
+| **Dual Authentication** | Separate login for users and administrators |
 
-- Shared UI components:
-  - `src/components/public-header.jsx` and `src/components/public-footer.jsx` — site header/footer and navigation used across routes.
-  - `src/components/adminsidebar.jsx` — admin navigation and layout helper.
-  - `src/components/statuschart.jsx` — chart/status widget used by admin pages.
-  *[More shared components soon.]*
-
-- Styling & assets:
-  - CSS: page styles live in `src/assets/styles/`
-  - Images and static assets in `src/assets/images` and the `public/` folder.
-
-- API integration and data flow:
-  - API wrappers live in `src/api/`:
-    - `registrationApi.js` — handles registration submissions.
-    - `userApi.js` — handles user operations such as login and status checks.
-  - Typical flow: a page/component collects form inputs -> calls a function from `src/api/*` -> that function performs an HTTP request (to SheetDB or a future backend) -> the component reads the response and updates UI/state or navigates to a result page.
-- Backend:
-  - The backend is not yet implemented. Currently, the app uses [SheetDB](https://sheetdb.io/) as a temporary backend to store registration data in Google Sheets.
-  - In future phases, a PHP + MySQL backend using XAMPP with AXIOS will be developed to replace SheetDB for better performance and security.
+---
 
 ## Tech Stack
-## Tech Stack
 
-- **Frontend:**
-  <p align="left">
-    <img src="https://skillicons.dev/icons?i=react,bootstrap,html,css,js" alt="Frontend Icons">
-  </p>
+### Frontend
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=react,bootstrap,html,css,js" alt="Frontend Icons">
+</p>
 
-  - `ReactJS`
-  - `Bootstrap`
-  - `HTML`/`CSS`/`JS` ***(Legacy)***
+- **React 19** with React Router v7
+- **Bootstrap 5** with React-Bootstrap
+- **Axios** for HTTP requests
+- **Recharts** for data visualization
+- **QRCode.react** for QR code generation
 
-  <br>
+### Backend
 
-- **Backend:**
-  <p align="left">
-  <img src="https://img.shields.io/badge/Xampp-F37623?style=for-the-badge&logo=xampp&logoColor=white" alt="XAMPP Badge" />
-  </p>
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=php" alt="PHP Icon">
+  <img src="https://img.shields.io/badge/XAMPP-F37623?style=for-the-badge&logo=xampp&logoColor=white" alt="XAMPP Badge" />
+</p>
 
-  - `SheetDB` ***(Temporary - midterm)***
-  - `XAMPP (PHP + MySQL)` ***(Contingency / In progress — theoretical)***
+- **PHP 8.2** on XAMPP
+- **MySQLi** with prepared statements
+- **18 RESTful API endpoints**
+- **File upload handling** with MIME validation
 
-  <br>
+### Database
 
-- **Database:**
-  <p align="left">
-  <img src="https://skillicons.dev/icons?i=mysql,php" alt="Database Icons">
-  </p>
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=mysql" alt="MySQL Icon">
+</p>
 
-  - `MySQL`
-  - `phpMyAdmin`
+- **MySQL** (PWDRegistry database)
+- **utf8mb4** collation for full Unicode support
+- **3 tables:** \`pwd_users\`, \`admin_users\`, \`pwd_file_uploads\`
 
-  <br>
+### Tools
 
-- **Tools:**
-   <p align="left">
-    <img src="https://skillicons.dev/icons?i=vscode,md,postman" alt="Tools Icons">
-  </p>
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=vscode,git,github,postman" alt="Tools Icons">
+</p>
 
-  - `Visual Studio Code`
-  - `Chrome DevTools`
-  - `Markdown` for Documentation
-  - `SheetDB` for Database API (Midterm, temporary)
-  - `Postman` for API Testing
+- **VS Code** for development
+- **Git/GitHub** for version control
+- **Postman** for API testing
+- **phpMyAdmin** for database management
 
-  <br>
+---
 
 ## Prerequisites
-- Node.js (>= 16 recommended) and npm
-- Git (for branching and PRs)
 
-## Install
-1. Clone the repo:
+- **Node.js** (v18+ recommended) and npm
+- **XAMPP** (v8.2+) with Apache and MySQL
+- **Git** for version control
+
+---
+
+## Installation
+
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/Keonbe/PWD-Automated-Application-System.git
-cd PWD-Automated-Application-System/Post-React-Migration/pwd-application-system
+cd PWD-Automated-Application-System
 ```
 
-1. Install dependencies:
+### 2. Install Frontend Dependencies
 
 ```bash
-# To install node_modules not present in git repository
+cd Post-React-Migration/pwd-application-system
 npm install
 ```
 
-## Run (development)
+### 3. Set Up PHP Backend
 
-Start the CRA development server (hot-reloads on change):
+Copy or symlink the PHP files to your XAMPP htdocs:
 
 ```bash
+# Option A: Create symbolic link (Windows Admin PowerShell)
+mklink /D "C:\xampp\htdocs\pwd-api" "C:\path\to\PWD-Automated-Application-System\Post-React-Migration\xampp-php-mysql-files\api"
+
+# Option B: Copy files directly
+xcopy "Post-React-Migration\xampp-php-mysql-files" "C:\xampp\htdocs\pwd-api" /E /I
+```
+
+---
+
+## Database Setup
+
+### 1. Start XAMPP Services
+
+1. Open **XAMPP Control Panel**
+2. Start **Apache** (port 80)
+3. Start **MySQL** (port 3306)
+
+### 2. Create Database
+
+Open phpMyAdmin (`http://localhost/phpmyadmin`) and run:
+
+```sql
+CREATE DATABASE IF NOT EXISTS PWDRegistry
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+```
+
+### 3. Run Setup Script
+
+Execute the master setup script in phpMyAdmin:
+
+1. Select \`PWDRegistry\` database
+2. Go to **SQL** tab
+3. Copy contents from \`Post-React-Migration/xampp-php-mysql-files/master-setup.sql\`
+4. Click **Go**
+
+This creates all tables and inserts sample data including a default admin account:
+- **Email:** `admin@dasma.gov.ph`
+- **Password:** `admin123`
+
+---
+
+## Run Development
+
+### Start Frontend (React)
+
+```bash
+cd Post-React-Migration/pwd-application-system
 npm start
 ```
 
-Open http://localhost:3000 in your browser.
+Opens at `http://localhost:3000`
 
-## Build (production)
+### Start Backend (XAMPP)
 
-Create an optimized production build (output in `build/`):
+1. Ensure Apache and MySQL are running in XAMPP
+2. API available at `http://localhost/pwd-api/` (or your configured path)
+
+---
+
+## Build Production
 
 ```bash
+cd Post-React-Migration/pwd-application-system
 npm run build
 ```
 
-## Serve the build locally (optional):
+The optimized build will be in the `build/` folder.
 
-```bash
-npm install -g serve
-serve -s build
+---
+
+## Project Structure
+
+```
+PWD-Automated-Application-System/
+├── Post-React-Migration/
+│   ├── pwd-application-system/     # React Frontend
+│   │   ├── public/                 # Static assets
+│   │   └── src/
+│   │       ├── api/                # API wrapper modules
+│   │       │   ├── loginApi.js
+│   │       │   ├── registrationApi.js
+│   │       │   ├── userApi.js
+│   │       │   └── adminApi.js
+│   │       ├── components/         # Reusable components
+│   │       ├── pages/              # Page components
+│   │       │   ├── homepage/       # Public pages
+│   │       │   ├── userpage/       # User dashboard
+│   │       │   └── adminpage/      # Admin dashboard
+│   │       └── assets/             # Styles and images
+│   │
+│   ├── xampp-php-mysql-files/      # PHP Backend
+│   │   ├── config.php              # Database configuration
+│   │   ├── master-setup.sql        # Database initialization
+│   │   ├── api/                    # 18 PHP API endpoints
+│   │   └── uploads/                # Uploaded files storage
+│   │
+│   └── documentation/              # Feature documentation
+│
+├── Pre-React-Migration/            # Legacy HTML/CSS/JS (archived)
+│
+└── documentation/                  # Main documentation
+    ├── README.md
+    ├── init-documentation.md
+    ├── api-documentation.md
+    ├── php-api-documentation.md
+    ├── database-documentation.md
+    ├── function-documentation.md
+    └── file-upload-feature-documentation.md
 ```
 
-## What to test (quick checklist)
-- Confirm pages render without console errors: Home, News, FAQ, Resources, Contact.
-- Login page: go to /login and check the form UI and client-side validation.
-- Registration/testing pages: visit /register or /registration depending on current routes.
-- Verify header and footer appear across pages and links use client-side routing (no full page reload).
-- Confirm assets (images/CSS) load and styles are applied.
+---
 
-## Project structure (short)
-- Post-React-Migration/pwd-application-system/
-  - public/ -> static public assets
-  - src/
-    - App.js -> main router and layout
-    - index.js -> app entry and global imports
-    - pages/ -> React pages grouped by feature (homepage, userpage, adminpage)
-    - components/ -> header, footer, shared components
-    - assets/styles/ -> CSS files (page-specific and shared)
+## API Endpoints
 
-## Migration notes and temporary artifacts
-- The `Pre-React-Migration/` folder contains the original static HTML/CSS/JS site preserved for reference.
-- During migration you'll see temporary files with names like `registerationtest.jsx` (note typos) and route aliases such as `/registrationcopy` — these are intentionally temporary. Before merging to `main`, please:
-  - Choose canonical filenames and routes (e.g., `/register` mapped to `register.jsx`).
-  - Remove duplicate routes like `/registrationcopy`.
-  - Replace legacy HTML `href` links pointing at `Pre-React-Migration/...` with React Router `<Link to="/...">`.
-  - Replace direct `window.location.href` usage with `useNavigate()`.
+### Authentication
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `user-login.php` | POST | User authentication |
+| `admin-login.php` | POST | Admin authentication |
+| `forgot-password.php` | POST | Password recovery |
+| `change-password.php` | POST | Change password |
 
-## How to contribute
-1. Create a feature branch off `react-migration` (or `main` if applicable):
+### User Management
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `register.php` | POST | Create new user |
+| `get-user-data.php` | GET | Get user profile |
+| `check-email.php` | POST | Validate email uniqueness |
+| `check-regnumber.php` | POST | Validate registration number |
 
-```bash
-git checkout -b feature/<short-descr>
-```
+### Admin Management
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `get-all-applications.php` | GET | List all applications |
+| `get-pending-application.php` | GET | List pending applications |
+| `update-application-status.php` | POST | Approve/deny application |
 
-2. Make small commits and push:
+### File Management
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `files.php` | POST | Upload file |
+| `get-user-files.php` | GET | Get user's uploaded files |
+| `file-download.php` | GET | Download file |
+| `file-view.php` | GET | View file inline |
+| `update-file-status.php` | POST | Update file status |
+| `update-all-files-status.php` | POST | Bulk update file status |
 
-```bash
-git add .
-git commit -m "Short, descriptive message"
-git push origin feature/<short-descr>
-```
+---
 
-3. Open a Pull Request on GitHub targeting `react-migration` (or `main`) and include:
-- What you changed and why
-- Any manual steps to validate
-- Screenshots if UI changed
+## How to Contribute
 
+1. **Create a feature branch:**
+   ```bash
+   git checkout -b feature/<short-description>
+   ```
+
+2. **Make changes and commit:**
+   ```bash
+   git add
+   git commit -m "feat: add new feature description"
+   git push origin feature/<short-description>
+   ```
+
+3. **Open a Pull Request** on GitHub with:
+   - Description of changes
+   - Screenshots (if UI changed)
+   - Testing steps
+
+---
 
 ## Contributors
 
-#### 👥 All Team Members 
-<!-- Grid of all contributors -->
+####  All Team Members
 ![Contributors Grid](https://contrib.rocks/image?repo=Keonbe/PWD-Automated-Application-System)
+
+- **Keanu M. Bembo**
+- **Marqus Borromeo**
+
+---
 
 ## Documentation Guide
 
-1. **Start Here:** Read `init-documentation.md` to understand the project structure
-2. **Start Here:** Read `README.md` in `/documentation` folder to understand Functions and API's used.
-3. **Set Up:** Follow the setup instructions in `init-documentation.md`
-4. **Learn APIs:** Review `api-documentation.md` to understand backend integration
-5. **Study Functions:** Read `function-documentation.md` to understand code patterns
-6. **Contribute:** Follow `contribution_guide-documentation.md` for contributing guidelines
+### Getting Started
+1. **Read** \`documentation/init-documentation.md\` for project setup
+2. **Review** \`documentation/database-documentation.md\` for schema details
+3. **Study** \`documentation/php-api-documentation.md\` for API reference
 
-#### Documentation Links:
+### Documentation Links
 
-- [Project Documentation Guide](documentation/init-documentation.md)
-- [API Documentation](documentation/api-documentation.md)
-- [Function Documentation](documentation/function-documentation.md)
-- [Contribution Guide](documentation/contribution_guide-documentation.md)
+| Document | Description |
+|----------|-------------|
+| [Init Documentation](documentation/init-documentation.md) | Complete project setup guide |
+| [Database Documentation](documentation/database-documentation.md) | MySQL schema and ER diagram |
+| [PHP API Documentation](documentation/php-api-documentation.md) | All 18 API endpoints |
+| [Function Documentation](documentation/function-documentation.md) | React function reference |
+| [File Upload Documentation](documentation/file-upload-feature-documentation.md) | File upload system guide |
+| [API Documentation](documentation/api-documentation.md) | Frontend API integration |
+| [Contribution Guide](documentation/contribution_guide-documentation.md) | How to contribute |
+
+---
+
+## License
+
+This project is for academic purposes as part of ITWB311 "Web Development" subject.
+
+---
+
+<p align="center">
+  <b>PWD Automated Application System v2.0</b><br>
+  De La Salle University Dasmariñas<br>
+  December 2025
+</p>
