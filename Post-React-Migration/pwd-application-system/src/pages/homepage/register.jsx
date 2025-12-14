@@ -10,6 +10,10 @@ export default function Register() {
   /** @summary Form submission loading state for registration process. */
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  /** @summary Tracks submission phase for loading overlay feedback. */
+  const [submissionPhase, setSubmissionPhase] = useState('');
+  // Phases: '' | 'validating' | 'submitting' | 'uploading' | 'success' | 'redirecting'
+
   /** @summary Form submission status message for user feedback. */
   const [submitMessage, setSubmitMessage] = useState('');
 
@@ -24,6 +28,27 @@ export default function Register() {
 
   /** @summary File input reference for disability document upload. */
   const disabilityRef = useRef(null);
+
+  /** @summary Stores selected file objects for upload after registration. */
+  const [selectedFiles, setSelectedFiles] = useState({
+    identity_proof: null,
+    medical_certificate: null
+  });
+
+  /** @summary File validation status for each file type. */
+  const [fileValidation, setFileValidation] = useState({
+    identity_proof: { valid: false, message: '' },
+    medical_certificate: { valid: false, message: '' }
+  });
+
+  /** @summary Loading state during file upload operations. */
+  const [uploading, setUploading] = useState(false);
+
+  /** @summary Phone number validation errors. */
+  const [phoneErrors, setPhoneErrors] = useState({
+    mobile: '',
+    emergency: ''
+  });
 
   /**
    * @summary Handles registration form submission with comprehensive data processing. Handle form submit with API integration
@@ -58,8 +83,29 @@ export default function Register() {
       return;
     }
 
+    // Validate phone numbers before submission
+    const mobileValidation = validatePhoneNumber(form.mobile.value.trim());
+    const emergencyValidation = validatePhoneNumber(form.emergencyPhone.value.trim());
+
+    if (!mobileValidation.valid) {
+      setPhoneErrors(prev => ({ ...prev, mobile: mobileValidation.error }));
+      const errorMsg = `Mobile number error: ${mobileValidation.error}`;
+      setSubmitMessage(errorMsg);
+      console.error('[Form Validation] Phone error:', errorMsg);
+      return;
+    }
+
+    if (!emergencyValidation.valid) {
+      setPhoneErrors(prev => ({ ...prev, emergency: emergencyValidation.error }));
+      const errorMsg = `Emergency contact number error: ${emergencyValidation.error}`;
+      setSubmitMessage(errorMsg);
+      console.error('[Form Validation] Phone error:', errorMsg);
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitMessage('');
+    setSubmissionPhase('validating');
 
     try {
       // Collect form values manually to ensure all fields are captured properly
@@ -126,6 +172,7 @@ export default function Register() {
 
       // Submit to API
       console.log('[Form Submission] Submitting registration data...');
+      setSubmissionPhase('submitting');
       const result = await submitRegistration(formData);
 
       // Handle API response
@@ -134,6 +181,44 @@ export default function Register() {
         setSubmitMessage(successMsg);
         console.log('[Form Submission] Success:', successMsg);
         console.log('[Form Submission] Registration Number:', formData.regNumber);
+
+        // Upload files NOW with the valid regNumber
+        setUploading(true);
+        setSubmissionPhase('uploading');
+        const uploadPromises = [];
+        
+        // Debug: Log selected files state
+        console.log('[File Upload] Selected files state:', {
+          identity_proof: selectedFiles.identity_proof ? selectedFiles.identity_proof.name : 'null',
+          medical_certificate: selectedFiles.medical_certificate ? selectedFiles.medical_certificate.name : 'null'
+        });
+        
+        if (selectedFiles.identity_proof) {
+          console.log('[File Upload] Uploading identity proof with regNumber:', formData.regNumber);
+          uploadPromises.push(
+            uploadFileToServer(selectedFiles.identity_proof, 'identity_proof', formData.regNumber)
+          );
+        } else {
+          console.warn('[File Upload] No identity_proof file selected!');
+        }
+        
+        if (selectedFiles.medical_certificate) {
+          console.log('[File Upload] Uploading medical certificate with regNumber:', formData.regNumber);
+          uploadPromises.push(
+            uploadFileToServer(selectedFiles.medical_certificate, 'medical_certificate', formData.regNumber)
+          );
+        } else {
+          console.warn('[File Upload] No medical_certificate file selected!');
+        }
+
+        // Wait for all uploads to complete
+        console.log('[File Upload] Total files to upload:', uploadPromises.length);
+        if (uploadPromises.length > 0) {
+          const uploadResults = await Promise.all(uploadPromises);
+          console.log('[File Upload] All uploads completed:', uploadResults);
+        }
+        setUploading(false);
+        setSubmissionPhase('success');
         
         // Store in sessionStorage for result page
         try {
@@ -143,12 +228,14 @@ export default function Register() {
         }
 
         // Navigate to result page after a short delay
+        setSubmissionPhase('redirecting');
         setTimeout(() => {
           navigate('/register/result', { state: { formData } });
         }, 2000);
       } else {
         const errorMsg = result.message;
         setSubmitMessage(errorMsg);
+        setSubmissionPhase('');
         console.error('[Form Submission] 404 Failed:', errorMsg);
       }
     } catch (error) {
@@ -157,6 +244,7 @@ export default function Register() {
       console.error('[Form Submission] 404 Exception:', error);
       console.error('[Form Submission] Error details:', error.response?.data || error.message);
       setSubmitMessage(errorMsg);
+      setSubmissionPhase('');
       } finally {
         setIsSubmitting(false);
         console.log('[Form Submission] Submission complete. isSubmitting set to false.');
@@ -355,8 +443,212 @@ export default function Register() {
     return `${year}-${month}-${day}`;
   };
 
+  /**
+   * @summary Validates file size and type before upload.
+   * @param {File} file - The file object to validate.
+   * @returns {Object} Validation result with valid flag and error message.
+   */
+  const validateFile = (file) => {
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
+
+    if (file.size > MAX_SIZE) {
+      return { 
+        valid: false, 
+        error: `File too large. Max: 5MB, Your file: ${(file.size / 1024 / 1024).toFixed(2)}MB` 
+      };
+    }
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return { 
+        valid: false, 
+        error: 'Only PDF, JPG, PNG allowed' 
+      };
+    }
+
+    return { valid: true };
+  };
+
+  /**
+   * @summary Handles file selection and validation (does NOT upload yet).
+   * @param {Event} e - Change event from file input.
+   * @param {string} fileType - Type of file being selected (identity_proof or medical_certificate).
+   * @remarks Files are stored in state and uploaded AFTER registration succeeds with valid regNumber.
+   */
+  const handleFileSelect = (e, fileType) => {
+    const file = e.target.files[0];
+    if (!file) {
+      setSelectedFiles(prev => ({ ...prev, [fileType]: null }));
+      setFileValidation(prev => ({ ...prev, [fileType]: { valid: false, message: '' } }));
+      return;
+    }
+
+    const validation = validateFile(file);
+    if (!validation.valid) {
+      setSelectedFiles(prev => ({ ...prev, [fileType]: null }));
+      setFileValidation(prev => ({ 
+        ...prev, 
+        [fileType]: { valid: false, message: validation.error } 
+      }));
+      console.log(`[File Select] Validation failed for ${fileType}:`, validation.error);
+      return;
+    }
+
+    // Store the file object for later upload
+    setSelectedFiles(prev => ({ ...prev, [fileType]: file }));
+    setFileValidation(prev => ({ 
+      ...prev, 
+      [fileType]: { valid: true, message: `Ready: ${file.name}` } 
+    }));
+    console.log(`[File Select] File validated for ${fileType}:`, file.name);
+  };
+
+  /**
+   * @summary Uploads a file to the server with the registration number.
+   * @param {File} file - The file object to upload.
+   * @param {string} fileType - Type of file (identity_proof or medical_certificate).
+   * @param {string} regNumber - The registration number from successful registration.
+   * @returns {Promise<Object>} Upload result with success status.
+   */
+  const uploadFileToServer = async (file, fileType, regNumber) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('fileType', fileType);
+    formData.append('regNumber', regNumber);
+
+    try {
+      const response = await fetch(
+        'http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/upload.php',
+        {
+          method: 'POST',
+          body: formData
+        }
+      );
+
+      const data = await response.json();
+      console.log(`[File Upload] ${fileType} result:`, data);
+      return data;
+    } catch (error) {
+      console.error(`[File Upload] ${fileType} exception:`, error);
+      return { success: false, error: 'Upload failed' };
+    }
+  };
+
+  /**
+   * @summary Validates phone number - must be exactly 11 digits starting with 09.
+   * @param {string} phone - Phone number to validate.
+   * @returns {Object} Validation result with valid flag and error message.
+   */
+  const validatePhoneNumber = (phone) => {
+    if (!phone) {
+      return { valid: false, error: 'Phone number is required' };
+    }
+
+    const cleanPhone = phone.trim();
+    
+    // Check if it's exactly 11 characters
+    if (cleanPhone.length !== 11) {
+      return { 
+        valid: false, 
+        error: 'Mobile number must be exactly 11 digits (e.g., 09123456789)' 
+      };
+    }
+
+    // Check if it starts with 09
+    if (!cleanPhone.startsWith('09')) {
+      return { 
+        valid: false, 
+        error: 'Mobile number must start with 09' 
+      };
+    }
+
+    // Check if all characters are digits
+    if (!/^\d+$/.test(cleanPhone)) {
+      return { 
+        valid: false, 
+        error: 'Mobile number must contain only digits' 
+      };
+    }
+
+    return { valid: true };
+  };
+
+  /**
+   * @summary Handles phone number input validation in real-time.
+   * @param {Event} e - Input event.
+   * @param {string} fieldType - 'mobile' or 'emergency' to identify which field.
+   */
+  const handlePhoneInput = (e, fieldType) => {
+    const phone = e.target.value.trim();
+    const validation = validatePhoneNumber(phone);
+
+    if (phone === '') {
+      setPhoneErrors(prev => ({ ...prev, [fieldType]: '' }));
+    } else {
+      setPhoneErrors(prev => ({ 
+        ...prev, 
+        [fieldType]: validation.valid ? '' : validation.error 
+      }));
+    }
+  };
+
   return (
     <main className="container my-5">
+      {/* Loading Overlay - Shows during form submission */}
+      {submissionPhase && (
+        <div 
+          className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+          style={{ 
+            backgroundColor: 'rgba(0, 0, 0, 0.7)', 
+            zIndex: 9999,
+            backdropFilter: 'blur(4px)'
+          }}
+          role="alert"
+          aria-live="assertive"
+          aria-busy="true"
+        >
+          <div className="text-center text-white p-5 rounded-4" style={{ backgroundColor: 'rgba(40, 167, 69, 0.95)', maxWidth: '400px' }}>
+            {/* Spinner */}
+            <div className="mb-4">
+              {submissionPhase === 'success' || submissionPhase === 'redirecting' ? (
+                <i className="fas fa-check-circle fa-4x text-white" aria-hidden="true"></i>
+              ) : (
+                <div className="spinner-border text-white" style={{ width: '4rem', height: '4rem' }} role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              )}
+            </div>
+            
+            {/* Phase Messages */}
+            <h4 className="mb-3">
+              {submissionPhase === 'validating' && 'Validating your information...'}
+              {submissionPhase === 'submitting' && 'Submitting your application...'}
+              {submissionPhase === 'uploading' && 'Uploading your documents...'}
+              {submissionPhase === 'success' && 'Registration Successful!'}
+              {submissionPhase === 'redirecting' && 'Redirecting to your results...'}
+            </h4>
+            
+            <p className="mb-0 opacity-75">
+              {submissionPhase === 'validating' && 'Please wait while we verify your details.'}
+              {submissionPhase === 'submitting' && 'Your application is being processed.'}
+              {submissionPhase === 'uploading' && 'Securely uploading your ID and certificate.'}
+              {submissionPhase === 'success' && 'Your PWD application has been submitted.'}
+              {submissionPhase === 'redirecting' && 'You will see your registration details shortly.'}
+            </p>
+
+            {/* Progress indicator */}
+            <div className="mt-4">
+              <div className="d-flex justify-content-center gap-2">
+                <div className={`rounded-circle ${['validating','submitting','uploading','success','redirecting'].includes(submissionPhase) ? 'bg-white' : 'bg-white-50'}`} style={{ width: '12px', height: '12px', opacity: ['validating','submitting','uploading','success','redirecting'].includes(submissionPhase) ? 1 : 0.3 }}></div>
+                <div className={`rounded-circle ${['submitting','uploading','success','redirecting'].includes(submissionPhase) ? 'bg-white' : 'bg-white-50'}`} style={{ width: '12px', height: '12px', opacity: ['submitting','uploading','success','redirecting'].includes(submissionPhase) ? 1 : 0.3 }}></div>
+                <div className={`rounded-circle ${['uploading','success','redirecting'].includes(submissionPhase) ? 'bg-white' : 'bg-white-50'}`} style={{ width: '12px', height: '12px', opacity: ['uploading','success','redirecting'].includes(submissionPhase) ? 1 : 0.3 }}></div>
+                <div className={`rounded-circle ${['success','redirecting'].includes(submissionPhase) ? 'bg-white' : 'bg-white-50'}`} style={{ width: '12px', height: '12px', opacity: ['success','redirecting'].includes(submissionPhase) ? 1 : 0.3 }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Page Header */}
       <div className="row mb-4">
         <div className="col-12">
@@ -650,6 +942,7 @@ export default function Register() {
                   <option value="Fatima I">Fatima I</option>
                   <option value="Fatima II">Fatima II</option>
                   <option value="Fatima III">Fatima III</option>
+                  <option value="H-2">H-2</option>
                   <option value="Langkaan I">Langkaan I</option>
                   <option value="Langkaan II">Langkaan II</option>
                   <option value="Luzviminda I">Luzviminda I</option>
@@ -784,20 +1077,29 @@ export default function Register() {
               <div className="form-floating">
                 <input
                   type="tel"
-                  className="form-control"
+                  className={`form-control ${phoneErrors.mobile ? 'is-invalid' : ''}`}
                   id="mobile"
                   name="mobile"
                   placeholder="09XXXXXXXXX"
                   pattern="09[0-9]{9}"
                   aria-describedby="mobileHelp"
+                  onInput={(e) => handlePhoneInput(e, 'mobile')}
                   required
                 />
                 <label htmlFor="mobile" className="required-field">
                   Mobile Number
                 </label>
-                <div id="mobileHelp" className="form-text">
-                  Format: 09XXXXXXXXX
-                </div>
+                {phoneErrors.mobile && (
+                  <div className="invalid-feedback d-block text-danger small mt-1">
+                    <i className="fas fa-exclamation-circle me-1"></i>
+                    {phoneErrors.mobile}
+                  </div>
+                )}
+                {!phoneErrors.mobile && (
+                  <div id="mobileHelp" className="form-text">
+                    Format: 09XXXXXXXXX (exactly 11 digits)
+                  </div>
+                )}
               </div>
             </div>
             <div className="col-md-4">
@@ -1219,12 +1521,23 @@ export default function Register() {
                 <input
                   type="tel"
                   name="emergencyPhone"
-                  className="form-control"
-                  placeholder="Contact Number - Format: 09XXXXXXXXX"
+                  className={`form-control ${phoneErrors.emergency ? 'is-invalid' : ''}`}
+                  placeholder="09XXXXXXXXX"
                   aria-label="Emergency Contact Phone Number"
+                  aria-describedby="emergencyPhoneHelp"
                   pattern="09[0-9]{9}"
+                  onInput={(e) => handlePhoneInput(e, 'emergency')}
                   required
                 />
+                {phoneErrors.emergency && (
+                  <div id="emergencyPhoneHelp" className="invalid-feedback d-block text-danger small mt-1">
+                    <i className="fas fa-exclamation-circle me-1"></i>
+                    {phoneErrors.emergency}
+                  </div>
+                )}
+                {!phoneErrors.emergency && (
+                  <small className="form-text text-muted">Format: 09XXXXXXXXX (exactly 11 digits)</small>
+                )}
               </div>
               <div className="col-md-6">
                 <select
@@ -1295,20 +1608,34 @@ export default function Register() {
                   className="form-control d-none"
                   id="proofIdentity"
                   name="proofIdentity"
-                  accept="image/*,application/pdf"
+                  accept=".pdf,.jpg,.jpeg,.png"
                   required
                   ref={identityRef}
-                  onChange={() => updateFileName(identityRef, "idBtn")}
+                  onChange={(e) => {
+                    updateFileName(identityRef, "idBtn");
+                    handleFileSelect(e, 'identity_proof');
+                  }}
                 />
                 <button
                   type="button"
                   className="btn upload-btn"
                   id="idBtn"
                   onClick={() => identityRef.current?.click()}
+                  disabled={uploading}
                 >
                   <i className="fas fa-upload me-2" aria-hidden="true"></i>
                   Upload ID Document
                 </button>
+                {fileValidation.identity_proof.valid && (
+                  <small className="d-block text-success mt-2">
+                    <i className="fas fa-check me-1"></i>{fileValidation.identity_proof.message}
+                  </small>
+                )}
+                {!fileValidation.identity_proof.valid && fileValidation.identity_proof.message && (
+                  <small className="d-block text-danger mt-2">
+                    <i className="fas fa-exclamation-circle me-1"></i>{fileValidation.identity_proof.message}
+                  </small>
+                )}
               </div>
             </div>
 
@@ -1341,20 +1668,34 @@ export default function Register() {
                   className="form-control d-none"
                   id="proofDisability"
                   name="proofDisability"
-                  accept="image/*,application/pdf"
+                  accept=".pdf,.jpg,.jpeg,.png"
                   required
                   ref={disabilityRef}
-                  onChange={() => updateFileName(disabilityRef, "medBtn")}
+                  onChange={(e) => {
+                    updateFileName(disabilityRef, "medBtn");
+                    handleFileSelect(e, 'medical_certificate');
+                  }}
                 />
                 <button
                   type="button"
                   className="btn upload-btn"
                   id="medBtn"
                   onClick={() => disabilityRef.current?.click()}
+                  disabled={uploading}
                 >
                   <i className="fas fa-upload me-2" aria-hidden="true"></i>
                   Upload Medical Certificate
                 </button>
+                {fileValidation.medical_certificate.valid && (
+                  <small className="d-block text-success mt-2">
+                    <i className="fas fa-check me-1"></i>{fileValidation.medical_certificate.message}
+                  </small>
+                )}
+                {!fileValidation.medical_certificate.valid && fileValidation.medical_certificate.message && (
+                  <small className="d-block text-danger mt-2">
+                    <i className="fas fa-exclamation-circle me-1"></i>{fileValidation.medical_certificate.message}
+                  </small>
+                )}
               </div>
             </div>
           </div>

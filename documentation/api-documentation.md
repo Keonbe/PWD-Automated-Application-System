@@ -1,62 +1,215 @@
 # PWD Automated Application System - API Documentation
 
-## Overview
-This document provides comprehensive documentation for all API integrations in the PWD Automated Application System, covering both **Pre-React Migration** (HTML/Vanilla JS) and **Post-React Migration** (React) implementations.
+## Overview - Important Update
+
+> **Version 2.0 - Backend Migration Complete**  
+> **Date Updated:** December 12, 2025  
+> **Current Backend:** PHP/MySQL (XAMPP) ✅  
+> **Legacy Backend:** SheetDB (deprecated) ⛔
+
+This document covers **all API implementations** in the PWD Automated Application System:
+
+- **[CURRENT] PHP/MySQL APIs** - Modern production backend (See [php-api-documentation.md](./php-api-documentation.md) for complete details)
+- **[DEPRECATED] SheetDB APIs** - Legacy backend from initial development (Archived below for reference)
 
 ---
 
 ## Table of Contents
-1. [SheetDB API Overview](#sheetdb-api-overview)
-2. [Authentication APIs](#authentication-apis)
-3. [Pre-React Migration API Implementation](#pre-react-migration-api-implementation)
-4. [Post-React Migration API Implementation](#post-react-migration-api-implementation)
-5. [Registration Submission API](#registration-submission-api)
-    - [submitRegistration(formData)](#function-submitregistration)
-    - [checkEmailExists(email)](#function-checkemailexists)
-6. [Merged Features API Documentation](#merged-features-api-documentation)
-    - [User Data Management API (userApi.js)](#1-user-data-management-api-userapijs)
-    - [Enhanced Login API (login.jsx)](#2-enhanced-login-api-loginjsx)
-    - [Admin Dashboard Data Fetching API](#3-admin-dashboard-data-fetching-api)
-    - [Registration API Enhancements](#4-registration-api-enhancements)
-    - [Branch Merge Summary](#5-branch-merge-summary)
-7. [API Error Handling](#api-error-handling)
-8. [API Security Considerations](#api-security-considerations)
+
+### Current Implementation (v2.0)
+1. [PHP/MySQL API Overview](#php-mysql-api-overview-v20) 🟢 **START HERE**
+2. [Frontend Integration Summary](#frontend-integration-summary)
+3. [Migration from SheetDB](#migration-from-sheetdb)
+
+### Legacy Implementation [DEPRECATED] ⛔
+4. [SheetDB API Overview](#-deprecated-sheetdb-api-overview)
+5. [Legacy Authentication APIs](#-deprecated-authentication-apis)
+6. [Pre-React Migration Implementation](#-deprecated-pre-react-migration-api-implementation)
+7. [Legacy Post-React Implementation](#-deprecated-post-react-migration-api-implementation)
+8. [API Error Handling](#api-error-handling)
+9. [API Security Considerations](#api-security-considerations)
 
 ---
 
-## SheetDB API Overview
+## 🟢 PHP/MySQL API Overview (v2.0)
 
-### Base URL
-The application uses SheetDB as a backend-as-a-service (BaaS) to store and retrieve user authentication data.
+> **See [php-api-documentation.md](./php-api-documentation.md) for comprehensive documentation**
 
-**API Endpoint:**
+### Quick Summary
+
+The system now uses **PHP 8.2 with MySQLi** backend running on **XAMPP** with the following characteristics:
+
+| Feature | Details |
+|---------|---------|
+| **Database** | MySQL (PWDRegistry) - UTF-8 character set |
+| **Base URL** | `http://localhost/webdev_finals/.../api/` |
+| **Request Format** | JSON (POST/GET) |
+| **Response Format** | JSON with `{success, message, data}` structure |
+| **Authentication** | Session-based (sessionStorage) |
+| **Total Endpoints** | 18 production-ready endpoints |
+
+### Core Features (v2.0)
+- ✅ User registration with validation
+- ✅ Email and registration number uniqueness checking
+- ✅ Secure password handling (with MySQL prepared statements)
+- ✅ Admin review workflow with name tracking
+- ✅ File upload and management (certificates, identity proofs)
+- ✅ Application status tracking (pending/accepted/denied)
+- ✅ Rejection reason tracking with admin notes
+- ✅ File reviewer identification and timestamps
+
+### API Endpoints Reference
+
 ```
-https://sheetdb.io/api/v1/duayfvx2u7zh9 (Admin)
-https://sheetdb.io/api/v1/wgjit0nprbfxe (User)
-```
+AUTHENTICATION
+  user-login.php              POST  User authentication
+  admin-login.php             POST  Admin authentication
+  forgot-password.php         POST  Password reset
 
-### Supported Operations
-- **Search/Query** - Search for records matching specific criteria
-- **Create** - Add new records to the sheet
-- **Read** - Retrieve all records
-- **Update** - Modify existing records
-- **Delete** - Remove records
+USER MANAGEMENT
+  register.php                POST  User registration
+  get-user-data.php           POST  Fetch user profile
+  update-profile.php          POST  Update user info
+  change-password.php         POST  Change password
+  check-email.php             POST  Email validation
+  check-regnumber.php         POST  RegNumber validation
+
+ADMIN MANAGEMENT
+  get-all-applications.php    GET   List all applications
+  get-pending-application.php GET   Fetch next pending app
+  update-application-status.php POST Accept/deny application
+
+FILE MANAGEMENT
+  upload.php                  POST  Upload document
+  files.php                   GET   List user files
+  file-view.php               GET   View file inline
+  file-download.php           GET   Download file
+  update-file-status.php      POST  [DEPRECATED] Update single file
+  update-all-files-status.php POST  Bulk update files
+```
 
 ---
 
-## Authentication APIs
+## Frontend Integration Summary
 
-### 1. User Login API
+### API Wrapper Modules
 
-#### Endpoint
+**Location:** `Post-React-Migration/pwd-application-system/src/api/`
+
+| Module | Endpoints | Used By |
+|--------|-----------|---------|
+| `loginApi.js` | user-login, admin-login, forgot-password | login.jsx |
+| `registrationApi.js` | register, check-email, check-regnumber | register.jsx |
+| `userApi.js` | get-user-data, update-profile, change-password, files, upload | userpage.jsx |
+| `adminApi.js` | get-all-applications, get-pending-application, update-application-status | adminpage.jsx, adminverify.jsx |
+
+### Component Integration
+
+```
+Login (login.jsx)
+  ├─ User Login → user-login.php
+  ├─ Admin Login → admin-login.php
+  └─ Forgot Password → forgot-password.php
+
+Registration (register.jsx)
+  ├─ Check Email → check-email.php
+  ├─ Check RegNumber → check-regnumber.php
+  ├─ Upload Files → upload.php
+  └─ Submit → register.php
+
+User Dashboard (userpage.jsx)
+  ├─ Fetch Profile → get-user-data.php
+  ├─ List Files → files.php
+  ├─ View File → file-view.php
+  ├─ Download → file-download.php
+  ├─ Update Profile → update-profile.php
+  └─ Change Password → change-password.php
+
+Admin Dashboard (adminpage.jsx)
+  └─ List Applications → get-all-applications.php
+
+Admin Verify (adminverify.jsx)
+  ├─ Get Pending → get-pending-application.php
+  ├─ View Files → files.php
+  ├─ View File → file-view.php
+  ├─ Download → file-download.php
+  └─ Approve/Deny → update-application-status.php
+```
+
+---
+
+## Migration from SheetDB
+
+### Why We Migrated
+
+| Aspect | SheetDB [DEPRECATED] | PHP/MySQL |
+|--------|-----|---------|
+| **Data Format** | Google Sheets | MySQL Database |
+| **Security** | Limited | ✅ Prepared statements |
+| **Control** | Limited | ✅ Full ownership |
+| **Cost** | Cloud-dependent | ✅ Local/self-hosted |
+| **Performance** | Slower | ✅ Faster queries |
+| **Scalability** | Limited | ✅ Better scaling |
+| **Admin Features** | Manual | ✅ Review workflow |
+
+### Migration Checklist
+
+- ✅ Database schema created (master-setup.sql)
+- ✅ PHP API endpoints developed (18 total)
+- ✅ React components updated to use new APIs
+- ✅ Session management configured
+- ✅ File upload system implemented
+- ✅ Admin review workflow integrated
+- ✅ Historical data sync script created
+- ✅ UTF-8 character encoding fixed
+
+---
+
+---
+
+## 🔴 [DEPRECATED] SheetDB API Overview
+
+### Base URL [DEPRECATED] ⛔
+The application ~~uses~~ **used** SheetDB as a backend-as-a-service (BaaS) to store and retrieve user authentication data.
+
+> **⚠️ This backend is no longer in use. Maintained for historical reference only.**
+
+**[LEGACY] API Endpoints:**
+```
+https://sheetdb.io/api/v1/duayfvx2u7zh9 (Admin) [NOT USED]
+https://sheetdb.io/api/v1/wgjit0nprbfxe (User) [NOT USED]
+```
+
+### [DEPRECATED] Supported Operations ⛔
+- **[Search/Query]** - Search for records matching specific criteria
+- **[Create]** - Add new records to the sheet
+- **[Read]** - Retrieve all records
+- **[Update]** - Modify existing records
+- **[Delete]** - Remove records
+
+> **Migration Complete:** All operations now handled by PHP/MySQL APIs (see php-api-documentation.md)
+
+---
+
+## 🔴 [DEPRECATED] Authentication APIs
+
+### 1. [DEPRECATED] User Login API ⛔
+
+#### [Legacy] Endpoint
 ```
 GET /search?username={username}&password={password}
 ```
 
-#### Purpose
+> **Status: NO LONGER USED**  
+> **Replacement:** `user-login.php` (PHP/MySQL)  
+> **See:** [php-api-documentation.md](./php-api-documentation.md#1-user-login)
+
+#### [Legacy] Purpose
 Verify user credentials against the database and authenticate users.
 
-#### Request Parameters
+> **ARCHIVED:** This implementation is kept for historical reference only.
+
+#### [Legacy] Request Parameters [DEPRECATED]
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | username | string | Yes | User's username |
@@ -136,12 +289,16 @@ const handleUserLogin = async (e) => {
 
 ---
 
-### 2. Admin Login API
+### 2. [DEPRECATED] Admin Login API ⛔
 
-#### Endpoint
+#### [Legacy] Endpoint
 ```
 GET /search?adminEmail={adminEmail}&adminPassword={adminPassword}
 ```
+
+> **Status: NO LONGER USED**  
+> **Replacement:** `admin-login.php` (PHP/MySQL)  
+> **See:** [php-api-documentation.md](./php-api-documentation.md#2-admin-login)
 
 #### Purpose
 Verify administrator credentials and provide elevated access.
@@ -212,12 +369,16 @@ const handleAdminLogin = async (e) => {
 
 ---
 
-### 3. User Registration API (Example)
+### 3. [DEPRECATED] User Registration API ⛔
 
-#### Endpoint
+#### [Legacy] Endpoint
 ```
 POST /
 ```
+
+> **Status: NO LONGER USED**  
+> **Replacement:** `register.php` (PHP/MySQL)  
+> **See:** [php-api-documentation.md](./php-api-documentation.md#4-user-registration)
 
 #### Purpose
 Create a new user account in the system.
@@ -290,12 +451,14 @@ const handleSignup = async (e) => {
 
 ---
 
-## Pre-React Migration API Implementation
+## 🔴 [DEPRECATED] Pre-React Migration API Implementation
 
-### File Location
+### File Location [DEPRECATED]
 ```
-Pre-React-Migration/pages/user/userLogin.html
+Pre-React-Migration/pages/user/userLogin.html [ARCHIVED]
 ```
+
+> **⚠️ Legacy HTML/Vanilla JS implementation. No longer maintained.**
 
 ### Implementation Details
 
@@ -377,12 +540,15 @@ if (sessionStorage.getItem("loggedInUser")) {
 
 ---
 
-## Post-React Migration API Implementation
+## 🔴 [DEPRECATED] Post-React Migration API Implementation
 
-### File Location
+### File Location [DEPRECATED]
 ```
-Post-React-Migration/pwd-application-system/src/pages/login.jsx
+Post-React-Migration/pwd-application-system/src/pages/login.jsx [PARTIAL - LEGACY CODE]
 ```
+
+> **⚠️ This file still contains SheetDB code references but has been updated to use PHP/MySQL APIs.**  
+> **See:** [php-api-documentation.md - Frontend Integration](./php-api-documentation.md#frontend-integration)
 
 ### Implementation Details
 
@@ -1750,22 +1916,115 @@ console.log('SheetDB response data:', responseData);
 
 ---
 
-## Future API Enhancements
+## ✅ Completed API Enhancements (v2.0)
 
-### Planned Features
-1. **File Upload API**
+### [NEW] Features Implemented
+1. **✅ File Upload API**
+   - Upload actual files to server uploads directory
+   - Store file metadata in database
+   - Support for certificates and identity proofs
+   - **See:** [php-api-documentation.md #11-upload-file](./php-api-documentation.md#11-upload-file)
+
+2. **✅ Application Status Update API**
+   - Admin can update application status
+   - Track approval workflow with admin name
+   - Sync file statuses automatically
+   - **See:** [php-api-documentation.md #10-update-application-status](./php-api-documentation.md#10-update-application-status)
+
+3. **✅ Admin Dashboard API**
+   - Retrieve all applications
+   - Filter by status, date, etc.
+   - Generate reports with statistics
+   - **See:** [php-api-documentation.md #8-get-all-applications](./php-api-documentation.md#8-get-all-applications)
+
+4. **✅ Password Reset API**
+   - Forgot password functionality
+   - Email verification (in development)
+   - **See:** [php-api-documentation.md #3-forgot-password](./php-api-documentation.md#3-forgot-password)
+
+5. **✅ File Download/View APIs**
+   - View files inline in browser
+   - Download files with original names
+   - **See:** [php-api-documentation.md #13-view-file](./php-api-documentation.md#13-view-file) & [#14-download-file](./php-api-documentation.md#14-download-file)
+
+---
+
+## 📝 Summary & Migration Status
+
+### Legacy to Current Migration
+
+| Feature | SheetDB [DEPRECATED] ⛔ | PHP/MySQL [CURRENT] ✅ |
+|---------|-----|---------|
+| **User Login** | SheetDB API | `user-login.php` |
+| **Admin Login** | SheetDB API | `admin-login.php` |
+| **Registration** | SheetDB API | `register.php` |
+| **User Data** | SheetDB API | `get-user-data.php` |
+| **File Upload** | Not supported | `upload.php` |
+| **File Management** | Not supported | `files.php` |
+| **Admin Review** | Manual | `update-application-status.php` |
+| **Rejection Tracking** | Not supported | `rejectionReason` field |
+| **Admin Name Tracking** | Not supported | `reviewed_by` field |
+
+### Documentation Files
+
+**For Current PHP/MySQL Implementation:**
+- 📄 [**php-api-documentation.md**](./php-api-documentation.md) - ⭐ **START HERE** - Complete PHP/MySQL API documentation
+- 📄 [database-documentation.md](./database-documentation.md) - Database schema, setup, and troubleshooting
+
+**For Database Setup:**
+- 📄 `Post-React-Migration/xampp-php-mysql-files/master-setup.sql` - Complete database initialization
+- 📄 `Post-React-Migration/xampp-php-mysql-files/sql-sync-file-reviews.sql` - Historical data sync
+
+**For Frontend Code:**
+- 📂 `Post-React-Migration/pwd-application-system/src/api/` - API wrapper modules
+- 📂 `Post-React-Migration/pwd-application-system/src/pages/` - React components
+
+### Migration Status ✅ Complete
+
+As of **December 12, 2025**, the complete migration from SheetDB to PHP/MySQL is **complete**:
+
+- ✅ All 18 PHP API endpoints deployed
+- ✅ React components updated to use new APIs  
+- ✅ Database schema created with v2.0 features
+- ✅ File upload system implemented
+- ✅ Admin review workflow integrated
+- ✅ Historical data sync completed
+- ✅ UTF-8 character encoding fixed
+- ✅ Session management configured
+- ✅ Frontend-backend integration verified
+
+### Legacy Code [DEPRECATED] ⛔
+
+The SheetDB API documentation below is kept **for historical reference only**. All SheetDB code is no longer used in the production system.
+
+---
+
+## [LEGACY] Future API Enhancements [ARCHIVED]
+
+> **⚠️ These are old planned features from the SheetDB era. See "Completed API Enhancements" above for what was actually implemented.**
+
+### [OLD] Planned Features [DEPRECATED]
+1. **[File Upload API]** → ✅ Implemented as `upload.php`
    - Upload actual files to cloud storage
    - Store file URLs in database
 
-2. **Application Status Update API**
+2. **[Application Status Update API]** → ✅ Implemented as `update-application-status.php`
    - Admin can update application status
    - Track approval workflow
 
-3. **Admin Dashboard API**
+3. **[Admin Dashboard API]** → ✅ Implemented as `get-all-applications.php`
    - Retrieve all applications
    - Filter by status, date, etc.
    - Generate reports
 
-4. **Password Reset API**
+4. **[Password Reset API]** → ✅ Implemented as `forgot-password.php`
    - Forgot password functionality
    - Email verification
+
+---
+
+**Last Updated:** December 12, 2025
+**Maintained By:** Keanu Bembo
+**Current API Version:** 2.0 (PHP/MySQL) ✅
+**Legacy API Version:** 1.0 (SheetDB) [ARCHIVED] ⛔
+**Status:** ✅ Production Ready

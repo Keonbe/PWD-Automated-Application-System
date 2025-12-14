@@ -103,10 +103,13 @@
   list-style: none;
   padding: 0 1rem;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .user-nav-item {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
 }
 
 .user-nav-link {
@@ -117,6 +120,9 @@
   text-decoration: none;
   border-radius: 6px;
   transition: background-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .user-nav-link:hover {
@@ -414,11 +420,25 @@
   display: inline-flex;
   align-items: center;
   padding: 0.5rem 1rem;
-  background-color: #ffc107;
-  color: #000;
   border-radius: 6px;
   font-weight: 500;
   font-size: 0.875rem;
+}
+
+/* Status-specific colors for user-status-badge */
+.user-status-badge.status-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.user-status-badge.status-success {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.user-status-badge.status-danger {
+  background-color: #f8d7da;
+  color: #842029;
 }
 
 .user-status-badge i {
@@ -469,4 +489,259 @@
 
 .user-overlay-active {
   display: block;
+}
+
+/* PWD ID Card Styles */
+.pwd-card-preview {
+  max-width: 800px;
+}
+
+.pwd-id-card {
+  border: 2px solid #2d7c2f;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pwd-card-header {
+  background: linear-gradient(135deg, #2d7c2f 0%, #1e5a1f 100%);
+  color: white;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pwd-card-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  background: white;
+  padding: 4px;
+}
+
+.pwd-card-header-text {
+  flex: 1;
+}
+
+.pwd-card-header-text h4 {
+  font-size: 0.85rem;
+  margin: 0;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.pwd-card-header-text h5 {
+  font-size: 1rem;
+  margin: 0.25rem 0;
+  font-weight: 600;
+}
+
+.pwd-card-header-text h6 {
+  font-size: 0.9rem;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.pwd-card-body {
+  display: flex;
+  padding: 1.5rem;
+  gap: 1.5rem;
+}
+
+.pwd-card-photo {
+  width: 120px;
+  height: 140px;
+  background: #e9ecef;
+  border: 2px dashed #adb5bd;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  flex-shrink: 0;
+}
+
+.pwd-card-photo i {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.photo-placeholder-text {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pwd-card-info {
+  flex: 1;
+}
+
+.pwd-card-row {
+  display: flex;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.pwd-label {
+  color: #666;
+  min-width: 130px;
+  flex-shrink: 0;
+}
+
+.pwd-value {
+  font-weight: 600;
+  color: #333;
+  word-break: break-word;
+}
+
+.pwd-card-footer {
+  background: #f8f9fa;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e9ecef;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.pwd-card-qr {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-top: 2px solid #2d7c2f;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.pwd-card-qr svg {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pwd-qr-label {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2d7c2f;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.pwd-qr-sublabel {
+  display: block;
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-align: center;
+  margin-top: 0.25rem;
+}
+
+/* Screen reader only - visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* PWD Status Colors in Card */
+.pwd-status-pending,
+.pwd-status-under\ review {
+  color: #856404;
+  background: #fff3cd;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.pwd-status-accepted,
+.pwd-status-approved {
+  color: #0f5132;
+  background: #d1e7dd;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.pwd-status-denied,
+.pwd-status-rejected {
+  color: #842029;
+  background: #f8d7da;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+/* Print Styles */
+@media print {
+  .user-dashboard-header,
+  .user-sidebar,
+  .user-overlay,
+  .btn,
+  .user-mobile-menu-btn {
+    display: none !important;
+  }
+
+  .user-dashboard-wrapper {
+    background: white;
+    padding: 0;
+  }
+
+  .user-main-content {
+    padding: 0;
+    margin: 0;
+  }
+
+  .pwd-card-preview {
+    max-width: 100%;
+    box-shadow: none;
+    border: none;
+  }
+
+  .pwd-id-card {
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+
+  .pwd-card-preview > .d-flex,
+  .pwd-card-preview > p,
+  .pwd-card-preview > .mt-4 > h5 {
+    display: none !important;
+  }
+}
+
+/* Mobile Responsiveness for PWD Card */
+@media (max-width: 576px) {
+  .pwd-card-body {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .pwd-card-info {
+    width: 100%;
+  }
+
+  .pwd-card-row {
+    flex-direction: column;
+    text-align: left;
+  }
+
+  .pwd-label {
+    min-width: auto;
+    font-size: 0.8rem;
+  }
+
+  .pwd-card-footer {
+    grid-template-columns: 1fr;
+  }
 }

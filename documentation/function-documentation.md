@@ -1,50 +1,752 @@
 # PWD Automated Application System - Function Documentation
 
+> 🟢 **START HERE** - This document now prioritizes **PHP/MySQL API Integration (v2.0)** at the top with all current implementations. Legacy SheetDB code has been moved to the bottom and marked as [DEPRECATED] ⛔.
+
+---
+
 ## Overview
-This document provides comprehensive documentation for all custom JavaScript functions that handle user interactions in the PWD Automated Application System. This excludes React default code (like `reportWebVitals`, `setupTests`, etc.) and focuses on business logic and user interaction handlers.
+
+This document provides comprehensive documentation for all custom JavaScript/React functions in the PWD Automated Application System. 
+
+**Current Version (v2.0):** PHP/MySQL Backend Integration
+- All modern React functions using `loginApi.js`, `registrationApi.js`, `userApi.js`, `adminApi.js`
+- Complete session management with sessionStorage
+- Proper error handling and loading states
+
+**Legacy Code (Archived):** SheetDB API Integration [DEPRECATED] ⛔
+- Pre-React vanilla JavaScript implementation
+- No longer used - kept for reference only
+- See bottom sections for legacy code
 
 ---
 
 ## Table of Contents
 
-1. [Pre-React Migration Functions](#pre-react-migration-functions)
-   - [User Login Functions](#pre-react-user-login-functions)
-   - [Admin Login Functions](#pre-react-admin-login-functions)
-   - [Registration Form Functions](#pre-react-registration-form-functions)
-   - [Navigation Functions](#pre-react-navigation-functions)
+### Current Implementation (v2.0 - PHP/MySQL) 🟢
 
-2. [Post-React Migration Functions](#post-react-migration-functions)
-   - [Login Page Functions](#post-react-login-page-functions)
-   - [Registration Form Functions](#post-react-registration-form-functions)
-    - [Registration Result Functions](#post-react-registration-result-functions)
-   - [Consent Page Functions](#post-react-consent-page-functions)
-   - [Navigation Functions](#post-react-navigation-functions)
+1. [PHP/MySQL API Integration Overview](#phpmysql-api-integration-overview)
+2. [Enhanced Login Functions (login.jsx)](#enhanced-login-functions-loginjsx)
+   - [User Login with PHP/MySQL](#user-login-with-phpmysql)
+   - [Admin Login with PHP/MySQL](#admin-login-with-phpmysql)
+   - [Session Management](#session-management)
+3. [Registration Functions (register.jsx)](#registration-functions-registerjsx)
+   - [User Registration with PHP/MySQL](#user-registration-with-phpmysql)
+   - [Email & Registration Number Validation](#email--registration-number-validation)
+4. [User Dashboard Functions (userpage.jsx)](#user-dashboard-functions-userpagejsx)
+   - [Load User Data from PHP/MySQL](#load-user-data-from-phpmysql)
+   - [File Management Functions](#file-management-functions)
+   - [Profile Update Functions](#profile-update-functions)
+5. [Admin Dashboard Functions (adminpage.jsx)](#admin-dashboard-functions-adminpagejsx)
+   - [Load Applications from PHP/MySQL](#load-applications-from-phpmysql)
+   - [Application Status Update](#application-status-update)
+   - [Admin Verification Functions](#admin-verification-functions)
+6. [Shared Utility Functions](#shared-utility-functions)
 
-3. [Merged Features Function Documentation](#merged-features-function-documentation)
-   - [User Dashboard Functions (userpage.jsx)](#user-dashboard-functions-userpagejsx)
-   - [Admin Dashboard Functions (adminpage.jsx)](#admin-dashboard-functions-adminpagejsx)
-   - [Enhanced Login Functions (login.jsx)](#enhanced-login-functions-loginjsx)
-   - [Session Management Functions](#session-management-functions)
-   - [Branch Merge Impact Summary](#branch-merge-impact-summary)
+### Legacy Code (SheetDB - DEPRECATED) ⛔
 
-4. [Shared Utility Functions](#shared-utility-functions)
+7. [Pre-React Migration Functions [ARCHIVED]](#pre-react-migration-functions-archived)
+8. [Post-React SheetDB Functions [DEPRECATED]](#post-react-sheetdb-functions-deprecated)
 
 ---
 
-## Pre-React Migration Functions
+## PHP/MySQL API Integration Overview 🟢
 
-### Pre-React User Login Functions
+**Status:** CURRENT VERSION (v2.0) - Active Implementation
+
+This section documents all React components and functions that interact with the PHP/MySQL backend. All modern authentication, registration, file management, and admin operations use this integration.
+
+**Key API Wrappers:**
+- `loginApi.js` - User/Admin authentication
+- `registrationApi.js` - User registration and validation
+- `userApi.js` - User profile and file operations  
+- `adminApi.js` - Admin dashboard and application management
+- `axiosConfig.js` - Axios instance configuration with base URL
+- `config.js` - API configuration constants
+
+**Session Management Strategy:**
+- `sessionStorage.userId` - Logged-in user's ID (unique identifier)
+- `sessionStorage.userData` - User profile object (name, email, regNumber, etc.)
+- `sessionStorage.adminLoggedIn` - Admin email (when admin is logged in)
+- `sessionStorage.adminData` - Admin profile object
+
+---
+
+## Enhanced Login Functions (login.jsx) 🟢
+
+### Function: `handleUserLogin()`
+
+**Purpose:** Authenticate user against PHP/MySQL backend and establish session.
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/login.jsx`
+
+**API Used:** `loginApi.js` → `user-login.php` (via `userLogin()` named import)
+
+**Implementation:**
+```javascript
+// Import at top of file
+import { userLogin, adminLogin, forgotPassword } from '../api/loginApi';
+
+const handleUserLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setLoginMessage('');
+
+    // Prevent user login if admin modal is open
+    if (showAdminModal) {
+        console.log('Admin modal is open - ignoring user form submission');
+        return;
+    }
+
+    // Basic validation
+    if (!email || !password) {
+        setLoginMessage('<div class="alert alert-danger">Please enter both username and password.</div>');
+        setIsLoading(false);
+        return;
+    }
+
+    try {
+        // Call userLogin API from loginApi.js
+        const result = await userLogin(email, password);
+        
+        if (result.success && result.user) {
+            const userRecord = result.user;
+            
+            // Store the regNumber as userId
+            if (userRecord.regNumber) {
+                sessionStorage.setItem('userId', userRecord.regNumber);
+            }
+
+            // Keep legacy email key
+            sessionStorage.setItem("loggedInUser", email.trim().toLowerCase());
+
+            // Store the full user data for immediate use
+            try { 
+                sessionStorage.setItem('userData', JSON.stringify(userRecord)); 
+            } catch (e) {
+                console.warn('[Login] Could not store userData:', e);
+            }
+
+            setLoginMessage('<div class="alert alert-success">Login successful! Redirecting...</div>');
+            setTimeout(() => {
+                navigate('/userpage', { replace: true });
+            }, 1000);
+        } else {
+            const errorMsg = result.message || 'Invalid email or password.';
+            setLoginMessage(`<div class="alert alert-danger">${errorMsg}</div>`);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        setLoginMessage('<div class="alert alert-danger">Login service temporarily unavailable.</div>');
+    } finally {
+        setIsLoading(false);
+    }
+};
+```
+
+**Parameters:**
+- `e` (Event) - Form submission event
+
+**Return Value:** None (updates component state)
+
+**Flow:**
+1. Prevent form default submission
+2. Check admin modal not open (prevents accidental triggers)
+3. Validate both email and password are filled
+4. Call `userLogin()` directly (named import from loginApi.js)
+5. On success:
+   - Store `userId` (regNumber) in sessionStorage
+   - Store legacy `loggedInUser` (email) for backward compatibility
+   - Store `userData` object in sessionStorage
+   - Show success message with HTML alert
+   - Redirect to /userpage after 1 second
+6. On error: Display error message with HTML alert
+
+**Side Effects:**
+- Updates component state: `loginMessage`, `isLoading`
+- Writes to sessionStorage
+- Navigation redirect
+
+**Dependencies:**
+- `userLogin()` - Named import from loginApi.js
+- React Router `navigate()`
+
+---
+
+### Function: `handleAdminLogin()`
+
+**Purpose:** Authenticate admin against PHP/MySQL backend with modal interface.
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/login.jsx`
+
+**API Used:** `loginApi.js` → `admin-login.php` (via `adminLogin()` named import)
+
+**Implementation:**
+```javascript
+const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    setAdminIsLoading(true);
+    setAdminLoginMessage('');
+
+    if (!adminEmail || !adminPassword) {
+        setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Please enter both email and password.</div>');
+        setAdminIsLoading(false);
+        return;
+    }
+
+    try {
+        // Call adminLogin API from loginApi.js
+        const result = await adminLogin(adminEmail, adminPassword);
+        
+        if (result.success && result.admin) {
+            const adminRecord = result.admin;
+            
+            // Default to session persistence for admin login
+            sessionStorage.setItem("adminLoggedIn", adminEmail.trim().toLowerCase());
+
+            // Store admin data for potential future use
+            try {
+                sessionStorage.setItem('adminData', JSON.stringify(adminRecord));
+            } catch (e) {
+                console.warn('[AdminLogin] Could not store adminData:', e);
+            }
+
+            setAdminLoginMessage('<div class="alert alert-success m-3 p-3">Admin login successful! Redirecting...</div>');
+            setTimeout(() => {
+                navigate('/adminpage', { replace: true });
+            }, 1000);
+        } else {
+            const errorMsg = result.message || 'Invalid admin credentials.';
+            setAdminLoginMessage(`<div class="alert alert-danger m-3 p-3">${errorMsg}</div>`);
+        }
+    } catch (error) {
+        console.error('Admin login error:', error);
+        setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Admin login failed.</div>');
+    } finally {
+        setAdminIsLoading(false);
+    }
+};
+```
+
+**Parameters:**
+- `e` (Event) - Form submission event
+
+**Return Value:** None
+
+**Flow:**
+1. Clear previous error messages
+2. Validate email and password not empty
+3. Call `adminLogin()` directly (named import from loginApi.js)
+4. On success:
+   - Store `adminLoggedIn` in sessionStorage (email)
+   - Store `adminData` object in sessionStorage
+   - Redirect to /adminpage
+5. On error: Display error message with HTML alert
+
+**Side Effects:**
+- Updates component state: `adminLoginMessage`, `adminIsLoading`
+- Writes to sessionStorage
+- Navigation redirect
+
+**Note:** The "Remember Me" feature has been commented out in the current implementation to avoid background session issues.
+
+---
+
+### Session Management with useEffect
+
+**Purpose:** Auto-redirect if user/admin already logged in on page load.
+
+**Implementation:**
+```javascript
+useEffect(() => {
+    // Check user login
+    if (sessionStorage.getItem('userId') || sessionStorage.getItem('loggedInUser')) {
+        navigate('/userpage', { replace: true });
+        return;
+    }
+    
+    // Check admin login
+    if (sessionStorage.getItem('adminLoggedIn') || localStorage.getItem('adminLoggedIn')) {
+        navigate('/adminpage', { replace: true });
+        return;
+    }
+}, [navigate]);
+```
+
+**Flow:**
+1. Check if `userId` exists in sessionStorage → redirect to userpage
+2. Check if `adminLoggedIn` exists → redirect to adminpage
+3. Otherwise allow login page to render
+
+---
+
+## Registration Functions (register.jsx) 🟢
+
+### Function: `handleFormSubmit()`
+
+**Purpose:** Register new user with PHP/MySQL backend and handle file uploads.
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/homepage/register.jsx`
+
+**APIs Used:**
+- `registrationApi.js` → `register.php` (via `submitRegistration()`)
+- Direct fetch to `upload.php` (for certificates/identity documents)
+
+**Implementation:**
+```javascript
+const handleFormSubmit = async (event) => {
+    event.preventDefault();
+    const form = event.target;
+
+    // Validate form before submission
+    if (!validateForm(form)) {
+        setSubmitMessage("Please fill in all required fields.");
+        return;
+    }
+
+    // Check if email already exists
+    if (emailValidation.exists) {
+        setSubmitMessage("Email address is already registered.");
+        return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitMessage('');
+    setSubmissionPhase('validating');
+
+    try {
+        // Collect form values manually
+        const formData = {
+            lastName: form.lastName.value.trim(),
+            firstName: form.firstName.value.trim(),
+            middleName: form.middleName.value.trim(),
+            disability: form.querySelector('input[name="disability"]:checked')?.value || '',
+            street: form.street.value.trim(),
+            barangay: form.barangay.value.trim(),
+            // ... other fields
+        };
+
+        // Add generated registration number and date
+        formData.regNumber = generateRegistrationNumber();
+        formData.regDate = getTodayDate();
+        formData.generatedPassword = generatePassword8();
+        formData.status = 'Pending';
+
+        // Submit to API
+        setSubmissionPhase('submitting');
+        const result = await submitRegistration(formData);
+
+        if (result.success) {
+            // Upload files with the valid regNumber
+            setSubmissionPhase('uploading');
+            if (selectedFiles.identity_proof) {
+                await uploadFileToServer(selectedFiles.identity_proof, 'identity_proof', formData.regNumber);
+            }
+            if (selectedFiles.medical_certificate) {
+                await uploadFileToServer(selectedFiles.medical_certificate, 'medical_certificate', formData.regNumber);
+            }
+
+            // Store result and navigate
+            sessionStorage.setItem('registrationResult', JSON.stringify({
+                regNumber: formData.regNumber,
+                password: formData.generatedPassword,
+                // ... other data
+            }));
+            navigate('/register-result');
+        }
+    } catch (error) {
+        console.error('Registration error:', error);
+        setSubmitMessage('Registration failed. Please try again.');
+    } finally {
+        setIsSubmitting(false);
+    }
+};
+```
+
+**Parameters:**
+- `event` (Event) - Form submission event
+
+**Flow:**
+1. Validate form using `validateForm()` helper
+2. Check email not already registered
+3. Manually collect all form values including radio buttons
+4. Generate registration number, date, and temporary password
+5. Call `submitRegistration()` from registrationApi.js
+6. Upload files using `uploadFileToServer()` helper function
+7. Store result in sessionStorage for result page
+8. Navigate to /register-result
+
+---
+
+### Function: `checkEmailExists()` (via API)
+
+**Purpose:** Validate email is not already registered (called during form blur/change).
+
+**API Used:** `registrationApi.js` → `check-email.php` (via `checkEmailExists()`)
+
+**Implementation:**
+```javascript
+// In register.jsx - email validation on blur
+const handleEmailBlur = async (e) => {
+    const email = e.target.value.trim();
+    if (!email) return;
+    
+    setEmailValidation({ checking: true, exists: false, message: '' });
+    
+    try {
+        const result = await checkEmailExists(email);
+        if (result.exists) {
+            setEmailValidation({ 
+                checking: false, 
+                exists: true, 
+                message: 'Email already registered.' 
+            });
+        } else {
+            setEmailValidation({ checking: false, exists: false, message: '' });
+        }
+    } catch (error) {
+        console.error('Email check error:', error);
+        setEmailValidation({ checking: false, exists: false, message: '' });
+    }
+};
+```
+
+---
+
+### Function: `checkRegNumberAvailability()`
+
+**Purpose:** Validate registration number is not already used.
+
+**API Used:** `registrationApi.js` → `check-regnumber.php`
+
+---
+
+## User Dashboard Functions (userpage.jsx) 🟢
+
+### Function: `loadUserData()` (useEffect)
+
+**Purpose:** Load user profile and files from PHP/MySQL on page load.
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/userpage/userpage.jsx`
+
+**APIs Used:**
+- `userApi.js` → `get-user-data.php` (via `getCurrentUserData()`)
+- Direct fetch to `files.php` (for user's uploaded files)
+
+**Implementation:**
+```javascript
+useEffect(() => {
+    const loadUserData = async () => {
+        try {
+            // Check if user is logged in
+            const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+            if (!userId) {
+                navigate('/login', { replace: true });
+                return;
+            }
+            
+            // Fetch user data from API
+            const data = await getCurrentUserData();
+            setUserData(data);
+            setError(null);
+            
+        } catch (err) {
+            console.error('[UserPage] Failed to load user data:', err.message);
+            setError(err.message);
+            
+            // If API fails, use demo data for development
+            setUserData(getDemoUserData());
+            
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    loadUserData();
+}, [navigate]);
+```
+
+**Flow:**
+1. Check `userId` exists in sessionStorage or localStorage
+2. If not, redirect to login
+3. Fetch user profile using `getCurrentUserData()` from userApi.js
+4. On success, update userData state
+5. On error, fall back to demo data for development
+6. Update loading state
+
+**Side Effects:**
+- Updates component state: `userData`, `loading`, `error`
+- Potential redirect if not authenticated
+
+---
+
+### Function: `uploadFiles()` (useCallback)
+
+**Purpose:** Upload user documents (certificates, identity) to PHP/MySQL backend.
+
+**API Used:** `userApi.js` → `upload.php`
+
+**Implementation:**
+```javascript
+const uploadFiles = useCallback(async (files) => {
+    const userId = sessionStorage.getItem('userId');
+    const formData = new FormData();
+    formData.append('userId', userId);
+    
+    files.forEach(file => {
+        formData.append('files[]', file);
+    });
+
+    try {
+        const response = await userApi.uploadFiles(formData);
+        if (response.success) {
+            // Refresh file list
+            const filesList = await userApi.getUserFiles(userId);
+            setUserFiles(filesList.files);
+        }
+    } catch (error) {
+        console.error('Upload error:', error);
+        setError('File upload failed.');
+    }
+}, []);
+```
+
+---
+
+### Function: `updateUserProfile()`
+
+**Purpose:** Update user information in PHP/MySQL database.
+
+**API Used:** `userApi.js` → `update-profile.php`
+
+---
+
+### Function: `changePassword()`
+
+**Purpose:** Update user password in PHP/MySQL database.
+
+**API Used:** `userApi.js` → `change-password.php`
+
+---
+
+### Function: `getStatusInfo()`
+
+**Purpose:** Compute status display information based on application status (label, progress, CSS classes).
+
+**Implementation:**
+```javascript
+const getStatusInfo = (status) => {
+    const s = (status || '').toString().trim().toLowerCase();
+    if (s === 'pending' || s === 'under review') {
+        return { label: 'Under Review', percent: 60, badgeClass: 'status-warning', fillClass: 'fill-warning' };
+    }
+    if (s === 'accepted' || s === 'approved') {
+        return { label: 'Accepted', percent: 100, badgeClass: 'status-success', fillClass: 'fill-success' };
+    }
+    if (s === 'denied' || s === 'rejected') {
+        return { label: 'Denied', percent: 100, badgeClass: 'status-danger', fillClass: 'fill-danger' };
+    }
+    // Fallback for any other value
+    return { label: status || 'Unknown', percent: 0, badgeClass: 'status-neutral', fillClass: 'fill-neutral' };
+};
+```
+
+**Returns:** Object with:
+- `label` (string) - Human-readable status text
+- `percent` (number) - Progress bar percentage
+- `badgeClass` (string) - CSS class for status badge
+- `fillClass` (string) - CSS class for progress fill
+
+---
+
+## Admin Dashboard Functions (adminpage.jsx) 🟢
+
+### Function: `fetchData()` (useEffect)
+
+**Purpose:** Load all user applications for admin review from PHP/MySQL.
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/adminpage/adminpage.jsx`
+
+**API Used:** `adminApi.js` → `get-all-applications.php` (via `getAllApplications()`)
+
+**Implementation:**
+```javascript
+useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const res = await getAllApplications();
+            if (res.success) {
+                const formattedData = res.users.map((row) => {
+                    const normalizedStatus = normalizeStatus(row.status);
+                    return {
+                        ...row,
+                        fullName: `${row.lastName || ""}, ${row.firstName || ""} ${row.middleName || ""}`.trim(),
+                        status: normalizedStatus,
+                    };
+                });
+
+                setApplications(formattedData);
+
+                // Calculate counts for chart
+                const counts = formattedData.reduce((acc, row) => {
+                    acc[row.status] = (acc[row.status] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const chartData = Object.entries(counts).map(([status, count]) => ({
+                    name: status.charAt(0).toUpperCase() + status.slice(1),
+                    Applications: count,
+                }));
+
+                setStatusData(chartData);
+            }
+        } catch (error) {
+            console.error("Error fetching data from API:", error);
+        }
+    };
+
+    fetchData();
+}, []);
+
+// Statistics derived from statusData
+const totalApplicants = statusData.reduce((sum, s) => sum + s.Applications, 0);
+const acceptedCount = statusData.find((s) => s.name.toLowerCase() === "accepted")?.Applications || 0;
+const pendingCount = statusData.find((s) => s.name.toLowerCase() === "pending")?.Applications || 0;
+const rejectedCount = statusData.find((s) => s.name.toLowerCase() === "rejected")?.Applications || 0;
+```
+
+**Flow:**
+1. Fetch all applications using `getAllApplications()` from adminApi.js
+2. Format data - combine name fields, normalize status
+3. Calculate status counts for chart visualization
+4. Update applications and statusData states
+5. Statistics are derived reactively from statusData
+
+---
+
+### Function: `updateApplicationStatus()`
+
+**Purpose:** Update user application status (approve/reject) in PHP/MySQL database.
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/adminpage/adminpage.jsx` (also used in `adminverify.jsx`)
+
+**API Used:** `adminApi.js` → `update-application-status.php` (via `updateApplicationStatus()`)
+
+**Implementation:**
+```javascript
+// From adminApi.js
+export const updateApplicationStatus = async (regNumber, status, rejectionReason = null) => {
+    try {
+        // Get admin name from sessionStorage
+        let adminName = 'System Administrator'; // Default fallback
+        try {
+            const adminData = sessionStorage.getItem('adminData');
+            if (adminData) {
+                const admin = JSON.parse(adminData);
+                adminName = admin.adminName || 'System Administrator';
+            }
+        } catch (e) {
+            console.warn('Could not retrieve admin name from sessionStorage:', e);
+        }
+        
+        const res = await api.post('/update-application-status.php', {
+            regNumber,
+            status,
+            rejectionReason,
+            adminName,
+        });
+        return res.data;
+    } catch (error) {
+        console.error('Error updating application status:', error);
+        throw error;
+    }
+};
+```
+
+**Parameters:**
+- `regNumber` (string) - Registration number of application to update
+- `status` (string) - New status: 'accepted', 'rejected', 'pending'
+- `rejectionReason` (string, optional) - Reason for rejection
+
+**Database Updates:**
+- Sets `status` column
+- Sets `admin_notes` with rejection reason
+- Sets `reviewed_by` to admin email
+- Sets `reviewed_at` to current timestamp
+
+---
+
+### Function: `verifyApplicationDocuments()`
+
+**Purpose:** Review user-submitted documents (certificates, identity) for application verification.
+
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/adminpage/adminverify.jsx`
+
+**APIs Used:**
+- `adminApi.js` → `get-pending-application.php` (via `getPendingApplication()`)
+- Direct URL to `file-view.php` for document display
+
+---
+
+## Shared Utility Functions
+
+### Function: `formatDate()`
+
+**Purpose:** Format date strings for display.
+
+**Implementation:**
+```javascript
+const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+};
+```
+
+---
+
+### Function: `normalizeStatus()`
+
+**Purpose:** Normalize status strings to consistent format.
+
+**Implementation:**
+```javascript
+const normalizeStatus = (status) => {
+    return status ? status.toLowerCase().trim() : 'pending';
+};
+```
+
+---
+
+---
+
+---
+
+## 🔴 [DEPRECATED] Legacy Code Archive ⛔
+
+> **⚠️ WARNING: All code below this section is from the legacy SheetDB era and is NO LONGER USED.**  
+> **Maintained for historical reference only. Do not use in new development.**  
+> **See sections above for current PHP/MySQL implementations.**
+
+---
+
+## 🔴 [DEPRECATED] Pre-React Migration Functions [ARCHIVED]
 
 #### File Location
 ```
-Pre-React-Migration/pages/user/userLogin.html
+Pre-React-Migration/pages/user/userLogin.html [ARCHIVED - NOT USED]
 ```
 
----
+> **⛔ Status:** DEPRECATED - Legacy vanilla JavaScript implementation
+> **Replacement:** `login.jsx` with `loginApi.js` using PHP/MySQL backend
+> **See:** [Enhanced Login Functions (login.jsx)](#enhanced-login-functions-loginjsx)
 
-#### Function: User Login Form Submit Handler
+#### Function: [DEPRECATED] User Login Form Submit Handler ⛔
 
-**Purpose:** Handles user authentication by validating credentials against SheetDB API and managing session storage.
+**Status:** ARCHIVED - No longer used  
+**Replaced by:** `handleUserLogin()` in `login.jsx` using `loginApi.js`
 
 **Trigger:** Form submission event on `#loginForm`
 
@@ -154,9 +856,17 @@ if (sessionStorage.getItem("loggedInUser")) {
 
 ### Pre-React Admin Login Functions
 
-#### Function: Admin Login Form Submit Handler
+#### File Location [DEPRECATED] ⛔
+```
+Pre-React-Migration/pages/user/userLogin.html [ARCHIVED - NOT USED]
+```
 
-**Purpose:** Handles administrator authentication and remembers login preference.
+> **⛔ Status:** DEPRECATED - Legacy vanilla JavaScript implementation  
+> **Replacement:** `handleAdminLogin()` in `login.jsx` using `adminApi.js`
+
+---
+
+#### Function: [DEPRECATED] Admin Login Form Submit Handler ⛔
 
 **Trigger:** Form submission event on `#adminLoginForm`
 
@@ -248,16 +958,17 @@ document.getElementById("adminLoginForm").addEventListener("submit", function(e)
 
 ### Pre-React Registration Form Functions
 
-#### File Location
+#### File Location [DEPRECATED] ⛔
 ```
-Pre-React-Migration/pages/homepage/register.html
+Pre-React-Migration/pages/homepage/register.html [ARCHIVED - NOT USED]
 ```
+
+> **⛔ Status:** DEPRECATED - Legacy vanilla JavaScript implementation  
+> **Replacement:** `register.jsx` with `registrationApi.js` using PHP/MySQL backend
 
 ---
 
-#### Function: updateFileName
-
-**Purpose:** Update file upload button text and styling when a file is selected.
+#### Function: [DEPRECATED] updateFileName ⛔
 
 **Parameters:**
 - `inputId` (string) - ID of the file input element
@@ -377,9 +1088,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 ### Pre-React Navigation Functions
 
-#### Function: Navigate to Login Page
+#### Function: [DEPRECATED] Navigate to Login Page ⛔
 
-**Purpose:** Redirect user to login page when clicking login button.
+**Status:** DEPRECATED - Replaced by React Router navigation
 
 **Usage:**
 ```html
@@ -403,9 +1114,9 @@ onclick="location.href='/Pre-React-Migration/pages/user/userLogin.html'"
 
 ---
 
-#### Function: Navigate to Consent Page
+#### Function: [DEPRECATED] Navigate to Consent Page ⛔
 
-**Purpose:** Start PWD application process by navigating to consent page.
+**Status:** DEPRECATED - Replaced by React Router navigation
 
 **Usage:**
 ```html
@@ -421,9 +1132,9 @@ onclick="location.href='consent.html'"
 
 ---
 
-#### Function: Navigate to Registration Form
+#### Function: [DEPRECATED] Navigate to Registration Form ⛔
 
-**Purpose:** Proceed from consent page to registration form.
+**Status:** DEPRECATED - Replaced by React Router navigation
 
 **Usage:**
 ```html
@@ -439,20 +1150,28 @@ onclick="location.href='register.html'"
 
 ---
 
-## Post-React Migration Functions
+## 🔴 [DEPRECATED] Post-React Migration Functions [PARTIAL LEGACY]
 
-### Post-React Login Page Functions
-
-#### File Location
-```
-Post-React-Migration/pwd-application-system/src/pages/login.jsx
-```
+> **⚠️ These sections document the older SheetDB integration in React components.**  
+> **Most of these functions have been replaced or significantly updated for PHP/MySQL backend.**  
+> **See current implementations above for latest code.**
 
 ---
 
-#### Function: handleUserLogin
+### [DEPRECATED] Post-React Login Page Functions
 
-**Purpose:** Async function to handle user authentication with modern React patterns.
+#### File Location
+```
+Post-React-Migration/pwd-application-system/src/pages/login.jsx [LEGACY REFERENCE]
+```
+
+> **⛔ Note:** This section documents legacy SheetDB authentication code  
+> **Current:** `login.jsx` now uses `loginApi.js` with PHP/MySQL backend  
+> **See:** [Enhanced Login Functions (login.jsx)](#enhanced-login-functions-loginjsx) for current implementation
+
+---
+
+#### Function: [DEPRECATED] handleUserLogin (SheetDB Version) ⛔
 
 **Type:** Async Function
 
@@ -529,9 +1248,10 @@ const handleUserLogin = async (e) => {
 
 ---
 
-#### Function: handleAdminLogin
+#### Function: [DEPRECATED] handleAdminLogin (SheetDB Version) ⛔
 
-**Purpose:** Async function to handle administrator authentication.
+**Status:** DEPRECATED in favor of new implementation  
+**See:** [Admin Login with PHP/MySQL](#admin-login-with-phpmysql) for current version
 
 **Type:** Async Function
 
@@ -604,9 +1324,10 @@ const handleAdminLogin = async (e) => {
 
 ---
 
-#### Function: useEffect - Session Check
+#### Function: [DEPRECATED] useEffect - Session Check (SheetDB Version) ⛔
 
-**Purpose:** Check if user is already logged in on component mount and redirect if necessary.
+**Status:** DEPRECATED - Replaced by current implementation  
+**See:** [Session Management](#session-management-with-useffect) for current version
 
 **Type:** React Hook Effect
 
@@ -646,18 +1367,20 @@ useEffect(() => {
 
 ---
 
-### Post-React Registration Form Functions
+### [DEPRECATED] Post-React Registration Form Functions
 
-#### File Location
+#### File Location [LEGACY]
 ```
-Post-React-Migration/pwd-application-system/src/pages/homepage/register.jsx
+Post-React-Migration/pwd-application-system/src/pages/homepage/register.jsx [PARTIAL - LEGACY CODE]
 ```
+
+> **⛔ Note:** Contains legacy SheetDB code integrated with newer React patterns  
+> **Current:** Now uses PHP/MySQL backend via `registrationApi.js`  
+> **See:** [Registration Functions (register.jsx)](#registration-functions-registerjsx) for current implementation
 
 ---
 
-#### Function: validateForm
-
-**Purpose:** Validate all required form fields including checkboxes and radio button groups.
+#### Function: [DEPRECATED] validateForm (Legacy SheetDB Version) ⛔
 
 **Parameters:**
 - `form` (HTMLFormElement) - The form element to validate
@@ -732,9 +1455,11 @@ const validateForm = (form) => {
 
 ---
 
-#### Function: handleFormSubmit (with API Integration)
+#### Function: [DEPRECATED] handleFormSubmit (SheetDB Version) ⛔
 
-**Purpose:** Process form submission, validate data, submit to SheetDB API, and navigate to result page upon success.
+**Status:** DEPRECATED - Now uses PHP/MySQL backend  
+**API Changed From:** SheetDB API  
+**API Changed To:** `registrationApi.submitRegistration()` → `register.php`
 
 **Type:** Async Event Handler Function
 
@@ -847,6 +1572,10 @@ const handleFormSubmit = async (event) => {
 - ✓ Radio buttons use `querySelector` with `:checked` selector
 - ✓ Optional fields have fallback values to prevent undefined errors
 
+> **⛔ Status:** DEPRECATED - Legacy SheetDB implementation  
+> **API Endpoint:** ~~SheetDB~~ (NO LONGER USED)  
+> **Replaced by:** `registerUser()` in `registrationApi.js` → `register.php`
+
 **Flow:**
 1. Prevent default form submission
 2. Validate form using `validateForm` function
@@ -916,9 +1645,10 @@ const handleFormSubmit = async (event) => {
 
 ---
 
-#### Function: updateFileName
+#### Function: [DEPRECATED] updateFileName (React Version) ⛔
 
-**Purpose:** React version of file upload button updater using refs.
+**Status:** DEPRECATED - Replaced by newer implementation  
+**See:** [File Upload in Current Functions](#file-upload-handling)
 
 **Parameters:**
 - `inputRef` (React.RefObject) - Ref to file input element
@@ -971,7 +1701,10 @@ const updateFileName = (inputRef, buttonId) => {
 
 ---
 
-#### Function: generateRegistrationNumber
+#### Function: [DEPRECATED] generateRegistrationNumber ⛔
+
+**Status:** DEPRECATED - Registration handled by backend PHP; this was used for legacy SheetDB submission  
+**See:** [User Registration in Current Functions](#user-registration-functions-php-mysql)
 
 **Purpose:** Generate a random 12-digit registration number.
 
@@ -1003,7 +1736,10 @@ const generateRegistrationNumber = () => {
 
 ---
 
-#### Function: getTodayDate
+#### Function: [DEPRECATED] getTodayDate ⛔
+
+**Status:** DEPRECATED - Date handling moved to backend PHP `strtotime()` and database server `NOW()`  
+**See:** [Backend Date Handling](php-api-documentation.md)
 
 **Purpose:** Get current date in YYYY-MM-DD format.
 
@@ -1044,7 +1780,10 @@ Post-React-Migration/pwd-application-system/src/pages/homepage/consent.jsx
 
 ---
 
-#### Function: handleProceed
+#### Function: [DEPRECATED] handleProceed (Consent Page) ⛔
+
+**Status:** DEPRECATED - Consent flow managed by React routing  
+**File Location:** Post-React-Migration/pwd-application-system/src/pages/homepage/consent.jsx [ARCHIVED]
 
 **Purpose:** Navigate to registration form when user agrees to terms.
 
@@ -1080,7 +1819,10 @@ const handleProceed = () => {
 
 ---
 
-#### Function: handleDecline
+#### Function: [DEPRECATED] handleDecline (Consent Page) ⛔
+
+**Status:** DEPRECATED - Consent flow managed by React routing  
+**File Location:** Post-React-Migration/pwd-application-system/src/pages/homepage/consent.jsx [ARCHIVED]
 
 **Purpose:** Navigate back to homepage when user declines terms.
 
@@ -1103,9 +1845,15 @@ const handleDecline = () => {
 
 ---
 
-### Post-React Navigation Functions
+### Post-React Navigation Functions [PARTIAL LEGACY] ⛔
 
-#### Function: React Router Navigation
+**Status:** DEPRECATED - React Router v6 navigation is still in use but being migrated to context-based state management  
+**Current Use:** Active in all React components for page transitions
+
+#### Function: [PARTIAL] React Router Navigation
+
+**Status:** DEPRECATED (Pre-v6 patterns) - Use React Router v6 `useNavigate()` hook  
+**Current Implementation:** React Router v6 with `useNavigate()` hook
 
 **Purpose:** Navigate between pages in React SPA without full page reload.
 
@@ -1143,15 +1891,26 @@ navigate(-1);
 
 ---
 
-## Shared Utility Functions
+## [DEPRECATED] Shared Utility Functions ⛔
 
-### Function: Session Storage Management
+**Status:** DEPRECATED - Client-side storage being migrated to server-side PHP session management for enhanced security and multi-device support
+
+### Function: [DEPRECATED] Session Storage Management ⛔
+
+**Status:** DEPRECATED - Use PHP `$_SESSION` superglobal for authenticated user data  
+**Current Use:** Still active for temporary UI state (non-sensitive)  
+**See:** [Server-Side Session Management](php-api-documentation.md#authentication-functions)
+
+**Purpose:** Store temporary data in session storage (client-side, cleared on browser close)
+
+**⚠️ Security Note:** Do NOT store sensitive data (passwords, tokens, PII) in sessionStorage. Use server-side PHP sessions instead.
 
 #### setItem
 **Purpose:** Store data in session storage
 
 **Usage:**
 ```javascript
+// ⚠️ DEPRECATED - For non-sensitive UI state only
 sessionStorage.setItem("loggedInUser", username);
 ```
 
@@ -1160,6 +1919,7 @@ sessionStorage.setItem("loggedInUser", username);
 
 **Usage:**
 ```javascript
+// ⚠️ DEPRECATED - Use PHP $_SESSION for authenticated data
 const user = sessionStorage.getItem("loggedInUser");
 ```
 
@@ -1173,13 +1933,19 @@ sessionStorage.removeItem("loggedInUser");
 
 ---
 
-### Function: Local Storage Management
+### Function: [DEPRECATED] Local Storage Management ⛔
+
+**Status:** DEPRECATED - Persistent client-side storage has security implications  
+**Recommendation:** Use server-side database with secure authentication cookies instead
+
+**Purpose:** Store persistent data across browser sessions (client-side)
 
 #### setItem
 **Purpose:** Store data persistently across browser sessions
 
 **Usage:**
 ```javascript
+// ⚠️ DEPRECATED - Security risk for sensitive data
 localStorage.setItem("adminLoggedIn", adminEmail);
 ```
 
@@ -1188,6 +1954,7 @@ localStorage.setItem("adminLoggedIn", adminEmail);
 
 **Usage:**
 ```javascript
+// ⚠️ DEPRECATED - Use server-side verification instead
 const admin = localStorage.getItem("adminLoggedIn");
 ```
 
@@ -1673,7 +2440,10 @@ const getDemoUserData = () => {
       generatedPassword: '12345678',
       password: '12345678',
       // Default status used by the registration form
-      status: 'Pending'
+      status: 'Pending',
+      // Timestamps from database
+      createdAt: '2025-01-15 10:30:00',
+      updatedAt: '2025-01-15 10:30:00'
     };
 };
 ```
@@ -2693,15 +3463,131 @@ useEffect(() => {
 
 ---
 
-## Conclusion
+## Documentation Reorganization Summary
 
-This function documentation provides comprehensive coverage of all custom JavaScript/JSX functions that handle user interactions in the PWD Automated Application System. The documentation includes both Pre-React (Vanilla JS) and Post-React (React) implementations with detailed explanations of parameters, return values, flow, side effects, and dependencies.
+### ✅ Completion Status
 
-**Key Takeaways:**
-- Pre-React uses event listeners and direct DOM manipulation
-- Post-React uses hooks, state management, and React Router
-- API integration uses fetch with async/await patterns
-- Form validation handles multiple input types including checkbox/radio groups
-- Registration data persists using sessionStorage for result page display
-- User dashboard displays real-time application status with fallback data
-- All functions include proper error handling and user feedback
+This file has been successfully reorganized to clearly distinguish between **Current (PHP/MySQL v2.0)** and **Legacy (SheetDB)** implementations.
+
+### File Structure Overview
+
+**Current Implementation (Top Sections)** 🟢
+
+1. **PHP/MySQL API Integration Overview** - Complete v2.0 backend
+2. **Enhanced Login Functions** - User/admin login via PHP
+3. **Registration Functions** - PHP-based registration with validation
+4. **User Dashboard Functions** - Profile and file management via PHP
+5. **Admin Dashboard Functions** - Application review and verification via PHP
+6. **Shared Utility Functions** - Common utilities across components (marked for migration)
+
+**Legacy Code (Bottom Sections)** [DEPRECATED] ⛔
+
+- **🔴 [DEPRECATED] Legacy Pre-React Functions** - Original vanilla JavaScript (archived)
+- **🔴 [DEPRECATED] Post-React SheetDB Functions** - React + SheetDB (partial legacy)
+- **[DEPRECATED] Session/Storage Management** - Client-side storage (marked for server migration)
+
+### Migration Path
+
+```
+Pre-React (Vanilla JS) ----┐
+                           ├──> [DEPRECATED - Legacy Code Archive]
+Post-React (SheetDB) ------┘
+                  ↓
+Current (React + PHP/MySQL) ← Current Production Implementation ⭐
+                  ↓
+Future (React + PHP Sessions) ← Planned Security Upgrade
+```
+
+### Related Documentation
+
+For comprehensive reference, see:
+
+- **[php-api-documentation.md](php-api-documentation.md)** - All 18 PHP API endpoints with examples
+- **[api-documentation.md](api-documentation.md)** - API overview with deprecation notices
+- **[database-documentation.md](database-documentation.md)** - MySQL schema, ER diagram, setup guide
+- **[backend-documentation.md](backend-documentation.md)** - Backend architecture and structure
+
+### Key Function Locations
+
+**Current Production Functions (Active):**
+
+| Function | File | Type | Status |
+|----------|------|------|--------|
+| `handleUserLogin()` | login.jsx | User Auth | ✅ Active |
+| `handleAdminLogin()` | login.jsx | Admin Auth | ✅ Active |
+| `handleRegistration()` | register.jsx | Registration | ✅ Active |
+| `fetchUserFiles()` | userpage.jsx | User Dashboard | ✅ Active |
+| `fetchAdminApplications()` | adminpage.jsx | Admin Dashboard | ✅ Active |
+| `normalizeStatus()` | utils | Utility | ✅ Active |
+
+**Deprecated Functions (Legacy - Not Recommended):**
+
+| Function | Previous File | Type | Status | See Current |
+|----------|--------------|------|--------|-------------|
+| `loginWithSheetDB()` | Pre-React | SheetDB Auth | ❌ Deprecated | `handleUserLogin()` |
+| `registerWithSheetDB()` | Pre-React/Post-React | SheetDB Register | ❌ Deprecated | `handleRegistration()` |
+| `setItem() / getItem()` | All | Session Storage | ⚠️ Deprecated | PHP `$_SESSION` |
+| `generateRegistrationNumber()` | Post-React | Utility | ❌ Deprecated | Backend PHP |
+| `getTodayDate()` | Post-React | Utility | ❌ Deprecated | Backend PHP |
+
+### Security Improvements
+
+**What Changed:**
+
+1. **Authentication:**
+   - ❌ Old: SheetDB API calls with username/password
+   - ✅ New: PHP backend with secure session management
+
+2. **Data Storage:**
+   - ❌ Old: Client-side sessionStorage/localStorage
+   - ✅ New: Server-side PHP `$_SESSION` and database
+
+3. **File Management:**
+   - ❌ Old: SheetDB spreadsheet
+   - ✅ New: MySQL database with proper relationships
+
+4. **Admin Verification:**
+   - ❌ Old: Manual spreadsheet updates
+   - ✅ New: PHP API with admin name tracking and timestamps
+
+### Using This Documentation
+
+**For Development:**
+1. Focus on **Current Implementation** sections (top of file)
+2. Reference [php-api-documentation.md](php-api-documentation.md) for API details
+3. Check [database-documentation.md](database-documentation.md) for schema
+
+**For Understanding Legacy Code:**
+1. See **[DEPRECATED] Legacy Code Archive** sections (bottom of file)
+2. Find equivalent current implementation in tables above
+3. Review migration notes in deprecated section headers
+
+**For New Developers:**
+1. Start with ⭐ **PHP/MySQL API Integration Overview**
+2. Read the 6 main sections in order (Login → Registration → Dashboard)
+3. Skip deprecated sections unless reviewing historical code
+
+### Last Updated
+
+- **Date:** 2025 (Ongoing)
+- **Version:** v2.0 (PHP/MySQL Production)
+- **Status:** ✅ Fully Reorganized with Deprecation Notices
+- **Completeness:** All functions documented with clear status indicators
+
+---
+
+## Conclusion (Legacy)
+
+This function documentation provides comprehensive coverage of all custom JavaScript/JSX functions that handle user interactions in the PWD Automated Application System.
+
+**Current Version (v2.0):** 
+- Uses PHP/MySQL backend with React frontend
+- All authentication and data handling moved to backend APIs
+- Client-side functions focused on UI state and user interactions
+
+**Legacy Sections Preserved For Reference:**
+- Pre-React vanilla JavaScript implementations
+- Post-React SheetDB implementations
+- All marked with [DEPRECATED] ⛔ for easy identification
+
+See the **Documentation Reorganization Summary** section above for the complete migration guide.

@@ -5,6 +5,8 @@ import "../assets/styles/adminpage.css";
 
 const AdminSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   /**
@@ -39,17 +41,40 @@ const AdminSidebar = () => {
   ];
 
   /**
+   * @summary Opens the logout confirmation modal.
+   * @remarks Shows modal instead of immediately logging out for user confirmation.
+   */
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+    setIsOpen(false); // Close mobile drawer if open
+  };
+
+  /**
    * @summary Handles admin logout process with session cleanup.
    *
    * @remarks
-   * Removes admin authentication tokens from both session and local storage.
-   * Redirects to home page with replace option to prevent back navigation.
+   * Shows loading state, removes admin authentication tokens from both session and local storage.
+   * Redirects to home page with replace option to prevent back navigation after a brief delay.
    */
   const handleLogout = () => {
-    sessionStorage.removeItem("adminLoggedIn");
-    localStorage.removeItem("adminLoggedIn");
-    setIsOpen(false);
-    navigate("/", { replace: true });
+    setIsLoggingOut(true);
+    
+    // Simulate logout delay for better UX
+    setTimeout(() => {
+      sessionStorage.removeItem("adminLoggedIn");
+      localStorage.removeItem("adminLoggedIn");
+      setShowLogoutModal(false);
+      setIsOpen(false);
+      setIsLoggingOut(false);
+      navigate("/", { replace: true });
+    }, 1500);
+  };
+
+  /**
+   * @summary Cancels the logout process and closes the modal.
+   */
+  const handleCancelLogout = () => {
+    setShowLogoutModal(false);
   };
 
   // lock scroll and close on Escape
@@ -100,7 +125,7 @@ const AdminSidebar = () => {
                   to="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleLogout();
+                    handleLogoutClick();
                   }}
                   className={
                     currentPath === item.path
@@ -174,7 +199,7 @@ const AdminSidebar = () => {
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        handleLogout();
+                        handleLogoutClick();
                       }}
                       className={
                         currentPath === item.path
@@ -212,6 +237,115 @@ const AdminSidebar = () => {
               © 2025 PWD System
             </div>
           </nav>
+        </div>
+      )}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div
+          className="modal-backdrop-custom"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1100,
+          }}
+          onClick={!isLoggingOut ? handleCancelLogout : undefined}
+        >
+          <div
+            className="logout-modal"
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: "12px",
+              padding: "2rem",
+              maxWidth: "400px",
+              width: "90%",
+              boxShadow: "0 10px 40px rgba(0, 0, 0, 0.2)",
+              textAlign: "center",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {isLoggingOut ? (
+              // Loading state
+              <>
+                <div
+                  style={{
+                    width: "60px",
+                    height: "60px",
+                    borderRadius: "50%",
+                    backgroundColor: "#d1e7dd",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1rem",
+                  }}
+                >
+                  <i
+                    className="fas fa-spinner fa-spin"
+                    style={{ fontSize: "1.5rem", color: "#198754" }}
+                  ></i>
+                </div>
+                <h5 style={{ marginBottom: "0.5rem", color: "#212529" }}>
+                  Logging Out...
+                </h5>
+                <p style={{ color: "#6c757d", marginBottom: "0" }}>
+                  Please wait while we securely log you out.
+                </p>
+              </>
+            ) : (
+              // Confirmation state
+              <>
+                <div
+                  style={{
+                    width: "60px",
+                    height: "60px",
+                    borderRadius: "50%",
+                    backgroundColor: "#f8d7da",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1rem",
+                  }}
+                >
+                  <i
+                    className="fas fa-sign-out-alt"
+                    style={{ fontSize: "1.5rem", color: "#dc3545" }}
+                  ></i>
+                </div>
+                <h5 style={{ marginBottom: "0.5rem", color: "#212529" }}>
+                  Confirm Logout
+                </h5>
+                <p style={{ color: "#6c757d", marginBottom: "1.5rem" }}>
+                  Are you sure you want to log out of the admin panel?
+                </p>
+                <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={handleCancelLogout}
+                    style={{ minWidth: "100px" }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={handleLogout}
+                    style={{ minWidth: "100px" }}
+                  >
+                    <i className="fas fa-sign-out-alt me-2"></i>
+                    Logout
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
     </>

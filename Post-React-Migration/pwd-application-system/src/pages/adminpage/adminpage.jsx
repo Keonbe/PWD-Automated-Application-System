@@ -5,8 +5,7 @@ import "../../assets/styles/adminpage.css";
 import StatusChart from "../../components/statuschart";
 import { normalizeStatus, barColors, getColor } from "../../utils/statusUtils";
 
-//const SHEETDB_URL = "https://sheetdb.io/api/v1/wgjit0nprbfxe";
-const SHEETDB_URL ="https://sheetdb.io/api/v1/ljqq6umrhu60o"; //Backup SheetsDB
+import { getAllApplications } from "../../api/adminApi";
 
 const AdminPage = () => {
   const [applications, setApplications] = useState([]);
@@ -51,35 +50,35 @@ const AdminPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(SHEETDB_URL);
-        const data = await response.json();
+        const res = await getAllApplications();
+        if (res.success) {
+          const formattedData = res.users.map((row) => {
+            const normalizedStatus = normalizeStatus(row.status);
+            return {
+              ...row,
+              fullName: `${row.lastName || ""}, ${row.firstName || ""} ${
+                row.middleName || ""
+              }`.trim(),
+              status: normalizedStatus,
+            };
+          });
 
-        const formattedData = data.map((row) => {
-          const normalizedStatus = normalizeStatus(row.status);
-          return {
-            ...row,
-            fullName: `${row.lastName || ""}, ${row.firstName || ""} ${
-              row.middleName || ""
-            }`.trim(),
-            status: normalizedStatus,
-          };
-        });
+          setApplications(formattedData);
 
-        setApplications(formattedData);
+          const counts = formattedData.reduce((acc, row) => {
+            acc[row.status] = (acc[row.status] || 0) + 1;
+            return acc;
+          }, {});
 
-        const counts = formattedData.reduce((acc, row) => {
-          acc[row.status] = (acc[row.status] || 0) + 1;
-          return acc;
-        }, {});
+          const chartData = Object.entries(counts).map(([status, count]) => ({
+            name: status.charAt(0).toUpperCase() + status.slice(1),
+            Applications: count,
+          }));
 
-        const chartData = Object.entries(counts).map(([status, count]) => ({
-          name: status.charAt(0).toUpperCase() + status.slice(1),
-          Applications: count,
-        }));
-
-        setStatusData(chartData);
+          setStatusData(chartData);
+        }
       } catch (error) {
-        console.error("Error fetching data from SheetDB:", error);
+        console.error("Error fetching data from API:", error);
       }
     };
 
