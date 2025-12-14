@@ -13,8 +13,197 @@ The PWD Automated Application System includes a comprehensive file upload featur
 - **User Dashboard Integration**: "My Documents" section for viewing uploaded files and their status
 - **Download Support**: Secure file download with proper headers and content types
 
-### Last Updated
-**December 14, 2025** - Documentation updated to match actual MySQLi implementation (v2.0)
+
+---
+
+## Visual Overview: File Upload System
+
+### System Architecture Diagram
+
+```mermaid
+flowchart TB
+    subgraph Frontend ["⚛️ React Frontend"]
+        direction TB
+        REG["📝 register.jsx<br/><a href='#1-state-management-registerjsx'>State Management</a>"]
+        VAL["✅ validateFile()<br/><a href='#2-file-validation-functions'>Validation Logic</a>"]
+        UPL["📤 uploadFileToServer()<br/><a href='#3-upload-function'>Upload Function</a>"]
+        USR["👤 userpage.jsx<br/><a href='#user-dashboard-my-documents'>My Documents</a>"]
+    end
+    
+    subgraph Backend ["🐘 PHP Backend"]
+        direction TB
+        UPLOAD["upload.php<br/><a href='#1-upload-endpoint-uploadphp'>POST /api/upload.php</a>"]
+        FILES["files.php<br/><a href='#2-get-files-endpoint-filesphp'>GET /api/files.php</a>"]
+        VIEW["file-view.php<br/><a href='#view-file-inline-by-id'>GET /api/file-view.php</a>"]
+        DOWNLOAD["file-download.php<br/><a href='#3-download-endpoint-file-downloadphp'>GET /api/file-download.php</a>"]
+    end
+    
+    subgraph Storage ["💾 Storage Layer"]
+        direction LR
+        FS[("📁 File System<br/>uploads/certificates/<br/>uploads/identity/")]
+        DB[("🗄️ MySQL<br/>pwd_file_uploads<br/><a href='#database-schema'>Schema</a>")]
+    end
+    
+    REG -->|"1. Select file"| VAL
+    VAL -->|"2. Store in memory"| REG
+    REG -->|"3. After registration"| UPL
+    UPL -->|"4. POST FormData"| UPLOAD
+    UPLOAD -->|"5. Save file"| FS
+    UPLOAD -->|"6. Insert record"| DB
+    USR -->|"7. Fetch files"| FILES
+    FILES -->|"8. Query"| DB
+    USR -->|"9. View/Download"| VIEW
+    USR -->|"9. View/Download"| DOWNLOAD
+    VIEW -->|"10. Read file"| FS
+    DOWNLOAD -->|"10. Read file"| FS
+```
+
+### Upload Flow Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as 👤 User
+    participant R as ⚛️ React<br/>(register.jsx)
+    participant API as 🐘 PHP API<br/>(upload.php)
+    participant FS as 📁 File System
+    participant DB as 🗄️ MySQL
+
+    rect rgb(230, 245, 255)
+    Note over U,DB: Phase 1: File Selection & Validation
+    U->>R: Select file (JPG/PNG/PDF)
+    R->>R: validateFile() - check size ≤5MB
+    R->>R: validateFile() - check MIME type
+    alt Validation Failed
+        R-->>U: ❌ Show error message
+    else Validation Passed
+        R->>R: Store file in selectedFiles state
+        R-->>U: ✅ "Ready: filename"
+    end
+    end
+
+    rect rgb(255, 245, 230)
+    Note over U,DB: Phase 2: Registration & Upload
+    U->>R: Submit registration form
+    R->>API: POST /api/register.php
+    API-->>R: Success + regNumber
+    R->>R: uploadFileToServer() called
+    R->>API: POST /api/upload.php (FormData)
+    API->>API: finfo_file() MIME check
+    API->>API: Extension fallback check
+    alt Backend Validation Failed
+        API-->>R: 400 + error JSON
+    else Validation Passed
+        API->>FS: move_uploaded_file()
+        API->>DB: INSERT pwd_file_uploads
+        DB-->>API: Return insert_id
+        API-->>R: ✅ Success + fileId
+    end
+    end
+
+    rect rgb(230, 255, 230)
+    Note over U,DB: Phase 3: View Documents
+    U->>R: Navigate to "My Documents"
+    R->>API: GET /api/files.php?regNumber=xxx
+    API->>DB: SELECT * FROM pwd_file_uploads
+    DB-->>API: Return file records
+    API-->>R: JSON files array
+    R-->>U: Display documents table
+    end
+```
+
+### Validation Logic Flowchart
+
+```mermaid
+flowchart TD
+    A["📄 File Selected"] --> B{"📏 Size ≤ 5MB?"}
+    B -->|"❌ No"| C["🚫 Reject: File too large"]
+    B -->|"✅ Yes"| D["🔍 finfo_file() detection"]
+    D --> E{"MIME in allowed list?<br/>pdf, jpeg, png, jpg"}
+    E -->|"✅ Yes"| I["✅ Accept File"]
+    E -->|"❌ No"| F["📎 Get file extension"]
+    F --> G{"Extension valid?<br/>.pdf, .jpg, .jpeg, .png"}
+    G -->|"✅ Yes"| H["⚠️ Accept (extension fallback)"]
+    G -->|"❌ No"| J["🚫 Reject: Invalid type"]
+    
+    style I fill:#90EE90,stroke:#228B22
+    style H fill:#FFE4B5,stroke:#FF8C00
+    style C fill:#FFB6C1,stroke:#DC143C
+    style J fill:#FFB6C1,stroke:#DC143C
+```
+
+### API Endpoints Overview
+
+```mermaid
+flowchart LR
+    subgraph Create ["📤 CREATE"]
+        UP["upload.php<br/>POST"]
+    end
+    
+    subgraph Read ["📖 READ"]
+        FI["files.php<br/>GET ?regNumber="]
+        VW["file-view.php<br/>GET ?fileId="]
+        VP["file-view-path.php<br/>GET ?path="]
+        DL["file-download.php<br/>GET ?fileId="]
+    end
+    
+    subgraph Update ["✏️ UPDATE"]
+        US["update-file-status.php<br/>POST"]
+        UA["update-all-files-status.php<br/>POST"]
+    end
+    
+    UP --> DB[(pwd_file_uploads)]
+    FI --> DB
+    US --> DB
+    UA --> DB
+    VW --> FS[(File System)]
+    VP --> FS
+    DL --> FS
+```
+
+### Database Entity Relationship
+
+```mermaid
+erDiagram
+    pwd_users ||--o{ pwd_file_uploads : "has files"
+    
+    pwd_users {
+        varchar regNumber PK "e.g., PWD-2025-00001"
+        varchar firstName
+        varchar lastName
+        varchar email
+        enum status "pending|approved|rejected"
+    }
+    
+    pwd_file_uploads {
+        int id PK "Auto-increment"
+        varchar regNumber FK "Links to pwd_users"
+        enum file_type "medical_certificate | identity_proof"
+        varchar original_filename "User's filename"
+        varchar stored_filename "Server filename"
+        varchar file_path "uploads/certificates/..."
+        int file_size "Bytes"
+        varchar mime_type "application/pdf, image/jpeg..."
+        timestamp uploaded_at "Auto timestamp"
+        enum status "pending | approved | rejected"
+        text admin_notes "Rejection reason"
+        varchar reviewed_by "Admin username"
+        timestamp reviewed_at "Review timestamp"
+    }
+```
+
+### Quick Navigation
+
+| Section | Description | Jump To |
+|---------|-------------|---------|
+| 🎯 **Frontend Validation** | File size & type checks in React | [validateFile()](#2-file-validation-functions) |
+| 📤 **Upload Function** | FormData POST to PHP | [uploadFileToServer()](#3-upload-function) |
+| 🐘 **PHP Upload API** | Server-side validation & storage | [upload.php](#1-upload-endpoint-uploadphp) |
+| 📋 **Files List API** | Retrieve user's uploaded files | [files.php](#2-get-files-endpoint-filesphp) |
+| 👁️ **View File API** | Inline viewing in browser | [file-view.php](#view-file-inline-by-id) |
+| 📥 **Download API** | File download with headers | [file-download.php](#3-download-endpoint-file-downloadphp) |
+| 🗄️ **Database Schema** | pwd_file_uploads table structure | [Schema](#database-schema) |
+| ✅ **Validation Rules** | Frontend + Backend rules | [Validation Rules](#file-validation-rules) |
 
 ---
 
@@ -91,32 +280,26 @@ The file upload feature is implemented in three locations:
 
 ## How It Works
 
-### Upload Flow Diagram
+> 📊 **See [Visual Overview](#visual-overview-file-upload-system) above for interactive Mermaid diagrams** showing the complete system architecture, sequence flow, validation logic, and database relationships.
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         REGISTRATION FILE UPLOAD FLOW                        │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  1. USER SELECTS FILE                                                        │
-│     └─► handleFileSelect() validates file (size ≤5MB, type PDF/JPG/PNG)     │
-│         └─► Shows "Ready: filename" ✓                                        │
-│         └─► File stored in memory (NOT uploaded yet)                         │
-│                                                                              │
-│  2. USER SUBMITS REGISTRATION                                                │
-│     └─► handleFormSubmit() sends form data to registration API               │
-│         └─► API creates user and returns regNumber (e.g., PWD-2024-00001)   │
-│                                                                              │
-│  3. AFTER REGISTRATION SUCCESS                                               │
-│     └─► uploadFileToServer() uploads each file WITH regNumber               │
-│         └─► Files saved to uploads/identity/ or uploads/certificates/        │
-│         └─► Database records created with proper foreign key                 │
-│                                                                              │
-│  4. USER REDIRECTED TO RESULT PAGE                                           │
-│     └─► Files now visible in "My Documents" section of dashboard            │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+### Step-by-Step Process
+
+1. **USER SELECTS FILE**
+   - `handleFileSelect()` validates file (size ≤5MB, type PDF/JPG/PNG)
+   - Shows "Ready: filename" ✓
+   - File stored in memory (NOT uploaded yet)
+
+2. **USER SUBMITS REGISTRATION**
+   - `handleFormSubmit()` sends form data to registration API
+   - API creates user and returns regNumber (e.g., PWD-2025-00001)
+
+3. **AFTER REGISTRATION SUCCESS**
+   - `uploadFileToServer()` uploads each file WITH regNumber
+   - Files saved to `uploads/identity/` or `uploads/certificates/`
+   - Database records created with proper foreign key
+
+4. **USER REDIRECTED TO RESULT PAGE**
+   - Files now visible in "My Documents" section of dashboard
 
 **Why this approach?**
 - Files are linked to users via `regNumber` foreign key
@@ -132,47 +315,77 @@ The file upload feature is implemented in three locations:
 ```jsx
 // State for selected files (stored in memory until registration succeeds)
 const [selectedFiles, setSelectedFiles] = useState({
-  identityProof: null,
-  medicalCertificate: null
+  identity_proof: null,
+  medical_certificate: null
 });
 
 // State for file validation feedback
 const [fileValidation, setFileValidation] = useState({
-  identityProof: { valid: false, message: '' },
-  medicalCertificate: { valid: false, message: '' }
+  identity_proof: { valid: false, message: '' },
+  medical_certificate: { valid: false, message: '' }
 });
 ```
 
-### 2. File Validation Function
+### 2. File Validation Functions
+
+The actual implementation uses a separate `validateFile()` function called by `handleFileSelect()`:
 
 ```jsx
-const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
-const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+/**
+ * @summary Validates file size and type before selection.
+ * @param {File} file - The file object to validate.
+ * @returns {Object} Validation result with valid flag and error message.
+ */
+const validateFile = (file) => {
+  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+  // Note: Backend also accepts 'image/jpg' for compatibility
+  const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 
-const handleFileSelect = (file, fileType) => {
-  // Validate file size
   if (file.size > MAX_SIZE) {
-    setFileValidation(prev => ({
-      ...prev,
-      [fileType]: { valid: false, message: 'File too large (max 5MB)' }
-    }));
-    return;
+    return { 
+      valid: false, 
+      error: `File too large. Max: 5MB, Your file: ${(file.size / 1024 / 1024).toFixed(2)}MB` 
+    };
   }
-  
-  // Validate file type
+
   if (!ALLOWED_TYPES.includes(file.type)) {
-    setFileValidation(prev => ({
-      ...prev,
-      [fileType]: { valid: false, message: 'Only PDF, JPG, PNG allowed' }
+    return { 
+      valid: false, 
+      error: 'Only PDF, JPG, PNG allowed' 
+    };
+  }
+
+  return { valid: true };
+};
+
+/**
+ * @summary Handles file selection and validation (does NOT upload yet).
+ * @param {Event} e - Change event from file input.
+ * @param {string} fileType - Type of file being selected (identity_proof or medical_certificate).
+ */
+const handleFileSelect = (e, fileType) => {
+  const file = e.target.files[0];
+  if (!file) {
+    setSelectedFiles(prev => ({ ...prev, [fileType]: null }));
+    setFileValidation(prev => ({ ...prev, [fileType]: { valid: false, message: '' } }));
+    return;
+  }
+
+  const validation = validateFile(file);
+  if (!validation.valid) {
+    setSelectedFiles(prev => ({ ...prev, [fileType]: null }));
+    setFileValidation(prev => ({ 
+      ...prev, 
+      [fileType]: { valid: false, message: validation.error } 
     }));
     return;
   }
-  
-  // Store file in memory and show success
+
+  // Store the file object for later upload
   setSelectedFiles(prev => ({ ...prev, [fileType]: file }));
-  setFileValidation(prev => ({
-    ...prev,
-    [fileType]: { valid: true, message: `Ready: ${file.name}` }
+  setFileValidation(prev => ({ 
+    ...prev, 
+    [fileType]: { valid: true, message: `Ready: ${file.name}` } 
   }));
 };
 ```
@@ -206,30 +419,34 @@ const uploadFileToServer = async (file, fileType, regNumber) => {
 ### 4. Form Submit Handler (relevant portion)
 
 ```jsx
-const handleFormSubmit = async (e) => {
-  e.preventDefault();
+const handleFormSubmit = async (event) => {
+  event.preventDefault();
   
   // 1. Submit registration form first
-  const registrationResult = await registerUser(formData);
+  const registrationResult = await submitRegistration(formData);
   
   if (registrationResult.success) {
-    const regNumber = registrationResult.regNumber;
+    const regNumber = formData.regNumber;
     
-    // 2. Upload files AFTER registration succeeds
-    if (selectedFiles.identityProof) {
-      await uploadFileToServer(
-        selectedFiles.identityProof,
-        'identity_proof',
-        regNumber
+    // 2. Upload files AFTER registration succeeds (using Promise.all for parallel uploads)
+    const uploadPromises = [];
+    
+    if (selectedFiles.identity_proof) {
+      uploadPromises.push(
+        uploadFileToServer(selectedFiles.identity_proof, 'identity_proof', regNumber)
       );
     }
     
-    if (selectedFiles.medicalCertificate) {
-      await uploadFileToServer(
-        selectedFiles.medicalCertificate,
-        'medical_certificate',
-        regNumber
+    if (selectedFiles.medical_certificate) {
+      uploadPromises.push(
+        uploadFileToServer(selectedFiles.medical_certificate, 'medical_certificate', regNumber)
       );
+    }
+    
+    // Wait for all uploads to complete
+    if (uploadPromises.length > 0) {
+      const uploadResults = await Promise.all(uploadPromises);
+      console.log('[File Upload] All uploads completed:', uploadResults);
     }
     
     // 3. Redirect to success page
@@ -246,27 +463,45 @@ const handleFormSubmit = async (e) => {
 
 ```jsx
 const [userFiles, setUserFiles] = useState([]);
+const [filesLoading, setFilesLoading] = useState(false);
+const [filesError, setFilesError] = useState(null);
 
-// Fetch files when userData loads
-useEffect(() => {
-  if (userData?.regNumber) {
-    fetchUserFiles(userData.regNumber);
-  }
-}, [userData]);
+// View document in new tab
+const handleViewDocument = (fileId) => {
+  const viewUrl = `http://localhost/.../api/file-view.php?fileId=${fileId}`;
+  window.open(viewUrl, '_blank');
+};
 
-const fetchUserFiles = async (regNumber) => {
+// Fetch files using useCallback for memoization
+const fetchUserFiles = useCallback(async () => {
+  if (!userData?.regNumber) return;
+  
+  setFilesLoading(true);
+  setFilesError(null);
   try {
     const response = await fetch(
-      `http://localhost/webdev_finals/.../api/files.php?regNumber=${regNumber}`
+      `http://localhost/.../api/files.php?regNumber=${userData.regNumber}`
     );
     const data = await response.json();
     if (data.success) {
       setUserFiles(data.files);
+    } else {
+      setFilesError(data.error || 'Failed to load files');
     }
   } catch (error) {
-    console.error('Error fetching files:', error);
+    console.error('[UserPage] Error fetching files:', error);
+    setFilesError('Could not load files');
+  } finally {
+    setFilesLoading(false);
   }
-};
+}, [userData?.regNumber]);
+
+// Fetch files when userData loads
+useEffect(() => {
+  if (userData?.regNumber) {
+    fetchUserFiles();
+  }
+}, [userData?.regNumber, fetchUserFiles]);
 ```
 
 ### Navigation Section (activeNav === 4)
@@ -298,25 +533,38 @@ const fetchUserFiles = async (regNumber) => {
           <th>Filename</th>
           <th>Size</th>
           <th>Status</th>
-          <th>Upload Date</th>
-          <th>Action</th>
+          <th>Uploaded</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {userFiles.map(file => (
           <tr key={file.id}>
-            <td>{file.type === 'identity_proof' ? 'ID Proof' : 'Medical Cert'}</td>
-            <td>{file.originalFilename}</td>
-            <td>{formatFileSize(file.size)}</td>
             <td>
-              <span className={`badge bg-${getStatusColor(file.status)}`}>
-                {file.status}
+              <i className={`fas me-2 ${
+                file.type === 'medical_certificate' 
+                  ? 'fa-file-medical text-danger' 
+                  : 'fa-id-card text-primary'
+              }`}></i>
+              {file.type === 'medical_certificate' ? 'Medical Certificate' : 'Identity Proof'}
+            </td>
+            <td><small>{file.originalFilename}</small></td>
+            <td><small>{(file.size / 1024).toFixed(1)} KB</small></td>
+            <td>
+              <span className={`badge bg-${
+                file.status === 'approved' ? 'success' :
+                file.status === 'rejected' ? 'danger' : 'warning'
+              }`}>
+                {file.status.charAt(0).toUpperCase() + file.status.slice(1)}
               </span>
             </td>
-            <td>{formatDate(file.uploadedAt)}</td>
+            <td><small>{new Date(file.uploadedAt).toLocaleDateString()}</small></td>
             <td>
-              <a href={`/api/file-download.php?fileId=${file.id}`}>
-                Download
+              <button onClick={() => handleViewDocument(file.id)} className="btn btn-sm btn-outline-info">
+                <i className="fas fa-eye"></i>
+              </button>
+              <a href={`/api/file-download.php?fileId=${file.id}`} className="btn btn-sm btn-outline-primary">
+                <i className="fas fa-download"></i>
               </a>
             </td>
           </tr>
@@ -347,18 +595,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 require_once '../config.php';
 
 // Constants
-define('MAX_FILE_SIZE', 5242880); // 5MB
-define('ALLOWED_TYPES', ['application/pdf', 'image/jpeg', 'image/png']);
-define('UPLOAD_DIR', __DIR__ . '/../uploads/');
+define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB
+define('ALLOWED_MIME_TYPES', [
+    'application/pdf', 
+    'image/jpeg', 
+    'image/png',
+    'image/jpg'  // Some systems report this
+]);
+define('ALLOWED_EXTENSIONS', ['pdf', 'jpg', 'jpeg', 'png']);
 
-// Validate file with dual MIME type and extension checking
-function validateFile($file) {
-    if ($file['error'] !== UPLOAD_ERR_OK) {
-        return ['valid' => false, 'error' => 'Upload error: ' . $file['error']];
-    }
+// Create uploads directory if not exists
+$uploadBaseDir = __DIR__ . '/../uploads/';
+$uploadSubDir = $_POST['fileType'] == 'medical_certificate' ? 'certificates/' : 'identity/';
+$uploadDir = $uploadBaseDir . $uploadSubDir;
+
+if (!file_exists($uploadDir)) {
+    mkdir($uploadDir, 0755, true);
+}
+
+// Main upload logic (validation is inline, not in separate function)
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
+    $file = $_FILES['file'];
+    $fileType = $_POST['fileType'] ?? 'identity_proof';
+    $regNumber = $_POST['regNumber'] ?? 'UNKNOWN';
     
+    // Validate file size
     if ($file['size'] > MAX_FILE_SIZE) {
-        return ['valid' => false, 'error' => 'File too large (max 5MB)'];
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'File too large. Maximum 5MB allowed.'
+        ]);
+        exit;
     }
     
     // Verify MIME type using finfo
@@ -370,55 +638,32 @@ function validateFile($file) {
     $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
     
     // Accept if MIME type matches OR extension is valid (some files have incorrect MIME detection)
-    $mimeValid = in_array($mime, ALLOWED_TYPES);
-    $extValid = in_array($extension, ['pdf', 'jpg', 'jpeg', 'png']);
+    $mimeValid = in_array($mime, ALLOWED_MIME_TYPES);
+    $extValid = in_array($extension, ALLOWED_EXTENSIONS);
     
     if (!$mimeValid && !$extValid) {
-        return [
-            'valid' => false, 
-            'error' => 'Invalid file type. Only PDF, JPG, PNG allowed',
-            'debug' => ['detected_mime' => $mime, 'extension' => $extension]
-        ];
-    }
-    
-    return ['valid' => true, 'mime' => $mime, 'extension' => $extension];
-}
-
-// Main upload logic
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $file = $_FILES['file'] ?? null;
-    $fileType = $_POST['fileType'] ?? '';
-    $regNumber = $_POST['regNumber'] ?? null;
-    
-    if (!$file || !$fileType) {
-        echo json_encode(['success' => false, 'error' => 'Missing file or file type']);
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Invalid file type. Only PDF, JPG, PNG allowed.',
+            'debug' => [
+                'detected_mime' => $mime,
+                'extension' => $extension
+            ]
+        ]);
         exit;
     }
     
-    // Validate
-    $validation = validateFile($file);
-    if (!$validation['valid']) {
-        echo json_encode(['success' => false, 'error' => $validation['error']]);
-        exit;
-    }
+    // Generate unique filename: fileType_timestamp_random.ext
+    $timestamp = time();
+    $random = substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyz'), 0, 6);
+    $storedName = $fileType . '_' . $timestamp . '_' . $random . '.' . $extension;
+    $destination = $uploadDir . $storedName;
     
-    // Determine subdirectory
-    $subdir = ($fileType === 'medical_certificate') ? 'certificates' : 'identity';
-    $targetDir = UPLOAD_DIR . $subdir . '/';
-    
-    // Generate unique filename
-    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-    $storedFilename = $fileType . '_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
-    $targetPath = $targetDir . $storedFilename;
-    
-    // Move file
-    if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
-        echo json_encode(['success' => false, 'error' => 'Failed to save file']);
-        exit;
-    }
-    
-    // Save to database using MySQLi (uses $conn from config.php)
-    $filePath = 'uploads/' . $uploadSubDir . $storedName;
+    // Move uploaded file
+    if (move_uploaded_file($file['tmp_name'], $destination)) {
+        // Save to database using MySQLi (uses $conn from config.php)
+        $filePath = 'uploads/' . $uploadSubDir . $storedName;
     
     $stmt = $conn->prepare(
         "INSERT INTO pwd_file_uploads 
@@ -560,13 +805,13 @@ $conn->close();
 ```sql
 CREATE TABLE IF NOT EXISTS pwd_file_uploads (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    regNumber VARCHAR(20),
-    file_type ENUM('medical_certificate', 'identity_proof') NOT NULL,
-    original_filename VARCHAR(255) NOT NULL,
-    stored_filename VARCHAR(255) NOT NULL,
-    file_path VARCHAR(500) NOT NULL,
-    file_size INT NOT NULL,
-    mime_type VARCHAR(100) NOT NULL,
+    regNumber VARCHAR(50),
+    file_type ENUM('medical_certificate', 'identity_proof'),
+    original_filename VARCHAR(255),
+    stored_filename VARCHAR(255),
+    file_path VARCHAR(500),
+    file_size INT,
+    mime_type VARCHAR(100),
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
     admin_notes TEXT,
@@ -576,8 +821,7 @@ CREATE TABLE IF NOT EXISTS pwd_file_uploads (
     FOREIGN KEY (regNumber) REFERENCES pwd_users(regNumber) ON DELETE CASCADE,
     INDEX idx_regNumber (regNumber),
     INDEX idx_status (status),
-    INDEX idx_file_type (file_type),
-    INDEX idx_uploaded_at (uploaded_at)
+    INDEX idx_file_type (file_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
@@ -611,7 +855,7 @@ POST /api/upload.php
 Form Data:
 - file: (binary file content)
 - fileType: 'identity_proof' or 'medical_certificate'
-- regNumber: 'PWD-2024-00001'
+- regNumber: 'PWD-2025-00001'
 
 Success Response:
 {
@@ -623,17 +867,27 @@ Success Response:
   "message": "File uploaded successfully"
 }
 
-Error Response:
+Error Response (file too large):
 {
   "success": false,
-  "error": "File too large (max 5MB)"
+  "error": "File too large. Maximum 5MB allowed."
+}
+
+Error Response (invalid type with debug info):
+{
+  "success": false,
+  "error": "Invalid file type. Only PDF, JPG, PNG allowed.",
+  "debug": {
+    "detected_mime": "application/octet-stream",
+    "extension": "exe"
+  }
 }
 ```
 
 ### Get User Files
 
 ```
-GET /api/files.php?regNumber=PWD-2024-00001
+GET /api/files.php?regNumber=PWD-2025-00001
 
 Success Response:
 {
@@ -644,10 +898,12 @@ Success Response:
       "type": "identity_proof",
       "originalFilename": "ID_card.jpg",
       "storedFilename": "identity_proof_1702251234_abc123.jpg",
-      "path": "uploads/identity/identity_proof_1702251234_abc123.jpg",
+      "filePath": "uploads/identity/identity_proof_1702251234_abc123.jpg",
       "size": 245670,
+      "mimeType": "image/jpeg",
       "status": "pending",
-      "uploadedAt": "2024-12-11 10:30:45"
+      "adminNotes": null,
+      "uploadedAt": "2025-12-11 10:30:45"
     }
   ]
 }
@@ -661,6 +917,33 @@ GET /api/file-download.php?fileId=123
 Response: Binary file with headers:
 - Content-Type: application/pdf (or image/jpeg, etc.)
 - Content-Disposition: attachment; filename="original_filename.pdf"
+```
+
+### View File (Inline by ID)
+
+```
+GET /api/file-view.php?fileId=123
+
+Response: Binary file served inline (for browser viewing)
+- Content-Type: application/pdf (or image/jpeg, etc.)
+- Content-Disposition: inline; filename="original_filename.pdf"
+- CORS: http://localhost:3000 (React dev server)
+```
+
+### View File (Inline by Path)
+
+```
+GET /api/file-view-path.php?path=certificates/medical_certificate_1702251234_abc123.pdf
+
+Security Features:
+- Directory traversal prevention (../ stripped)
+- Path must be within uploads/ directory
+- realpath() validation
+
+Response: Binary file served inline (for browser viewing)
+- Content-Type: (auto-detected via finfo)
+- Content-Disposition: inline; filename="stored_filename.pdf"
+- CORS: http://localhost:3000
 ```
 
 ---
@@ -679,11 +962,12 @@ Response: Binary file with headers:
 | Rule | Implementation | Purpose |
 |------|----------------|---------|
 | Size Check | `$file['size'] > MAX_FILE_SIZE` | Prevent large uploads (max 5MB) |
-| MIME Check | `finfo_file()` | Verify actual file type using file signature |
-| Extension Check | `pathinfo()` | Fallback validation + safe filename generation |
-| Dual Validation | MIME OR Extension | Handle files with incorrect MIME detection |
-| Directory Check | `file_exists()` + `mkdir()` | Auto-create upload directories |
+| MIME Check | `in_array($mime, ALLOWED_MIME_TYPES)` | Verify actual file type using finfo signature |
+| Extension Check | `in_array($ext, ALLOWED_EXTENSIONS)` | Fallback validation + safe filename generation |
+| Dual Validation | MIME OR Extension must match | Handle files with incorrect MIME detection |
+| Directory Check | `file_exists()` + `mkdir(0755, true)` | Auto-create upload directories recursively |
 | SQL Injection Protection | MySQLi `bind_param()` | Secure database operations |
+| Path Traversal Prevention | `str_replace(['../', '..\\'])` | Prevent directory escape in file-view-path.php |
 
 ### Directory Structure
 
@@ -696,9 +980,11 @@ xampp-php-mysql-files/
 │   │   └── identity_proof_1702251234_def456.jpg
 │   └── thumbnails/             # Future: resized images
 └── api/
-    ├── upload.php
-    ├── files.php
-    └── file-download.php
+    ├── upload.php              # POST - Upload files
+    ├── files.php               # GET - List user files
+    ├── file-download.php       # GET - Download as attachment
+    ├── file-view.php           # GET - View inline (by fileId)
+    └── file-view-path.php      # GET - View inline (by path)
 ```
 
 ### Filename Convention
@@ -862,7 +1148,8 @@ The API returns detailed error messages for debugging:
 |------|-------------|
 | `xampp-php-mysql-files/api/upload.php` | File upload endpoint with dual validation |
 | `xampp-php-mysql-files/api/files.php` | Get user files endpoint |
-| `xampp-php-mysql-files/api/file-view.php` | View file inline in browser |
+| `xampp-php-mysql-files/api/file-view.php` | View file inline in browser (by fileId) |
+| `xampp-php-mysql-files/api/file-view-path.php` | View file inline in browser (by path) |
 | `xampp-php-mysql-files/api/file-download.php` | Download file endpoint |
 | `xampp-php-mysql-files/api/update-file-status.php` | Update individual file status |
 | `xampp-php-mysql-files/api/update-all-files-status.php` | Batch update all files for a user |
@@ -888,5 +1175,12 @@ The API returns detailed error messages for debugging:
 | 2025-12-12 | Updated upload.php with improved MIME type validation |
 | 2025-12-12 | Added extension fallback for files with incorrect MIME detection |
 | 2025-12-12 | Enhanced file upload error messages with debug information |
+| 2025-12-12 | Added file-view.php and file-view-path.php for inline viewing |
 | 2025-12-13 | Documentation updated with current production implementation |
 | 2025-12-14 | Fixed documentation to use MySQLi (not PDO), updated CORS headers |
+| 2025-12-14 | Added Visual Overview section with 5 Mermaid diagrams at top |
+| 2025-12-14 | Added system architecture, sequence, flowchart, API, and ER diagrams |
+| 2025-12-14 | Added Quick Navigation table with anchor links to all sections |
+| 2025-12-14 | Documented file-view.php and file-view-path.php endpoints |
+| 2025-12-14 | Fixed state variable names (snake_case: identity_proof, medical_certificate) |
+| 2025-12-14 | Fixed fetchUserFiles to show useCallback implementation |
