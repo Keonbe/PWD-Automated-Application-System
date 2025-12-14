@@ -1024,10 +1024,20 @@ export default function UserPage() {
                 {/* Dynamic activity based on status */}
                 {(() => {
                   const status = userData.status?.toLowerCase();
+                  
+                  // Helper function to format dates consistently
+                  const formatDate = (dateString) => {
+                    if (!dateString) return 'N/A';
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    });
+                  };
+                  
                   // Format updatedAt for status changes (fallback to regDate if not available)
-                  const statusUpdateDate = userData.updatedAt 
-                    ? new Date(userData.updatedAt).toLocaleDateString()
-                    : userData.regDate;
+                  const statusUpdateDate = formatDate(userData.updatedAt || userData.regDate);
                   
                   // Get latest document review date from userFiles
                   const latestReviewDate = userFiles.length > 0 
@@ -1035,16 +1045,15 @@ export default function UserPage() {
                         .filter(f => f.reviewedAt)
                         .sort((a, b) => new Date(b.reviewedAt) - new Date(a.reviewedAt))[0]?.reviewedAt
                     : null;
-                  const documentsVerifiedDate = latestReviewDate 
-                    ? new Date(latestReviewDate).toLocaleDateString()
-                    : userData.regDate;
+                  const documentsVerifiedDate = formatDate(latestReviewDate || userData.regDate);
+                  const submissionDate = formatDate(userData.regDate);
                   
                   if (status === 'pending') {
                     return (
                       <div className="user-activity-item">
                         <div className="user-activity-header">
                           <span className="user-activity-title">Application Under Review</span>
-                          <span className="user-activity-time">{userData.regDate}</span>
+                          <span className="user-activity-time">{submissionDate}</span>
                         </div>
                         <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
                       </div>
@@ -1092,7 +1101,7 @@ export default function UserPage() {
                       <div className="user-activity-item">
                         <div className="user-activity-header">
                           <span className="user-activity-title">Application Under Review</span>
-                          <span className="user-activity-time">{userData.regDate}</span>
+                          <span className="user-activity-time">{submissionDate}</span>
                         </div>
                         <p className="user-activity-desc">Your application is currently being reviewed by our team.</p>
                       </div>
@@ -1103,7 +1112,13 @@ export default function UserPage() {
                 <div className="user-activity-item">
                   <div className="user-activity-header">
                     <span className="user-activity-title">Application Submitted</span>
-                    <span className="user-activity-time">{userData.regDate}</span>
+                    <span className="user-activity-time">
+                      {new Date(userData.regDate).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </span>
                   </div>
                   <p className="user-activity-desc">Your PWD application has been successfully submitted.</p>
                 </div>
