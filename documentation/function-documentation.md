@@ -49,7 +49,7 @@ This document provides comprehensive documentation for all custom JavaScript/Rea
 
 ---
 
-## PHP/MySQL API Integration Overview ⭐
+## PHP/MySQL API Integration Overview 🟢
 
 **Status:** CURRENT VERSION (v2.0) - Active Implementation
 
@@ -60,6 +60,8 @@ This section documents all React components and functions that interact with the
 - `registrationApi.js` - User registration and validation
 - `userApi.js` - User profile and file operations  
 - `adminApi.js` - Admin dashboard and application management
+- `axiosConfig.js` - Axios instance configuration with base URL
+- `config.js` - API configuration constants
 
 **Session Management Strategy:**
 - `sessionStorage.userId` - Logged-in user's ID (unique identifier)
@@ -77,41 +79,66 @@ This section documents all React components and functions that interact with the
 
 **File Location:** `Post-React-Migration/pwd-application-system/src/pages/login.jsx`
 
-**API Used:** `loginApi.js` → `user-login.php`
+**API Used:** `loginApi.js` → `user-login.php` (via `userLogin()` named import)
 
 **Implementation:**
 ```javascript
+// Import at top of file
+import { userLogin, adminLogin, forgotPassword } from '../api/loginApi';
+
 const handleUserLogin = async (e) => {
     e.preventDefault();
-    setUserLoginMessage('');
-    
-    if (!username || !password) {
-        setUserLoginMessage('Please enter both username and password.');
+    setIsLoading(true);
+    setLoginMessage('');
+
+    // Prevent user login if admin modal is open
+    if (showAdminModal) {
+        console.log('Admin modal is open - ignoring user form submission');
         return;
     }
 
-    setUserLoginLoading(true);
-    
+    // Basic validation
+    if (!email || !password) {
+        setLoginMessage('<div class="alert alert-danger">Please enter both username and password.</div>');
+        setIsLoading(false);
+        return;
+    }
+
     try {
-        const response = await loginApi.userLogin(username, password);
+        // Call userLogin API from loginApi.js
+        const result = await userLogin(email, password);
         
-        if (response.success) {
-            // Store user data in sessionStorage
-            sessionStorage.setItem('userId', response.userId);
-            sessionStorage.setItem('userData', JSON.stringify(response.userData));
+        if (result.success && result.user) {
+            const userRecord = result.user;
             
-            setUserLoginMessage('Login successful! Redirecting...');
+            // Store the regNumber as userId
+            if (userRecord.regNumber) {
+                sessionStorage.setItem('userId', userRecord.regNumber);
+            }
+
+            // Keep legacy email key
+            sessionStorage.setItem("loggedInUser", email.trim().toLowerCase());
+
+            // Store the full user data for immediate use
+            try { 
+                sessionStorage.setItem('userData', JSON.stringify(userRecord)); 
+            } catch (e) {
+                console.warn('[Login] Could not store userData:', e);
+            }
+
+            setLoginMessage('<div class="alert alert-success">Login successful! Redirecting...</div>');
             setTimeout(() => {
-                navigate('/userpage');
+                navigate('/userpage', { replace: true });
             }, 1000);
         } else {
-            setUserLoginMessage(response.message || 'Invalid credentials.');
+            const errorMsg = result.message || 'Invalid email or password.';
+            setLoginMessage(`<div class="alert alert-danger">${errorMsg}</div>`);
         }
     } catch (error) {
-        console.error('Login error:', error);
-        setUserLoginMessage('Login failed. Please try again.');
+        console.error("Error:", error);
+        setLoginMessage('<div class="alert alert-danger">Login service temporarily unavailable.</div>');
     } finally {
-        setUserLoginLoading(false);
+        setIsLoading(false);
     }
 };
 ```
@@ -123,23 +150,24 @@ const handleUserLogin = async (e) => {
 
 **Flow:**
 1. Prevent form default submission
-2. Clear previous messages
-3. Validate both fields are filled
-4. Call `loginApi.userLogin()` with credentials
+2. Check admin modal not open (prevents accidental triggers)
+3. Validate both email and password are filled
+4. Call `userLogin()` directly (named import from loginApi.js)
 5. On success:
-   - Store `userId` in sessionStorage
+   - Store `userId` (regNumber) in sessionStorage
+   - Store legacy `loggedInUser` (email) for backward compatibility
    - Store `userData` object in sessionStorage
-   - Show success message
+   - Show success message with HTML alert
    - Redirect to /userpage after 1 second
-6. On error: Display error message
+6. On error: Display error message with HTML alert
 
 **Side Effects:**
-- Updates component state: `userLoginMessage`, `userLoginLoading`
+- Updates component state: `loginMessage`, `isLoading`
 - Writes to sessionStorage
 - Navigation redirect
 
 **Dependencies:**
-- `loginApi.userLogin()` - API call to user-login.php
+- `userLogin()` - Named import from loginApi.js
 - React Router `navigate()`
 
 ---
@@ -150,45 +178,51 @@ const handleUserLogin = async (e) => {
 
 **File Location:** `Post-React-Migration/pwd-application-system/src/pages/login.jsx`
 
-**API Used:** `loginApi.js` → `admin-login.php`
+**API Used:** `loginApi.js` → `admin-login.php` (via `adminLogin()` named import)
 
 **Implementation:**
 ```javascript
 const handleAdminLogin = async (e) => {
     e.preventDefault();
+    setAdminIsLoading(true);
     setAdminLoginMessage('');
-    
+
     if (!adminEmail || !adminPassword) {
-        setAdminLoginMessage('Please enter both email and password.');
+        setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Please enter both email and password.</div>');
+        setAdminIsLoading(false);
         return;
     }
 
-    setAdminLoginLoading(true);
-    
     try {
-        const response = await loginApi.adminLogin(adminEmail, adminPassword);
+        // Call adminLogin API from loginApi.js
+        const result = await adminLogin(adminEmail, adminPassword);
         
-        if (response.success) {
-            // Store admin data in sessionStorage
-            sessionStorage.setItem('adminLoggedIn', adminEmail);
-            sessionStorage.setItem('adminData', JSON.stringify(response.adminData));
+        if (result.success && result.admin) {
+            const adminRecord = result.admin;
             
-            if (adminRemember) {
-                localStorage.setItem('adminLoggedIn', adminEmail);
+            // Default to session persistence for admin login
+            sessionStorage.setItem("adminLoggedIn", adminEmail.trim().toLowerCase());
+
+            // Store admin data for potential future use
+            try {
+                sessionStorage.setItem('adminData', JSON.stringify(adminRecord));
+            } catch (e) {
+                console.warn('[AdminLogin] Could not store adminData:', e);
             }
-            
-            setAdminLoginMessage('Admin login successful! Redirecting...');
+
+            setAdminLoginMessage('<div class="alert alert-success m-3 p-3">Admin login successful! Redirecting...</div>');
             setTimeout(() => {
-                navigate('/adminpage');
+                navigate('/adminpage', { replace: true });
             }, 1000);
         } else {
-            setAdminLoginMessage(response.message || 'Invalid admin credentials.');
+            const errorMsg = result.message || 'Invalid admin credentials.';
+            setAdminLoginMessage(`<div class="alert alert-danger m-3 p-3">${errorMsg}</div>`);
         }
     } catch (error) {
         console.error('Admin login error:', error);
-        setAdminLoginMessage('Admin login failed. Please try again.');
+        setAdminLoginMessage('<div class="alert alert-danger m-3 p-3">Admin login failed.</div>');
     } finally {
-        setAdminLoginLoading(false);
+        setAdminIsLoading(false);
     }
 };
 ```
@@ -201,18 +235,19 @@ const handleAdminLogin = async (e) => {
 **Flow:**
 1. Clear previous error messages
 2. Validate email and password not empty
-3. Call `loginApi.adminLogin()` with credentials
+3. Call `adminLogin()` directly (named import from loginApi.js)
 4. On success:
-   - Store `adminLoggedIn` in sessionStorage
+   - Store `adminLoggedIn` in sessionStorage (email)
    - Store `adminData` object in sessionStorage
-   - Optionally store in localStorage if "Remember Me" checked
    - Redirect to /adminpage
-5. On error: Display error message
+5. On error: Display error message with HTML alert
 
 **Side Effects:**
-- Updates component state
-- Writes to sessionStorage and possibly localStorage
+- Updates component state: `adminLoginMessage`, `adminIsLoading`
+- Writes to sessionStorage
 - Navigation redirect
+
+**Note:** The "Remember Me" feature has been commented out in the current implementation to avoid background session issues.
 
 ---
 
@@ -246,107 +281,131 @@ useEffect(() => {
 
 ## Registration Functions (register.jsx) 🟢
 
-### Function: `handleUserRegistration()`
+### Function: `handleFormSubmit()`
 
 **Purpose:** Register new user with PHP/MySQL backend and handle file uploads.
 
-**File Location:** `Post-React-Migration/pwd-application-system/src/pages/register.jsx`
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/homepage/register.jsx`
 
 **APIs Used:**
-- `registrationApi.js` → `register.php`
-- `userApi.js` → `upload.php` (for certificates/identity documents)
+- `registrationApi.js` → `register.php` (via `submitRegistration()`)
+- Direct fetch to `upload.php` (for certificates/identity documents)
 
 **Implementation:**
 ```javascript
-const handleUserRegistration = async (e) => {
-    e.preventDefault();
-    setRegError('');
-    
-    // Validate all fields
-    if (!firstName || !lastName || !email || !regNumber || !password) {
-        setRegError('All fields are required.');
+const handleFormSubmit = async (event) => {
+    event.preventDefault();
+    const form = event.target;
+
+    // Validate form before submission
+    if (!validateForm(form)) {
+        setSubmitMessage("Please fill in all required fields.");
         return;
     }
 
-    setRegLoading(true);
-    
-    try {
-        // Step 1: Register user in database
-        const regResponse = await registrationApi.registerUser({
-            firstName,
-            lastName,
-            email,
-            regNumber,
-            password
-        });
-        
-        if (!regResponse.success) {
-            setRegError(regResponse.message || 'Registration failed.');
-            return;
-        }
+    // Check if email already exists
+    if (emailValidation.exists) {
+        setSubmitMessage("Email address is already registered.");
+        return;
+    }
 
-        const userId = regResponse.userId;
-        
-        // Step 2: Upload files if provided
-        if (certFile || identityFile) {
-            const formData = new FormData();
-            formData.append('userId', userId);
-            if (certFile) formData.append('certificate', certFile);
-            if (identityFile) formData.append('identity', identityFile);
-            
-            await userApi.uploadFiles(formData);
+    setIsSubmitting(true);
+    setSubmitMessage('');
+    setSubmissionPhase('validating');
+
+    try {
+        // Collect form values manually
+        const formData = {
+            lastName: form.lastName.value.trim(),
+            firstName: form.firstName.value.trim(),
+            middleName: form.middleName.value.trim(),
+            disability: form.querySelector('input[name="disability"]:checked')?.value || '',
+            street: form.street.value.trim(),
+            barangay: form.barangay.value.trim(),
+            // ... other fields
+        };
+
+        // Add generated registration number and date
+        formData.regNumber = generateRegistrationNumber();
+        formData.regDate = getTodayDate();
+        formData.generatedPassword = generatePassword8();
+        formData.status = 'Pending';
+
+        // Submit to API
+        setSubmissionPhase('submitting');
+        const result = await submitRegistration(formData);
+
+        if (result.success) {
+            // Upload files with the valid regNumber
+            setSubmissionPhase('uploading');
+            if (selectedFiles.identity_proof) {
+                await uploadFileToServer(selectedFiles.identity_proof, 'identity_proof', formData.regNumber);
+            }
+            if (selectedFiles.medical_certificate) {
+                await uploadFileToServer(selectedFiles.medical_certificate, 'medical_certificate', formData.regNumber);
+            }
+
+            // Store result and navigate
+            sessionStorage.setItem('registrationResult', JSON.stringify({
+                regNumber: formData.regNumber,
+                password: formData.generatedPassword,
+                // ... other data
+            }));
+            navigate('/register-result');
         }
-        
-        // Store registration data for result page
-        sessionStorage.setItem('regResult', JSON.stringify({
-            success: true,
-            message: 'User registered successfully!',
-            userId: userId
-        }));
-        
-        navigate('/register-result');
     } catch (error) {
         console.error('Registration error:', error);
-        setRegError('Registration service unavailable. Please try again.');
+        setSubmitMessage('Registration failed. Please try again.');
     } finally {
-        setRegLoading(false);
+        setIsSubmitting(false);
     }
 };
 ```
 
 **Parameters:**
-- `e` (Event) - Form submission event
+- `event` (Event) - Form submission event
 
 **Flow:**
-1. Validate all required fields
-2. Call `registrationApi.registerUser()` with user data
-3. Get `userId` from response
-4. If files selected, upload them using `userApi.uploadFiles()`
-5. Store result in sessionStorage for result page
-6. Navigate to /register-result
+1. Validate form using `validateForm()` helper
+2. Check email not already registered
+3. Manually collect all form values including radio buttons
+4. Generate registration number, date, and temporary password
+5. Call `submitRegistration()` from registrationApi.js
+6. Upload files using `uploadFileToServer()` helper function
+7. Store result in sessionStorage for result page
+8. Navigate to /register-result
 
 ---
 
-### Function: `checkEmailAvailability()`
+### Function: `checkEmailExists()` (via API)
 
-**Purpose:** Validate email is not already registered (called during form change).
+**Purpose:** Validate email is not already registered (called during form blur/change).
 
-**API Used:** `registrationApi.js` → `check-email.php`
+**API Used:** `registrationApi.js` → `check-email.php` (via `checkEmailExists()`)
 
 **Implementation:**
 ```javascript
-const checkEmailAvailability = async (value) => {
-    if (!value) return;
+// In register.jsx - email validation on blur
+const handleEmailBlur = async (e) => {
+    const email = e.target.value.trim();
+    if (!email) return;
+    
+    setEmailValidation({ checking: true, exists: false, message: '' });
     
     try {
-        const response = await registrationApi.checkEmailAvailability(value);
-        if (!response.available) {
-            setEmailError('Email already registered.');
+        const result = await checkEmailExists(email);
+        if (result.exists) {
+            setEmailValidation({ 
+                checking: false, 
+                exists: true, 
+                message: 'Email already registered.' 
+            });
         } else {
-            setEmailError('');
+            setEmailValidation({ checking: false, exists: false, message: '' });
         }
     } catch (error) {
         console.error('Email check error:', error);
+        setEmailValidation({ checking: false, exists: false, message: '' });
     }
 };
 ```
@@ -365,55 +424,57 @@ const checkEmailAvailability = async (value) => {
 
 ### Function: `loadUserData()` (useEffect)
 
-**Purpose:** Load user profile and applications from PHP/MySQL on page load.
+**Purpose:** Load user profile and files from PHP/MySQL on page load.
 
-**File Location:** `Post-React-Migration/pwd-application-system/src/pages/userpage.jsx`
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/userpage/userpage.jsx`
 
 **APIs Used:**
-- `userApi.js` → `get-user-data.php`
-- `userApi.js` → `get-all-applications.php` (for user's own applications)
+- `userApi.js` → `get-user-data.php` (via `getCurrentUserData()`)
+- Direct fetch to `files.php` (for user's uploaded files)
 
 **Implementation:**
 ```javascript
 useEffect(() => {
-    const userId = sessionStorage.getItem('userId');
-    if (!userId) {
-        navigate('/login', { replace: true });
-        return;
-    }
-
-    const fetchUserData = async () => {
+    const loadUserData = async () => {
         try {
-            // Load user profile
-            const userData = await userApi.getCurrentUserData(userId);
-            setUser(userData.user);
+            // Check if user is logged in
+            const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+            if (!userId) {
+                navigate('/login', { replace: true });
+                return;
+            }
             
-            // Load user's applications
-            const appsResponse = await userApi.getUserApplications(userId);
-            setApplications(appsResponse.applications);
+            // Fetch user data from API
+            const data = await getCurrentUserData();
+            setUserData(data);
+            setError(null);
             
-            setLoading(false);
-        } catch (error) {
-            console.error('Error loading user data:', error);
-            setError('Failed to load user data.');
+        } catch (err) {
+            console.error('[UserPage] Failed to load user data:', err.message);
+            setError(err.message);
+            
+            // If API fails, use demo data for development
+            setUserData(getDemoUserData());
+            
+        } finally {
             setLoading(false);
         }
     };
 
-    fetchUserData();
+    loadUserData();
 }, [navigate]);
 ```
 
 **Flow:**
-1. Check `userId` exists in sessionStorage
+1. Check `userId` exists in sessionStorage or localStorage
 2. If not, redirect to login
-3. Fetch user profile using `userApi.getCurrentUserData()`
-4. Fetch user's applications list
-5. Update component state
-6. Handle errors gracefully
+3. Fetch user profile using `getCurrentUserData()` from userApi.js
+4. On success, update userData state
+5. On error, fall back to demo data for development
+6. Update loading state
 
 **Side Effects:**
-- Updates component state: `user`, `applications`, `loading`, `error`
+- Updates component state: `userData`, `loading`, `error`
 - Potential redirect if not authenticated
 
 ---
@@ -469,75 +530,96 @@ const uploadFiles = useCallback(async (files) => {
 
 ### Function: `getStatusInfo()`
 
-**Purpose:** Format application status for display (color, icon, text).
+**Purpose:** Compute status display information based on application status (label, progress, CSS classes).
 
 **Implementation:**
 ```javascript
 const getStatusInfo = (status) => {
-    const statusMap = {
-        'pending': { color: 'warning', icon: 'hourglass', text: 'Pending Review' },
-        'approved': { color: 'success', icon: 'check-circle', text: 'Approved' },
-        'rejected': { color: 'danger', icon: 'times-circle', text: 'Rejected' },
-        'resubmit': { color: 'info', icon: 'redo', text: 'Resubmit Required' }
-    };
-    return statusMap[status?.toLowerCase()] || statusMap['pending'];
+    const s = (status || '').toString().trim().toLowerCase();
+    if (s === 'pending' || s === 'under review') {
+        return { label: 'Under Review', percent: 60, badgeClass: 'status-warning', fillClass: 'fill-warning' };
+    }
+    if (s === 'accepted' || s === 'approved') {
+        return { label: 'Accepted', percent: 100, badgeClass: 'status-success', fillClass: 'fill-success' };
+    }
+    if (s === 'denied' || s === 'rejected') {
+        return { label: 'Denied', percent: 100, badgeClass: 'status-danger', fillClass: 'fill-danger' };
+    }
+    // Fallback for any other value
+    return { label: status || 'Unknown', percent: 0, badgeClass: 'status-neutral', fillClass: 'fill-neutral' };
 };
 ```
+
+**Returns:** Object with:
+- `label` (string) - Human-readable status text
+- `percent` (number) - Progress bar percentage
+- `badgeClass` (string) - CSS class for status badge
+- `fillClass` (string) - CSS class for progress fill
 
 ---
 
 ## Admin Dashboard Functions (adminpage.jsx) 🟢
 
-### Function: `fetchAllApplications()` (useEffect)
+### Function: `fetchData()` (useEffect)
 
 **Purpose:** Load all user applications for admin review from PHP/MySQL.
 
-**File Location:** `Post-React-Migration/pwd-application-system/src/pages/adminpage.jsx`
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/adminpage/adminpage.jsx`
 
-**API Used:** `adminApi.js` → `get-all-applications.php`
+**API Used:** `adminApi.js` → `get-all-applications.php` (via `getAllApplications()`)
 
 **Implementation:**
 ```javascript
 useEffect(() => {
-    const adminEmail = sessionStorage.getItem('adminLoggedIn');
-    if (!adminEmail) {
-        navigate('/login', { replace: true });
-        return;
-    }
-
-    const loadApplications = async () => {
+    const fetchData = async () => {
         try {
-            const response = await adminApi.getAllApplications();
-            setApplications(response.applications);
-            
-            // Calculate statistics
-            const stats = {
-                total: response.applications.length,
-                pending: response.applications.filter(a => a.status === 'pending').length,
-                approved: response.applications.filter(a => a.status === 'approved').length,
-                rejected: response.applications.filter(a => a.status === 'rejected').length
-            };
-            setStatistics(stats);
-            
-            setLoading(false);
+            const res = await getAllApplications();
+            if (res.success) {
+                const formattedData = res.users.map((row) => {
+                    const normalizedStatus = normalizeStatus(row.status);
+                    return {
+                        ...row,
+                        fullName: `${row.lastName || ""}, ${row.firstName || ""} ${row.middleName || ""}`.trim(),
+                        status: normalizedStatus,
+                    };
+                });
+
+                setApplications(formattedData);
+
+                // Calculate counts for chart
+                const counts = formattedData.reduce((acc, row) => {
+                    acc[row.status] = (acc[row.status] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const chartData = Object.entries(counts).map(([status, count]) => ({
+                    name: status.charAt(0).toUpperCase() + status.slice(1),
+                    Applications: count,
+                }));
+
+                setStatusData(chartData);
+            }
         } catch (error) {
-            console.error('Error loading applications:', error);
-            setError('Failed to load applications.');
-            setLoading(false);
+            console.error("Error fetching data from API:", error);
         }
     };
 
-    loadApplications();
-}, [navigate]);
+    fetchData();
+}, []);
+
+// Statistics derived from statusData
+const totalApplicants = statusData.reduce((sum, s) => sum + s.Applications, 0);
+const acceptedCount = statusData.find((s) => s.name.toLowerCase() === "accepted")?.Applications || 0;
+const pendingCount = statusData.find((s) => s.name.toLowerCase() === "pending")?.Applications || 0;
+const rejectedCount = statusData.find((s) => s.name.toLowerCase() === "rejected")?.Applications || 0;
 ```
 
 **Flow:**
-1. Check `adminLoggedIn` exists in sessionStorage
-2. If not, redirect to login
-3. Fetch all applications using `adminApi.getAllApplications()`
-4. Calculate statistics (total, pending, approved, rejected)
-5. Update component state
-6. Handle errors gracefully
+1. Fetch all applications using `getAllApplications()` from adminApi.js
+2. Format data - combine name fields, normalize status
+3. Calculate status counts for chart visualization
+4. Update applications and statusData states
+5. Statistics are derived reactively from statusData
 
 ---
 
@@ -545,44 +627,45 @@ useEffect(() => {
 
 **Purpose:** Update user application status (approve/reject) in PHP/MySQL database.
 
-**File Location:** `Post-React-Migration/pwd-application-system/src/pages/adminpage.jsx`
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/adminpage/adminpage.jsx` (also used in `adminverify.jsx`)
 
-**API Used:** `adminApi.js` → `update-application-status.php`
+**API Used:** `adminApi.js` → `update-application-status.php` (via `updateApplicationStatus()`)
 
 **Implementation:**
 ```javascript
-const updateApplicationStatus = async (applicationId, newStatus, rejectionReason = '') => {
+// From adminApi.js
+export const updateApplicationStatus = async (regNumber, status, rejectionReason = null) => {
     try {
-        const adminEmail = sessionStorage.getItem('adminLoggedIn');
-        const response = await adminApi.updateApplicationStatus(
-            applicationId,
-            newStatus,
-            adminEmail,
-            rejectionReason
-        );
-
-        if (response.success) {
-            // Refresh applications list
-            const updatedApps = applications.map(app =>
-                app.id === applicationId
-                    ? { ...app, status: newStatus }
-                    : app
-            );
-            setApplications(updatedApps);
-            
-            setUpdateMessage(`Application ${newStatus} successfully!`);
+        // Get admin name from sessionStorage
+        let adminName = 'System Administrator'; // Default fallback
+        try {
+            const adminData = sessionStorage.getItem('adminData');
+            if (adminData) {
+                const admin = JSON.parse(adminData);
+                adminName = admin.adminName || 'System Administrator';
+            }
+        } catch (e) {
+            console.warn('Could not retrieve admin name from sessionStorage:', e);
         }
+        
+        const res = await api.post('/update-application-status.php', {
+            regNumber,
+            status,
+            rejectionReason,
+            adminName,
+        });
+        return res.data;
     } catch (error) {
-        console.error('Status update error:', error);
-        setUpdateMessage('Failed to update application status.');
+        console.error('Error updating application status:', error);
+        throw error;
     }
 };
 ```
 
 **Parameters:**
-- `applicationId` (number) - ID of application to update
-- `newStatus` (string) - New status: 'approved', 'rejected', 'resubmit'
-- `rejectionReason` (string, optional) - Reason for rejection/resubmission
+- `regNumber` (string) - Registration number of application to update
+- `status` (string) - New status: 'accepted', 'rejected', 'pending'
+- `rejectionReason` (string, optional) - Reason for rejection
 
 **Database Updates:**
 - Sets `status` column
@@ -596,11 +679,11 @@ const updateApplicationStatus = async (applicationId, newStatus, rejectionReason
 
 **Purpose:** Review user-submitted documents (certificates, identity) for application verification.
 
-**File Location:** `Post-React-Migration/pwd-application-system/src/pages/adminverify.jsx`
+**File Location:** `Post-React-Migration/pwd-application-system/src/pages/adminpage/adminverify.jsx`
 
 **APIs Used:**
-- `adminApi.js` → `get-pending-application.php`
-- `userApi.js` → `file-view.php`
+- `adminApi.js` → `get-pending-application.php` (via `getPendingApplication()`)
+- Direct URL to `file-view.php` for document display
 
 ---
 

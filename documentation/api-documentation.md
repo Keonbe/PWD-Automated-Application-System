@@ -2023,7 +2023,8 @@ The SheetDB API documentation below is kept **for historical reference only**. A
 
 ---
 
-**Last Updated:** December 12, 2025  
-**Current API Version:** 2.0 (PHP/MySQL) ✅  
-**Legacy API Version:** 1.0 (SheetDB) [ARCHIVED] ⛔  
+**Last Updated:** December 12, 2025
+**Maintained By:** Keanu Bembo
+**Current API Version:** 2.0 (PHP/MySQL) ✅
+**Legacy API Version:** 1.0 (SheetDB) [ARCHIVED] ⛔
 **Status:** ✅ Production Ready

@@ -37,7 +37,7 @@ Check that `qrcode.react` appears in `package.json` dependencies:
 ```json
 {
   "dependencies": {
-    "qrcode.react": "^3.x.x"
+    "qrcode.react": "^4.2.0"
   }
 }
 ```
@@ -120,7 +120,7 @@ City Government of Dasmariñas`}
 
 ```jsx
 <div role="region" aria-label="PWD Registration Verification QR Code">
-  <span className="sr-only">QR Code containing PWD registration information</span>
+  <span className="sr-only">QR Code containing PWD registration information for verification</span>
   <QRCodeSVG 
     value={`PWD ID: ${display('regNumber', 'N/A')}
 Name: ${display('lastName', '')}, ${display('firstName', '')} ${display('middleName', '')}
@@ -131,6 +131,7 @@ City Government of Dasmariñas`}
     level="H"
     includeMargin={true}
     aria-hidden="true"
+    style={{ borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
   />
 </div>
 ```
@@ -342,7 +343,7 @@ Potential improvements for this feature:
 
 ```json
 {
-  "qrcode.react": "^3.1.0"
+  "qrcode.react": "^4.2.0"
 }
 ```
 
@@ -357,6 +358,7 @@ Potential improvements for this feature:
 
 | Date | Change |
 |------|--------|
-| 2024-12-10 | Initial QR code feature implementation |
-| 2024-12-10 | Added accessibility features (ARIA, sr-only) |
-| 2024-12-10 | Enhanced styling with gradient background |
+| 2025-12-14 | Updated documentation |
+| 2025-12-10 | Initial QR code feature implementation |
+| 2025-12-10 | Added accessibility features (ARIA, sr-only) |
+| 2025-12-10 | Enhanced styling with gradient background |

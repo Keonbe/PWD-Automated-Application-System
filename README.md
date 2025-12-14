@@ -116,7 +116,7 @@ This system is designed to:
 
 - **MySQL** (PWDRegistry database)
 - **utf8mb4** collation for full Unicode support
-- **3 tables:** \`pwd_users\`, \`admin_users\`, \`pwd_file_uploads\`
+- **3 tables:** `pwd_users`, `admin_users`, `pwd_file_uploads`
 
 ### Tools
 
@@ -191,9 +191,9 @@ COLLATE utf8mb4_unicode_ci;
 
 Execute the master setup script in phpMyAdmin:
 
-1. Select \`PWDRegistry\` database
+1. Select `PWDRegistry` database
 2. Go to **SQL** tab
-3. Copy contents from \`Post-React-Migration/xampp-php-mysql-files/master-setup.sql\`
+3. Copy contents from `Post-React-Migration/xampp-php-mysql-files/master-setup.sql`
 4. Click **Go**
 
 This creates all tables and inserts sample data including a default admin account:

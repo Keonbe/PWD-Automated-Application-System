@@ -2,7 +2,7 @@
 
 > **Version:** 2.0  
 > **Backend:** PHP/MySQL (XAMPP)  
-> **Frontend:** React 18+  
+> **Frontend:** React 19  
 > **Last Updated:** December 14, 2025
 
 ## Quick Reference Guide
@@ -11,7 +11,7 @@ This document serves as a comprehensive index to all technical documentation for
 
 ---
 
-## 📚 Core Documentation Files
+## Core Documentation Files
 
 ### 1. **🟢 Init Documentation** (`init-documentation.md`) - START HERE
 Complete project overview, setup guide, and architecture documentation.
@@ -57,10 +57,10 @@ Complete MySQL database schema, setup, and management guide.
 ---
 
 ### 3. **🟢 PHP API Documentation** (`php-api-documentation.md`)
-Comprehensive documentation of all 18 PHP backend endpoints.
+Comprehensive documentation of all 19 PHP backend endpoints.
 
 **Contains:**
-- All 18 API endpoints with examples
+- All 19 API endpoints with examples
 - Authentication APIs (user/admin login)
 - User management APIs (registration, profile)
 - Admin management APIs (applications, verification)
@@ -154,25 +154,6 @@ Documentation for PWD ID card QR code generation.
 - Working with QR codes
 - Understanding ID card system
 - Implementing scannable features
-
----
-
-### 8. **News Feature Implementation Plan** (`news-feature-implementation-plan.md`)
-Complete plan for admin-managed news system (v2.1 - Planned).
-
-**Contains:**
-- Current state analysis
-- Storage solutions comparison
-- MySQL database schema design
-- 7 backend API endpoints (with code)
-- Frontend implementation guide
-- Step-by-step implementation (8-12 hours)
-- Testing checklist
-
-**When to use:**
-- Implementing news management system
-- Understanding CMS patterns
-- Planning similar features
 
 ---
 
@@ -270,11 +251,11 @@ Summary of v2.0 documentation updates.
 
 ### For New Developers
 
-1. **📖 Start Here:** Read `init-documentation.md` for project overview and setup
-2. **🗄️ Database Setup:** Follow `database-documentation.md` to create MySQL database
-3. **🔌 Learn APIs:** Review `php-api-documentation.md` for backend endpoints
-4. **⚛️ Study Code:** Read `function-documentation.md` for React implementation patterns
-5. **🌿 Git Workflow:** Check `contribution_guide-documentation.md` for collaboration
+1. **Start Here:** Read `init-documentation.md` for project overview and setup
+2. **Database Setup:** Follow `database-documentation.md` to create MySQL database
+3. **Learn APIs:** Review `php-api-documentation.md` for backend endpoints
+4. **Study Code:** Read `function-documentation.md` for React implementation patterns
+5. **Git Workflow:** Check `contribution_guide-documentation.md` for collaboration
 
 ### For Feature Development
 
@@ -331,9 +312,8 @@ Summary of v2.0 documentation updates.
 - **Frontend:** register-result.jsx, userpage.jsx components
 
 ### News System (Planned v2.1)
-- **Planning:** `news-feature-implementation-plan.md` → Implementation roadmap
 - **Status:** Not yet implemented
-- **Frontend:** news.jsx (currently static)
+- **Frontend:** news.jsx (currently static content)
 
 ---
 
@@ -404,11 +384,10 @@ Summary of v2.0 documentation updates.
 3. Understand state management
 4. Practice creating components
 
-### Day 1-3: Advanced Features
+### Day 10-12: Advanced Features
 1. Study `file-upload-feature-documentation.md`
 2. Review `qrcode-feature-documentation.md`
-3. Read `news-feature-implementation-plan.md`
-4. Practice implementing similar features
+3. Practice implementing similar features
 
 ---
 
@@ -423,232 +402,5 @@ Summary of v2.0 documentation updates.
 
 **Last Updated:** December 14, 2025  
 **Maintained by:** Development Team  
-**Repository:** PWD-Automated-Application-System
-
-## 🏗️ Project Structure Overview
-
-```
-PWD-Automated-Application-System/
-├── documentation/           # All project documentation
-│   ├── api-documentation.md         ← API reference
-│   ├── function-documentation.md    ← Function reference
-│   ├── init-documentation.md        ← Setup & migration guide
-│   └── npm-script.md               ← NPM commands
-│
-├── Pre-React-Migration/    # Original HTML/CSS/JS version
-│   └── pages/
-│       ├── user/
-│       │   └── userLogin.html      ← Login page (Pre-React)
-│       └── homepage/
-│           └── register.html       ← Registration (Pre-React)
-│
-└── Post-React-Migration/   # React version
-    └── pwd-application-system/
-        └── src/
-            ├── pages/
-            │   ├── login.jsx           ← Login page (React)
-            │   └── homepage/
-            │       ├── register.jsx    ← Registration (React)
-            │       └── register-result.jsx
-            └── components/
-                ├── user-sidebar.jsx
-                ├── public-header.jsx
-                └── public-footer.jsx
-```
-
----
-
-## 🔧 Technology Stack
-
-### Pre-React Migration
-- **Frontend:** `HTML5`, `CSS3`, `Vanilla JavaScript`
-- **Styling:** `Bootstrap 5`
-- **Icons:** `Font Awesome`
-- **API:** `SheetDB REST API`
-
-### Post-React Migration
-- **Frontend Framework:** `React 18`
-- **Routing:** `React Router DOM`
-- **Styling:**`Bootstrap 5 (imported)`
-- **State Management:** `React Hooks (useState, useEffect)`
-- **API Calls:** `Fetch API with async/await`
-- **Build Tool:** `Create-React-App`
-
----
-
-## Documentation Standards
-
-### Code Examples
-All code examples in documentation are:
-- ✅ Tested and working
-- ✅ Commented for clarity
-- ✅ Following project conventions
-- ✅ Using real file paths
-
-### Function Documentation Format
-Each function includes:
-- **Purpose:** What the function does
-- **Parameters:** Input parameters with types
-- **Returns:** Return value and type
-- **Implementation:** Full code example
-- **Flow:** Step-by-step execution
-- **Side Effects:** Any state changes or DOM manipulation
-- **Dependencies:** Required imports or other functions
-
-### API Documentation Format
-Each API endpoint includes:
-- **Endpoint:** URL pattern
-- **Purpose:** What it does
-- **Request:** Parameters, headers, body
-- **Response:** Success and error responses
-- **Usage Examples:** Both Pre-React and Post-React
-
----
-
-## Coverage Summary
-
-### APIs Documented
-- ✅ User Login API (SheetDB)
-- ✅ Admin Login API (SheetDB)
-- ✅ User Registration API (example)
-- ⏳ Application Status API (planned)
-- ⏳ File Upload API (planned)
-
-### Functions Documented
-
-#### Pre-React
-- ✅ User login handler
-- ✅ Admin login handler
-- ✅ Form validation
-- ✅ File upload handler (updateFileName)
-- ✅ Navigation functions
-- ✅ Session checks
-
-#### Post-React
-- ✅ handleUserLogin (async)
-- ✅ handleAdminLogin (async)
-- ✅ validateForm
-- ✅ handleFormSubmit
-- ✅ updateFileName (React version)
-- ✅ generateRegistrationNumber
-- ✅ getTodayDate
-- ✅ handleProceed
-- ✅ handleDecline
-- ✅ useEffect session checks
-
----
-
-## Learning Path
-
-### Beginner
-1. Read `init-documentation.md` (Project Overview)
-2. Review Pre-React functions in `function-documentation.md`
-3. Study simple API calls in `api-documentation.md`
-
-### Intermediate
-1. Compare Pre-React vs Post-React patterns
-2. Study React hooks usage
-3. Learn async/await patterns
-4. Understand React Router navigation
-
-### Advanced
-1. Review security considerations
-2. Study error handling patterns
-3. Plan new features
-4. Optimize existing code
-
----
-
-## External Resources
-
-### React Documentation
-- [React Official Docs](https://react.dev/)
-- [React Router Docs](https://reactrouter.com/)
-
-### SheetDB Documentation
-- [SheetDB API Docs](https://docs.sheetdb.io/)
-
-### Bootstrap Documentation
-- [Bootstrap 5 Docs](https://getbootstrap.com/docs/5.3/)
-
----
-
-## Contributing to Documentation
-
-### When to Update Documentation
-
-**Always update when:**
-- Adding new API endpoints
-- Creating new functions
-- Changing existing behavior
-- Adding new dependencies
-- Implementing new features
-
-**How to Update:**
-1. Identify affected documentation file
-2. Add your changes following existing format
-3. Include code examples
-4. Update this index if needed
-5. Update "Recent Updates" section
-
----
-
-## Support
-
-### Common Issues
-
-**Issue:** Can't find documentation for a function
-**Solution:** Use browser search (Ctrl+F) in `function-documentation.md`
-
-**Issue:** API not working as documented
-**Solution:** Check `api-documentation.md` → Error Handling section
-
-**Issue:** Don't understand Pre-React vs Post-React differences
-**Solution:** Review comparison tables in `function-documentation.md`
-
----
-
-## Maintenance Schedule
-
-**Weekly:**
-- Review for outdated information
-- Add newly created functions
-
-**Monthly:**
-- Update API documentation if endpoints change
-- Review and update code examples
-- Check for broken links
-
-**Quarterly:**
-- Major documentation review
-- Update technology stack section
-- Add new learning resources
-
----
-
-## Documentation Checklist
-
-Before releasing a feature, ensure:
-- [ ] API endpoints documented (if applicable)
-- [ ] Functions documented with full details
-- [ ] Code examples tested and working
-- [ ] Pre-React and Post-React versions covered
-- [ ] Security considerations noted
-- [ ] Error handling documented
-- [ ] Usage examples included
-- [ ] This index updated
-
----
-
-## Future Documentation Plans
-
-### Planned Documentation
-- [ ] Admin dashboard API and functions
-- [ ] Application status tracking system
-- [ ] File upload to cloud storage
-- [ ] Email notification system
-- [ ] Reporting and analytics
-- [ ] Database schema documentation
-- [ ] Deployment guide
-- [ ] Testing guide
+**Repository:** [PWD-Automated-Application-System](https://github.com/Keonbe/PWD-Automated-Application-System)
 

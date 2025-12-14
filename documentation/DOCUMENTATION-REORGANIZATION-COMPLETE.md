@@ -31,7 +31,7 @@ The **PWD Automated Application System** documentation has been successfully reo
 
 ### Phase 4: PHP API Documentation
 - ✅ Created `php-api-documentation.md` documenting:
-  - All 18 PHP API endpoints with request/response examples
+  - All 19 PHP API endpoints with request/response examples
   - Authentication functions (user/admin login, forgot password)
   - User management (register, profile, file operations)
   - Admin management (applications, verification, status updates)
@@ -42,7 +42,7 @@ The **PWD Automated Application System** documentation has been successfully reo
 ### Phase 5: API Documentation Update
 - ✅ Updated `api-documentation.md` with:
   - New PHP/MySQL API Overview (marked as ⭐ START HERE)
-  - Quick reference table of 18 endpoints
+  - Quick reference table of 19 endpoints
   - Migration status from SheetDB with checkmarks
   - All SheetDB sections marked as [DEPRECATED] ⛔
   - Cross-references to `php-api-documentation.md` for details
@@ -70,9 +70,10 @@ The **PWD Automated Application System** documentation has been successfully reo
 | File | Type | Status | Sections |
 |------|------|--------|----------|
 | `database-documentation.md` | New | ✅ Complete | 9 (schema, setup, troubleshooting, etc.) |
-| `php-api-documentation.md` | New | ✅ Complete | 18 API endpoints + integration guide |
+| `php-api-documentation.md` | New | ✅ Complete | 19 API endpoints + integration guide |
 | `api-documentation.md` | Updated | ✅ Complete | Added PHP overview + deprecated sections |
 | `function-documentation.md` | Updated | ✅ Complete | 6 current + 8 deprecated sections |
+| `backend-documentation.md` | Updated | ✅ Complete | Architecture, schema, endpoints |
 | `master-setup.sql` | Updated | ✅ v2.0 | 9 SQL sections |
 
 ### Deprecation Markers Applied
@@ -82,14 +83,15 @@ The **PWD Automated Application System** documentation has been successfully reo
 - **Status Badges:** [ARCHIVED], [DEPRECATED], [PARTIAL LEGACY]
 
 ### Code Coverage
-- **PHP API Endpoints:** 18/18 documented ✅
+- **PHP API Endpoints:** 19/19 documented ✅
 - **Frontend Components:** 5/5 documented ✅
 - **Database Tables:** 3/3 documented ✅
-- **API Wrapper Modules:** 4/4 documented ✅
+- **API Wrapper Modules:** 6/6 documented ✅
+- **SQL Scripts:** 7/7 documented ✅
 
 ---
 
-## 📍 File Structure (function-documentation.md)
+## File Structure (function-documentation.md)
 
 ### Current Implementation (Top - Active 🟢)
 1. 🟢 **PHP/MySQL API Integration Overview** (START HERE)
@@ -180,26 +182,46 @@ The **PWD Automated Application System** documentation has been successfully reo
 documentation/
 ├── README.md (overview)
 ├── DOCUMENTATION-REORGANIZATION-COMPLETE.md (this file)
-├── function-documentation.md 🟢 (all JavaScript/React functions)
-├── php-api-documentation.md 🟢 (all 18 PHP endpoints)
+├── init-documentation.md (project setup guide)
+├── function-documentation.md (all JavaScript/React functions)
+├── php-api-documentation.md (all 19 PHP endpoints)
 ├── api-documentation.md (API overview with deprecation)
 ├── database-documentation.md (MySQL schema & setup)
-├── backend-documentation.md (PHP structure)
+├── backend-documentation.md (PHP structure & architecture)
 ├── backend-migration-documentation.md (SheetDB → PHP/MySQL)
 ├── file-upload-feature-documentation.md
 ├── qrcode-feature-documentation.md
+├── contribution_guide-documentation.md (how to contribute)
 ├── npm-script.md
-└── github-issues/ (feature request tracking)
+├── utf8-collation-fix.md (database encoding fix)
+├── github-issues/ (feature request tracking)
+└── images/ (screenshots & diagrams)
 ```
 
 ### SQL Scripts
 ```
 Post-React-Migration/xampp-php-mysql-files/
+├── config.php (database connection)
 ├── master-setup.sql (v2.0 - MAIN SETUP SCRIPT)
+├── sql-add-rejection-reason.sql
 ├── sql-file-uploads.sql
+├── sql-generate-data.sql
+├── sql-scripts.sql
 ├── sql-sync-file-reviews.sql
 ├── sql-utf8-fix.sql
-└── ... (other utilities)
+├── api/ (19 PHP endpoints)
+└── uploads/ (file storage)
+```
+
+### API Wrapper Modules
+```
+Post-React-Migration/pwd-application-system/src/api/
+├── adminApi.js (admin operations)
+├── axiosConfig.js (HTTP client config)
+├── config.js (API mode settings)
+├── loginApi.js (authentication)
+├── registrationApi.js (user registration)
+└── userApi.js (user data operations)
 ```
 
 ---
@@ -224,12 +246,14 @@ Post-React-Migration/xampp-php-mysql-files/
 
 ---
 
-## 📈 Project Metrics
+## Project Metrics
 
 ### Documentation Completeness
-- **API Endpoints Documented:** 18/18 (100%)
+- **API Endpoints Documented:** 19/19 (100%)
 - **Frontend Components Documented:** 5/5 (100%)
 - **Database Tables Documented:** 3/3 (100%)
+- **API Wrapper Modules Documented:** 6/6 (100%)
+- **SQL Scripts Documented:** 7/7 (100%)
 - **Deprecation Markers Applied:** 25+ functions (100%)
 - **Cross-References Created:** 15+ links
 
@@ -307,9 +331,8 @@ Post-React-Migration/xampp-php-mysql-files/
 
 **Status:** ✅ DOCUMENTATION REORGANIZATION COMPLETE
 
-**Last Updated:** 2025  
-**Maintained By:** Development Team  
-**Reviewed:** Yes  
+**Last Updated:** December 14, 2025  
+**Maintained By:** Keanu Bembo
 **Tested:** Yes  
 **Production Ready:** Yes ✅
 

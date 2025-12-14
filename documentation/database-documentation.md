@@ -230,7 +230,7 @@ ORDER BY pf.reviewed_at DESC;
 
 ---
 
-## 📝 SQL Scripts Reference
+## SQL Scripts Reference
 
 ### Legacy SQL Scripts (Original Development)
 
@@ -530,7 +530,7 @@ If you have an existing database from the old scripts:
 
 ---
 
-## 📚 Migration Guide
+## Migration Guide
 
 ### From SheetDB to MySQL
 
@@ -816,7 +816,7 @@ WHERE email LIKE '%@email.com';
 
 ---
 
-## 📝 Changelog
+## Changelog
 
 ### Version 2.0 (December 12, 2025)
 - ✅ Added `rejectionReason` column to pwd_users

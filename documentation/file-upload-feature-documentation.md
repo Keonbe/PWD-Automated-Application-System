@@ -14,7 +14,7 @@ The PWD Automated Application System includes a comprehensive file upload featur
 - **Download Support**: Secure file download with proper headers and content types
 
 ### Last Updated
-**December 13, 2025** - Documentation reflects current production implementation (v2.0)
+**December 14, 2025** - Documentation updated to match actual MySQLi implementation (v2.0)
 
 ---
 
@@ -335,18 +335,16 @@ const fetchUserFiles = async (regNumber) => {
 
 ```php
 <?php
-header('Access-Control-Allow-Origin: http://localhost:3000');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
 
 // Handle preflight
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    exit(0);
 }
 
-require_once __DIR__ . '/../config.php';
+require_once '../config.php';
 
 // Constants
 define('MAX_FILE_SIZE', 5242880); // 5MB
@@ -419,43 +417,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     
-    // Save to database
-    $relativePath = 'uploads/' . $subdir . '/' . $storedFilename;
+    // Save to database using MySQLi (uses $conn from config.php)
+    $filePath = 'uploads/' . $uploadSubDir . $storedName;
     
-    try {
-        $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
-        $stmt = $pdo->prepare("
-            INSERT INTO pwd_file_uploads 
-            (regNumber, file_type, original_filename, stored_filename, file_path, file_size, mime_type)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ");
-        
-        $stmt->execute([
-            $regNumber,
-            $fileType,
-            $file['name'],
-            $storedFilename,
-            $relativePath,
-            $file['size'],
-            $validation['mime']
-        ]);
-        
-        $fileId = $pdo->lastInsertId();
-        
+    $stmt = $conn->prepare(
+        "INSERT INTO pwd_file_uploads 
+        (regNumber, file_type, original_filename, stored_filename, file_path, file_size, mime_type) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)"
+    );
+    
+    $stmt->bind_param(
+        'sssssss',
+        $regNumber,
+        $fileType,
+        $file['name'],
+        $storedName,
+        $filePath,
+        $file['size'],
+        $mime
+    );
+    
+    if ($stmt->execute()) {
         echo json_encode([
             'success' => true,
-            'fileId' => $fileId,
-            'filename' => $storedFilename,
-            'filePath' => $relativePath,
+            'fileId' => $conn->insert_id,
+            'filename' => $storedName,
+            'filePath' => $filePath,
             'size' => $file['size'],
             'message' => 'File uploaded successfully'
         ]);
-        
-    } catch (PDOException $e) {
-        echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Database error']);
     }
+    
+    $stmt->close();
+    $conn->close();
 }
 ?>
 ```
@@ -464,39 +460,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 ```php
 <?php
-header('Access-Control-Allow-Origin: http://localhost:3000');
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
 
-require_once __DIR__ . '/../config.php';
+require_once '../config.php';
 
-$regNumber = $_GET['regNumber'] ?? '';
+$regNumber = $_GET['regNumber'] ?? null;
 
-if (empty($regNumber)) {
-    echo json_encode(['success' => false, 'error' => 'Missing regNumber']);
+if (!$regNumber) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'No registration number provided']);
     exit;
 }
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    $stmt = $pdo->prepare("
-        SELECT id, file_type as type, original_filename as originalFilename, 
-               stored_filename as storedFilename, file_path as path, 
-               file_size as size, status, uploaded_at as uploadedAt
-        FROM pwd_file_uploads
-        WHERE regNumber = ?
-        ORDER BY uploaded_at DESC
-    ");
-    
-    $stmt->execute([$regNumber]);
-    $files = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    echo json_encode(['success' => true, 'files' => $files]);
-    
-} catch (PDOException $e) {
-    echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
+$stmt = $conn->prepare(
+    "SELECT id, file_type, original_filename, stored_filename, file_path, file_size, mime_type, status, admin_notes, uploaded_at 
+    FROM pwd_file_uploads 
+    WHERE regNumber = ? 
+    ORDER BY uploaded_at DESC"
+);
+
+$stmt->bind_param('s', $regNumber);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$files = [];
+while ($row = $result->fetch_assoc()) {
+    $files[] = [
+        'id' => $row['id'],
+        'type' => $row['file_type'],
+        'originalFilename' => $row['original_filename'],
+        'storedFilename' => $row['stored_filename'],
+        'filePath' => $row['file_path'],
+        'size' => $row['file_size'],
+        'mimeType' => $row['mime_type'],
+        'status' => $row['status'],
+        'adminNotes' => $row['admin_notes'],
+        'uploadedAt' => $row['uploaded_at']
+    ];
 }
+
+echo json_encode(['success' => true, 'files' => $files]);
+
+$stmt->close();
+$conn->close();
 ?>
 ```
 
@@ -504,50 +511,43 @@ try {
 
 ```php
 <?php
-header('Access-Control-Allow-Origin: http://localhost:3000');
+require_once '../config.php';
 
-require_once __DIR__ . '/../config.php';
+$fileId = $_GET['fileId'] ?? null;
 
-$fileId = $_GET['fileId'] ?? '';
-
-if (empty($fileId)) {
+if (!$fileId) {
     http_response_code(400);
-    echo 'Missing fileId';
-    exit;
+    exit('No file ID provided');
 }
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    $stmt = $pdo->prepare("SELECT original_filename, file_path, mime_type FROM pwd_file_uploads WHERE id = ?");
-    $stmt->execute([$fileId]);
-    $file = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if (!$file) {
-        http_response_code(404);
-        echo 'File not found';
-        exit;
-    }
-    
-    $fullPath = __DIR__ . '/../' . $file['file_path'];
-    
-    if (!file_exists($fullPath)) {
-        http_response_code(404);
-        echo 'File not found on disk';
-        exit;
-    }
-    
-    header('Content-Type: ' . $file['mime_type']);
-    header('Content-Disposition: attachment; filename="' . $file['original_filename'] . '"');
-    header('Content-Length: ' . filesize($fullPath));
-    
-    readfile($fullPath);
-    
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo 'Database error';
+// Get file info from database using MySQLi
+$stmt = $conn->prepare("SELECT file_path, original_filename, mime_type FROM pwd_file_uploads WHERE id = ?");
+$stmt->bind_param('i', $fileId);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    http_response_code(404);
+    exit('File not found');
 }
+
+$row = $result->fetch_assoc();
+$filePath = __DIR__ . '/../' . $row['file_path'];
+
+if (!file_exists($filePath)) {
+    http_response_code(404);
+    exit('File not found on server');
+}
+
+// Serve the file
+header('Content-Type: ' . $row['mime_type']);
+header('Content-Length: ' . filesize($filePath));
+header('Content-Disposition: attachment; filename="' . $row['original_filename'] . '"');
+
+readfile($filePath);
+
+$stmt->close();
+$conn->close();
 ?>
 ```
 
@@ -560,13 +560,13 @@ try {
 ```sql
 CREATE TABLE IF NOT EXISTS pwd_file_uploads (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    regNumber VARCHAR(50),
-    file_type ENUM('medical_certificate', 'identity_proof'),
-    original_filename VARCHAR(255),
-    stored_filename VARCHAR(255),
-    file_path VARCHAR(500),
-    file_size INT,
-    mime_type VARCHAR(100),
+    regNumber VARCHAR(20),
+    file_type ENUM('medical_certificate', 'identity_proof') NOT NULL,
+    original_filename VARCHAR(255) NOT NULL,
+    stored_filename VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_size INT NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
     admin_notes TEXT,
@@ -576,7 +576,8 @@ CREATE TABLE IF NOT EXISTS pwd_file_uploads (
     FOREIGN KEY (regNumber) REFERENCES pwd_users(regNumber) ON DELETE CASCADE,
     INDEX idx_regNumber (regNumber),
     INDEX idx_status (status),
-    INDEX idx_file_type (file_type)
+    INDEX idx_file_type (file_type),
+    INDEX idx_uploaded_at (uploaded_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
@@ -870,7 +871,7 @@ The API returns detailed error messages for debugging:
 | File | Description |
 |------|-------------|
 | `xampp-php-mysql-files/sql-file-uploads.sql` | Database migration for file uploads table |
-| `documentation/php-api-documentation.md` | Complete PHP API reference (18+ endpoints) |
+| `documentation/php-api-documentation.md` | Complete PHP API reference (19 endpoints) |
 | `documentation/database-documentation.md` | Database schema with ER diagrams |
 
 ---
@@ -888,3 +889,4 @@ The API returns detailed error messages for debugging:
 | 2025-12-12 | Added extension fallback for files with incorrect MIME detection |
 | 2025-12-12 | Enhanced file upload error messages with debug information |
 | 2025-12-13 | Documentation updated with current production implementation |
+| 2025-12-14 | Fixed documentation to use MySQLi (not PDO), updated CORS headers |
