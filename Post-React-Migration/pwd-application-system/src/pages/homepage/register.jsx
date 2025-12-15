@@ -3,22 +3,28 @@ import "../../assets/styles/register-styles.css";
 import id from "../../assets/images/sample-id.png";
 import medCert from "../../assets/images/sample-medcert.png";
 import { Link, useNavigate } from "react-router-dom";
-import { submitRegistration, checkEmailExists } from "../../api/registrationApi";
+import {
+  submitRegistration,
+  checkEmailExists,
+} from "../../api/registrationApi";
 
 export default function Register() {
-
   /** @summary Form submission loading state for registration process. */
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   /** @summary Tracks submission phase for loading overlay feedback. */
-  const [submissionPhase, setSubmissionPhase] = useState('');
+  const [submissionPhase, setSubmissionPhase] = useState("");
   // Phases: '' | 'validating' | 'submitting' | 'uploading' | 'success' | 'redirecting'
 
   /** @summary Form submission status message for user feedback. */
-  const [submitMessage, setSubmitMessage] = useState('');
+  const [submitMessage, setSubmitMessage] = useState("");
 
   /** @summary Email validation state for duplicate check feedback. */
-  const [emailValidation, setEmailValidation] = useState({ checking: false, exists: false, message: '' });
+  const [emailValidation, setEmailValidation] = useState({
+    checking: false,
+    exists: false,
+    message: "",
+  });
   const navigate = useNavigate();
 
   /** File input refs: @remarks Provides direct access to the identity proof file input for validation and file name retrieval. */
@@ -32,13 +38,13 @@ export default function Register() {
   /** @summary Stores selected file objects for upload after registration. */
   const [selectedFiles, setSelectedFiles] = useState({
     identity_proof: null,
-    medical_certificate: null
+    medical_certificate: null,
   });
 
   /** @summary File validation status for each file type. */
   const [fileValidation, setFileValidation] = useState({
-    identity_proof: { valid: false, message: '' },
-    medical_certificate: { valid: false, message: '' }
+    identity_proof: { valid: false, message: "" },
+    medical_certificate: { valid: false, message: "" },
   });
 
   /** @summary Loading state during file upload operations. */
@@ -46,18 +52,18 @@ export default function Register() {
 
   /** @summary Phone number validation errors. */
   const [phoneErrors, setPhoneErrors] = useState({
-    mobile: '',
-    emergency: ''
+    mobile: "",
+    emergency: "",
   });
 
   /**
    * @summary Handles registration form submission with comprehensive data processing. Handle form submit with API integration
-   * 
+   *
    * @param {Event} event - Form submission event object.
    * @returns {Promise<void>}
-   * 
+   *
    * @throws {Error} Throws error if API submission fails or form validation errors occur.
-   * 
+   *
    * @remarks
    * Manually collects form data to ensure all fields are captured properly, including radio buttons.
    * Generates registration number, date, and temporary password automatically.
@@ -69,43 +75,50 @@ export default function Register() {
 
     // Validate form before submission
     if (!validateForm(form)) {
-      const errorMsg = "Please fill in all required fields marked with an asterisk (*). Please check highlighted fields.";
+      const errorMsg =
+        "Please fill in all required fields marked with an asterisk (*). Please check highlighted fields.";
       setSubmitMessage(errorMsg);
-      console.error('[Form Validation] error', errorMsg);
+      console.error("[Form Validation] error", errorMsg);
       return;
     }
 
     // Check if email already exists
     if (emailValidation.exists) {
-      const errorMsg = "Cannot submit: Email address is already registered. Please use a different email.";
+      const errorMsg =
+        "Cannot submit: Email address is already registered. Please use a different email.";
       setSubmitMessage(errorMsg);
-      console.error('[Form Submission] error', errorMsg);
+      console.error("[Form Submission] error", errorMsg);
       return;
     }
 
     // Validate phone numbers before submission
     const mobileValidation = validatePhoneNumber(form.mobile.value.trim());
-    const emergencyValidation = validatePhoneNumber(form.emergencyPhone.value.trim());
+    const emergencyValidation = validatePhoneNumber(
+      form.emergencyPhone.value.trim()
+    );
 
     if (!mobileValidation.valid) {
-      setPhoneErrors(prev => ({ ...prev, mobile: mobileValidation.error }));
+      setPhoneErrors((prev) => ({ ...prev, mobile: mobileValidation.error }));
       const errorMsg = `Mobile number error: ${mobileValidation.error}`;
       setSubmitMessage(errorMsg);
-      console.error('[Form Validation] Phone error:', errorMsg);
+      console.error("[Form Validation] Phone error:", errorMsg);
       return;
     }
 
     if (!emergencyValidation.valid) {
-      setPhoneErrors(prev => ({ ...prev, emergency: emergencyValidation.error }));
+      setPhoneErrors((prev) => ({
+        ...prev,
+        emergency: emergencyValidation.error,
+      }));
       const errorMsg = `Emergency contact number error: ${emergencyValidation.error}`;
       setSubmitMessage(errorMsg);
-      console.error('[Form Validation] Phone error:', errorMsg);
+      console.error("[Form Validation] Phone error:", errorMsg);
       return;
     }
 
     setIsSubmitting(true);
-    setSubmitMessage('');
-    setSubmissionPhase('validating');
+    setSubmitMessage("");
+    setSubmissionPhase("validating");
 
     try {
       // Collect form values manually to ensure all fields are captured properly
@@ -114,27 +127,28 @@ export default function Register() {
         lastName: form.lastName.value.trim(),
         firstName: form.firstName.value.trim(),
         middleName: form.middleName.value.trim(),
-        
+
         // Disability - get selected radio button
-        disability: form.querySelector('input[name="disability"]:checked')?.value || '',
-        
+        disability:
+          form.querySelector('input[name="disability"]:checked')?.value || "",
+
         // Address
         street: form.street.value.trim(),
         barangay: form.barangay.value.trim(),
-        
+
         // Contact
-        tel: form.tel?.value?.trim() || '',
+        tel: form.tel?.value?.trim() || "",
         mobile: form.mobile.value.trim(),
         email: form.email.value.trim(),
-        
+
         // Personal info
         dob: form.dob.value,
         // `sex` is a <select> element in the form, read its value directly
-        sex: form.sex?.value || '',
-        nationality: form.nationality?.value?.trim() || 'Filipino',
-        blood: form.blood?.value?.trim() || '',
-        civil: form.querySelector('input[name="civil"]:checked')?.value || '',
-        
+        sex: form.sex?.value || "",
+        nationality: form.nationality?.value?.trim() || "Filipino",
+        blood: form.blood?.value?.trim() || "",
+        civil: form.querySelector('input[name="civil"]:checked')?.value || "",
+
         // Emergency contact
         emergencyName: form.emergencyName.value.trim(),
         emergencyPhone: form.emergencyPhone.value.trim(),
@@ -146,7 +160,7 @@ export default function Register() {
       formData.regDate = getTodayDate();
 
       // Debug: Log formData before processing
-      console.log('Manually collected formData:', formData);
+      console.log("Manually collected formData:", formData);
 
       // Set fixed location values
       formData.municipality = "Dasmariñas";
@@ -157,111 +171,144 @@ export default function Register() {
       formData.generatedPassword = generatePassword8();
 
       // Include selected file names
-      formData.proofIdentityName = identityRef.current?.files?.[0]?.name || '';
-      formData.proofDisabilityName = disabilityRef.current?.files?.[0]?.name || '';
+      formData.proofIdentityName = identityRef.current?.files?.[0]?.name || "";
+      formData.proofDisabilityName =
+        disabilityRef.current?.files?.[0]?.name || "";
 
       //Mirror file name fields to match SheetDB column names
       formData.proofIdentity = formData.proofIdentityName;
       formData.proofDisability = formData.proofDisabilityName;
 
       //Ensure a default status of Denied
-      formData.status = 'Pending';
+      formData.status = "Pending";
 
       //Also mirror generated password to 'password' (sheet column expected)
       formData.password = formData.generatedPassword;
 
       // Submit to API
-      console.log('[Form Submission] Submitting registration data...');
-      setSubmissionPhase('submitting');
+      console.log("[Form Submission] Submitting registration data...");
+      setSubmissionPhase("submitting");
       const result = await submitRegistration(formData);
 
       // Handle API response
       if (result.success) {
         const successMsg = result.message;
         setSubmitMessage(successMsg);
-        console.log('[Form Submission] Success:', successMsg);
-        console.log('[Form Submission] Registration Number:', formData.regNumber);
+        console.log("[Form Submission] Success:", successMsg);
+        console.log(
+          "[Form Submission] Registration Number:",
+          formData.regNumber
+        );
 
         // Upload files NOW with the valid regNumber
         setUploading(true);
-        setSubmissionPhase('uploading');
+        setSubmissionPhase("uploading");
         const uploadPromises = [];
-        
+
         // Debug: Log selected files state
-        console.log('[File Upload] Selected files state:', {
-          identity_proof: selectedFiles.identity_proof ? selectedFiles.identity_proof.name : 'null',
-          medical_certificate: selectedFiles.medical_certificate ? selectedFiles.medical_certificate.name : 'null'
+        console.log("[File Upload] Selected files state:", {
+          identity_proof: selectedFiles.identity_proof
+            ? selectedFiles.identity_proof.name
+            : "null",
+          medical_certificate: selectedFiles.medical_certificate
+            ? selectedFiles.medical_certificate.name
+            : "null",
         });
-        
+
         if (selectedFiles.identity_proof) {
-          console.log('[File Upload] Uploading identity proof with regNumber:', formData.regNumber);
+          console.log(
+            "[File Upload] Uploading identity proof with regNumber:",
+            formData.regNumber
+          );
           uploadPromises.push(
-            uploadFileToServer(selectedFiles.identity_proof, 'identity_proof', formData.regNumber)
+            uploadFileToServer(
+              selectedFiles.identity_proof,
+              "identity_proof",
+              formData.regNumber
+            )
           );
         } else {
-          console.warn('[File Upload] No identity_proof file selected!');
+          console.warn("[File Upload] No identity_proof file selected!");
         }
-        
+
         if (selectedFiles.medical_certificate) {
-          console.log('[File Upload] Uploading medical certificate with regNumber:', formData.regNumber);
+          console.log(
+            "[File Upload] Uploading medical certificate with regNumber:",
+            formData.regNumber
+          );
           uploadPromises.push(
-            uploadFileToServer(selectedFiles.medical_certificate, 'medical_certificate', formData.regNumber)
+            uploadFileToServer(
+              selectedFiles.medical_certificate,
+              "medical_certificate",
+              formData.regNumber
+            )
           );
         } else {
-          console.warn('[File Upload] No medical_certificate file selected!');
+          console.warn("[File Upload] No medical_certificate file selected!");
         }
 
         // Wait for all uploads to complete
-        console.log('[File Upload] Total files to upload:', uploadPromises.length);
+        console.log(
+          "[File Upload] Total files to upload:",
+          uploadPromises.length
+        );
         if (uploadPromises.length > 0) {
           const uploadResults = await Promise.all(uploadPromises);
-          console.log('[File Upload] All uploads completed:', uploadResults);
+          console.log("[File Upload] All uploads completed:", uploadResults);
         }
         setUploading(false);
-        setSubmissionPhase('success');
-        
+        setSubmissionPhase("success");
+
         // Store in sessionStorage for result page
         try {
-          sessionStorage.setItem('lastRegistration', JSON.stringify(formData));
+          sessionStorage.setItem("lastRegistration", JSON.stringify(formData));
         } catch (e) {
-          console.warn('[Session Storage] Could not save to sessionStorage:', e);
+          console.warn(
+            "[Session Storage] Could not save to sessionStorage:",
+            e
+          );
         }
 
         // Navigate to result page after a short delay
-        setSubmissionPhase('redirecting');
+        setSubmissionPhase("redirecting");
         setTimeout(() => {
-          navigate('/register/result', { state: { formData } });
+          navigate("/register/result", { state: { formData } });
         }, 2000);
       } else {
         const errorMsg = result.message;
         setSubmitMessage(errorMsg);
-        setSubmissionPhase('');
-        console.error('[Form Submission] 404 Failed:', errorMsg);
+        setSubmissionPhase("");
+        console.error("[Form Submission] 404 Failed:", errorMsg);
       }
     } catch (error) {
       // Handle unexpected errors
-      const errorMsg = 'Something went wrong. Please try again.';
-      console.error('[Form Submission] 404 Exception:', error);
-      console.error('[Form Submission] Error details:', error.response?.data || error.message);
+      const errorMsg = "Something went wrong. Please try again.";
+      console.error("[Form Submission] 404 Exception:", error);
+      console.error(
+        "[Form Submission] Error details:",
+        error.response?.data || error.message
+      );
       setSubmitMessage(errorMsg);
-      setSubmissionPhase('');
-      } finally {
-        setIsSubmitting(false);
-        console.log('[Form Submission] Submission complete. isSubmitting set to false.');
-      }
+      setSubmissionPhase("");
+    } finally {
+      setIsSubmitting(false);
+      console.log(
+        "[Form Submission] Submission complete. isSubmitting set to false."
+      );
+    }
   };
 
   /**
    * @summary Updates file input button text and styling based on selected file.
-   * 
+   *
    * @param {Object} inputRef - React ref object pointing to the file input element.
    * @param {string} buttonId - HTML ID of the button element to update.
-   * 
+   *
    * @remarks
    * Provides visual feedback by changing button text to show selected file name.
    * Updates button styling to indicate successful file selection with checkmark icon.
    * Supports both identity and disability document upload buttons.
-  */
+   */
   const updateFileName = (inputRef, buttonId) => {
     const fileInput = inputRef.current;
     const button = document.getElementById(buttonId);
@@ -284,10 +331,10 @@ export default function Register() {
 
   /**
    * @summary Handles email blur event to check if email already exists.
-   * 
+   *
    * @param {Event} event - The blur event from email input field.
    * @returns {Promise<void>}
-   * 
+   *
    * @remarks
    * Provides real-time feedback on email availability.
    * Updates visual indicators and console logs for debugging.
@@ -296,54 +343,59 @@ export default function Register() {
   const handleEmailBlur = async (event) => {
     const email = event.target.value.trim();
     const emailInput = event.target;
-    
-    if (!email || !email.includes('@')) {
-      setEmailValidation({ checking: false, exists: false, message: '' });
+
+    if (!email || !email.includes("@")) {
+      setEmailValidation({ checking: false, exists: false, message: "" });
       return;
     }
 
-    setEmailValidation({ checking: true, exists: false, message: 'Checking email...' });
-    console.log('[Email Validation] Validating email:', email);
+    setEmailValidation({
+      checking: true,
+      exists: false,
+      message: "Checking email...",
+    });
+    console.log("[Email Validation] Validating email:", email);
 
     try {
       const exists = await checkEmailExists(email);
-      
+
       if (exists) {
-        setEmailValidation({ 
-          checking: false, 
-          exists: true, 
-          message: '⚠️ This email is already registered. Please use a different email.' 
+        setEmailValidation({
+          checking: false,
+          exists: true,
+          message:
+            "⚠️ This email is already registered. Please use a different email.",
         });
-        emailInput.classList.add('is-invalid');
-        emailInput.classList.remove('is-valid');
-        console.error('[Email Validation] Email already exists:', email);
+        emailInput.classList.add("is-invalid");
+        emailInput.classList.remove("is-valid");
+        console.error("[Email Validation] Email already exists:", email);
       } else {
-        setEmailValidation({ 
-          checking: false, 
-          exists: false, 
-          message: '✓ Email is available' 
+        setEmailValidation({
+          checking: false,
+          exists: false,
+          message: "✓ Email is available",
         });
-        emailInput.classList.add('is-valid');
-        emailInput.classList.remove('is-invalid');
-        console.log('[Email Validation] Email is available:', email);
+        emailInput.classList.add("is-valid");
+        emailInput.classList.remove("is-invalid");
+        console.log("[Email Validation] Email is available:", email);
       }
     } catch (error) {
-      console.error('[Email Validation] Error checking email:', error);
-      setEmailValidation({ 
-        checking: false, 
-        exists: false, 
-        message: '⚠️ Could not verify email. Please try again.' 
+      console.error("[Email Validation] Error checking email:", error);
+      setEmailValidation({
+        checking: false,
+        exists: false,
+        message: "⚠️ Could not verify email. Please try again.",
       });
-      emailInput.classList.remove('is-valid', 'is-invalid');
+      emailInput.classList.remove("is-valid", "is-invalid");
     }
   };
 
   /**
    * @summary Validates all required form fields and provides visual feedback.
-   * 
+   *
    * @param {HTMLFormElement} form - The form element to validate.
    * @returns {boolean} True if all required fields are valid, false otherwise.
-   * 
+   *
    * @remarks
    * Handles both standard input fields and radio button groups for disability/civil status.
    * Applies Bootstrap validation classes (is-invalid/is-valid) for visual feedback.
@@ -356,22 +408,22 @@ export default function Register() {
 
     requiredFields.forEach((field) => {
       //For checkboxes/radios, check checked status
-      if ((field.type === 'checkbox' || field.type === 'radio')) {
-        if (field.type === 'radio') {
+      if (field.type === "checkbox" || field.type === "radio") {
+        if (field.type === "radio") {
           const group = form.querySelectorAll(`input[name="${field.name}"]`);
-          const anyChecked = Array.from(group).some(g => g.checked);
+          const anyChecked = Array.from(group).some((g) => g.checked);
           if (!anyChecked) {
             valid = false;
-            group.forEach(g => g.classList.add('is-invalid'));
+            group.forEach((g) => g.classList.add("is-invalid"));
           } else {
-            group.forEach(g => g.classList.remove('is-invalid'));
+            group.forEach((g) => g.classList.remove("is-invalid"));
           }
-        } else if (field.type === 'checkbox') {
+        } else if (field.type === "checkbox") {
           if (!field.checked) {
             valid = false;
-            field.classList.add('is-invalid');
+            field.classList.add("is-invalid");
           } else {
-            field.classList.remove('is-invalid');
+            field.classList.remove("is-invalid");
           }
         }
       } else {
@@ -390,16 +442,16 @@ export default function Register() {
 
   /**
    * @summary Generates a unique 12-digit numeric registration number.
-   * 
+   *
    * @returns {string} 12-digit random number string for user identification.
-   * 
+   *
    * @remarks
    * Creates a unique identifier for each registration using random number generation.
    * Used as the primary key for user records in the database system.
    */
   //Generate random 12-digit registration number
   const generateRegistrationNumber = () => {
-    let result = '';
+    let result = "";
     for (let i = 0; i < 12; i++) {
       result += Math.floor(Math.random() * 10); //Random number 0-9
     }
@@ -408,28 +460,27 @@ export default function Register() {
 
   /**
    * @summary Generates an 8-digit numeric temporary password.
-   * 
+   *
    * @returns {string} 8-digit random number string for temporary authentication.
-   * 
+   *
    * @remarks
    * Creates a simple numeric password for initial user login.
    * Users are expected to change this password after first login for security.
    */
   // Generate an 8-digit numeric password (characters 0-9)
   const generatePassword8 = () => {
-    let p = '';
+    let p = "";
     for (let i = 0; i < 8; i++) {
       p += Math.floor(Math.random() * 10);
     }
     return p;
   };
 
-
   /**
    * @summary Gets current date in YYYY-MM-DD format for registration.
-   * 
+   *
    * @returns {string} Current date formatted as YYYY-MM-DD.
-   * 
+   *
    * @remarks
    * Used to timestamp registrations with the submission date.
    * Ensures consistent date formatting across the application.
@@ -438,8 +489,8 @@ export default function Register() {
   const getTodayDate = () => {
     const today = new Date();
     const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
@@ -450,19 +501,23 @@ export default function Register() {
    */
   const validateFile = (file) => {
     const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-    const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
+    const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
 
     if (file.size > MAX_SIZE) {
-      return { 
-        valid: false, 
-        error: `File too large. Max: 5MB, Your file: ${(file.size / 1024 / 1024).toFixed(2)}MB` 
+      return {
+        valid: false,
+        error: `File too large. Max: 5MB, Your file: ${(
+          file.size /
+          1024 /
+          1024
+        ).toFixed(2)}MB`,
       };
     }
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      return { 
-        valid: false, 
-        error: 'Only PDF, JPG, PNG allowed' 
+      return {
+        valid: false,
+        error: "Only PDF, JPG, PNG allowed",
       };
     }
 
@@ -478,27 +533,33 @@ export default function Register() {
   const handleFileSelect = (e, fileType) => {
     const file = e.target.files[0];
     if (!file) {
-      setSelectedFiles(prev => ({ ...prev, [fileType]: null }));
-      setFileValidation(prev => ({ ...prev, [fileType]: { valid: false, message: '' } }));
+      setSelectedFiles((prev) => ({ ...prev, [fileType]: null }));
+      setFileValidation((prev) => ({
+        ...prev,
+        [fileType]: { valid: false, message: "" },
+      }));
       return;
     }
 
     const validation = validateFile(file);
     if (!validation.valid) {
-      setSelectedFiles(prev => ({ ...prev, [fileType]: null }));
-      setFileValidation(prev => ({ 
-        ...prev, 
-        [fileType]: { valid: false, message: validation.error } 
+      setSelectedFiles((prev) => ({ ...prev, [fileType]: null }));
+      setFileValidation((prev) => ({
+        ...prev,
+        [fileType]: { valid: false, message: validation.error },
       }));
-      console.log(`[File Select] Validation failed for ${fileType}:`, validation.error);
+      console.log(
+        `[File Select] Validation failed for ${fileType}:`,
+        validation.error
+      );
       return;
     }
 
     // Store the file object for later upload
-    setSelectedFiles(prev => ({ ...prev, [fileType]: file }));
-    setFileValidation(prev => ({ 
-      ...prev, 
-      [fileType]: { valid: true, message: `Ready: ${file.name}` } 
+    setSelectedFiles((prev) => ({ ...prev, [fileType]: file }));
+    setFileValidation((prev) => ({
+      ...prev,
+      [fileType]: { valid: true, message: `Ready: ${file.name}` },
     }));
     console.log(`[File Select] File validated for ${fileType}:`, file.name);
   };
@@ -512,16 +573,16 @@ export default function Register() {
    */
   const uploadFileToServer = async (file, fileType, regNumber) => {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('fileType', fileType);
-    formData.append('regNumber', regNumber);
+    formData.append("file", file);
+    formData.append("fileType", fileType);
+    formData.append("regNumber", regNumber);
 
     try {
       const response = await fetch(
-        'http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/upload.php',
+        "http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/upload.php",
         {
-          method: 'POST',
-          body: formData
+          method: "POST",
+          body: formData,
         }
       );
 
@@ -530,7 +591,7 @@ export default function Register() {
       return data;
     } catch (error) {
       console.error(`[File Upload] ${fileType} exception:`, error);
-      return { success: false, error: 'Upload failed' };
+      return { success: false, error: "Upload failed" };
     }
   };
 
@@ -541,32 +602,32 @@ export default function Register() {
    */
   const validatePhoneNumber = (phone) => {
     if (!phone) {
-      return { valid: false, error: 'Phone number is required' };
+      return { valid: false, error: "Phone number is required" };
     }
 
     const cleanPhone = phone.trim();
-    
+
     // Check if it's exactly 11 characters
     if (cleanPhone.length !== 11) {
-      return { 
-        valid: false, 
-        error: 'Mobile number must be exactly 11 digits (e.g., 09123456789)' 
+      return {
+        valid: false,
+        error: "Mobile number must be exactly 11 digits (e.g., 09123456789)",
       };
     }
 
     // Check if it starts with 09
-    if (!cleanPhone.startsWith('09')) {
-      return { 
-        valid: false, 
-        error: 'Mobile number must start with 09' 
+    if (!cleanPhone.startsWith("09")) {
+      return {
+        valid: false,
+        error: "Mobile number must start with 09",
       };
     }
 
     // Check if all characters are digits
     if (!/^\d+$/.test(cleanPhone)) {
-      return { 
-        valid: false, 
-        error: 'Mobile number must contain only digits' 
+      return {
+        valid: false,
+        error: "Mobile number must contain only digits",
       };
     }
 
@@ -582,67 +643,213 @@ export default function Register() {
     const phone = e.target.value.trim();
     const validation = validatePhoneNumber(phone);
 
-    if (phone === '') {
-      setPhoneErrors(prev => ({ ...prev, [fieldType]: '' }));
+    if (phone === "") {
+      setPhoneErrors((prev) => ({ ...prev, [fieldType]: "" }));
     } else {
-      setPhoneErrors(prev => ({ 
-        ...prev, 
-        [fieldType]: validation.valid ? '' : validation.error 
+      setPhoneErrors((prev) => ({
+        ...prev,
+        [fieldType]: validation.valid ? "" : validation.error,
       }));
     }
+  };
+
+  /**
+   * @summary Handles the "I confirm and agree" checkbox to toggle all certification checkboxes.
+   * When checked, it checks all other certification boxes.
+   * When unchecked, it unchecks all other certification boxes.
+   * If all other boxes are checked, auto-checks the confirm box.
+   * @param {Event} e - Change event from the confirm checkbox.
+   */
+  const handleCertifyAllToggle = (e) => {
+    const isChecked = e.target.checked;
+    const form = e.target.form;
+
+    // Get all certification checkboxes except the confirm checkbox
+    const certBoxes = [
+      form.certify1,
+      form.certify2,
+      form.certify3,
+      form.certify4,
+      form.certify5,
+    ];
+
+    // Set all boxes to the same state as the confirm checkbox
+    certBoxes.forEach((checkbox) => {
+      checkbox.checked = isChecked;
+    });
+  };
+
+  /**
+   * @summary Handles individual certification checkbox changes.
+   * If all 5 individual boxes are checked, auto-checks the confirm box.
+   * If any box is unchecked, unchecks the confirm box.
+   * @param {Event} e - Change event from any individual certification checkbox.
+   */
+  const handleIndividualCertify = (e) => {
+    const form = e.target.form;
+    const confirmBox = form.certify6;
+
+    // Get all individual certification checkboxes
+    const certBoxes = [
+      form.certify1,
+      form.certify2,
+      form.certify3,
+      form.certify4,
+      form.certify5,
+    ];
+
+    // Check if all individual boxes are checked
+    const allChecked = certBoxes.every((checkbox) => checkbox.checked);
+
+    // Auto-check or uncheck the confirm box based on all others
+    confirmBox.checked = allChecked;
   };
 
   return (
     <main className="container my-5">
       {/* Loading Overlay - Shows during form submission */}
       {submissionPhase && (
-        <div 
+        <div
           className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-          style={{ 
-            backgroundColor: 'rgba(0, 0, 0, 0.7)', 
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
             zIndex: 9999,
-            backdropFilter: 'blur(4px)'
+            backdropFilter: "blur(4px)",
           }}
           role="alert"
           aria-live="assertive"
-          aria-busy="true"
-        >
-          <div className="text-center text-white p-5 rounded-4" style={{ backgroundColor: 'rgba(40, 167, 69, 0.95)', maxWidth: '400px' }}>
+          aria-busy="true">
+          <div
+            className="text-center text-white p-5 rounded-4"
+            style={{
+              backgroundColor: "rgba(40, 167, 69, 0.95)",
+              maxWidth: "400px",
+            }}>
             {/* Spinner */}
             <div className="mb-4">
-              {submissionPhase === 'success' || submissionPhase === 'redirecting' ? (
-                <i className="fas fa-check-circle fa-4x text-white" aria-hidden="true"></i>
+              {submissionPhase === "success" ||
+              submissionPhase === "redirecting" ? (
+                <i
+                  className="fas fa-check-circle fa-4x text-white"
+                  aria-hidden="true"></i>
               ) : (
-                <div className="spinner-border text-white" style={{ width: '4rem', height: '4rem' }} role="status">
+                <div
+                  className="spinner-border text-white"
+                  style={{ width: "4rem", height: "4rem" }}
+                  role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
               )}
             </div>
-            
+
             {/* Phase Messages */}
             <h4 className="mb-3">
-              {submissionPhase === 'validating' && 'Validating your information...'}
-              {submissionPhase === 'submitting' && 'Submitting your application...'}
-              {submissionPhase === 'uploading' && 'Uploading your documents...'}
-              {submissionPhase === 'success' && 'Registration Successful!'}
-              {submissionPhase === 'redirecting' && 'Redirecting to your results...'}
+              {submissionPhase === "validating" &&
+                "Validating your information..."}
+              {submissionPhase === "submitting" &&
+                "Submitting your application..."}
+              {submissionPhase === "uploading" && "Uploading your documents..."}
+              {submissionPhase === "success" && "Registration Successful!"}
+              {submissionPhase === "redirecting" &&
+                "Redirecting to your results..."}
             </h4>
-            
+
             <p className="mb-0 opacity-75">
-              {submissionPhase === 'validating' && 'Please wait while we verify your details.'}
-              {submissionPhase === 'submitting' && 'Your application is being processed.'}
-              {submissionPhase === 'uploading' && 'Securely uploading your ID and certificate.'}
-              {submissionPhase === 'success' && 'Your PWD application has been submitted.'}
-              {submissionPhase === 'redirecting' && 'You will see your registration details shortly.'}
+              {submissionPhase === "validating" &&
+                "Please wait while we verify your details."}
+              {submissionPhase === "submitting" &&
+                "Your application is being processed."}
+              {submissionPhase === "uploading" &&
+                "Securely uploading your ID and certificate."}
+              {submissionPhase === "success" &&
+                "Your PWD application has been submitted."}
+              {submissionPhase === "redirecting" &&
+                "You will see your registration details shortly."}
             </p>
 
             {/* Progress indicator */}
             <div className="mt-4">
               <div className="d-flex justify-content-center gap-2">
-                <div className={`rounded-circle ${['validating','submitting','uploading','success','redirecting'].includes(submissionPhase) ? 'bg-white' : 'bg-white-50'}`} style={{ width: '12px', height: '12px', opacity: ['validating','submitting','uploading','success','redirecting'].includes(submissionPhase) ? 1 : 0.3 }}></div>
-                <div className={`rounded-circle ${['submitting','uploading','success','redirecting'].includes(submissionPhase) ? 'bg-white' : 'bg-white-50'}`} style={{ width: '12px', height: '12px', opacity: ['submitting','uploading','success','redirecting'].includes(submissionPhase) ? 1 : 0.3 }}></div>
-                <div className={`rounded-circle ${['uploading','success','redirecting'].includes(submissionPhase) ? 'bg-white' : 'bg-white-50'}`} style={{ width: '12px', height: '12px', opacity: ['uploading','success','redirecting'].includes(submissionPhase) ? 1 : 0.3 }}></div>
-                <div className={`rounded-circle ${['success','redirecting'].includes(submissionPhase) ? 'bg-white' : 'bg-white-50'}`} style={{ width: '12px', height: '12px', opacity: ['success','redirecting'].includes(submissionPhase) ? 1 : 0.3 }}></div>
+                <div
+                  className={`rounded-circle ${
+                    [
+                      "validating",
+                      "submitting",
+                      "uploading",
+                      "success",
+                      "redirecting",
+                    ].includes(submissionPhase)
+                      ? "bg-white"
+                      : "bg-white-50"
+                  }`}
+                  style={{
+                    width: "12px",
+                    height: "12px",
+                    opacity: [
+                      "validating",
+                      "submitting",
+                      "uploading",
+                      "success",
+                      "redirecting",
+                    ].includes(submissionPhase)
+                      ? 1
+                      : 0.3,
+                  }}></div>
+                <div
+                  className={`rounded-circle ${
+                    [
+                      "submitting",
+                      "uploading",
+                      "success",
+                      "redirecting",
+                    ].includes(submissionPhase)
+                      ? "bg-white"
+                      : "bg-white-50"
+                  }`}
+                  style={{
+                    width: "12px",
+                    height: "12px",
+                    opacity: [
+                      "submitting",
+                      "uploading",
+                      "success",
+                      "redirecting",
+                    ].includes(submissionPhase)
+                      ? 1
+                      : 0.3,
+                  }}></div>
+                <div
+                  className={`rounded-circle ${
+                    ["uploading", "success", "redirecting"].includes(
+                      submissionPhase
+                    )
+                      ? "bg-white"
+                      : "bg-white-50"
+                  }`}
+                  style={{
+                    width: "12px",
+                    height: "12px",
+                    opacity: ["uploading", "success", "redirecting"].includes(
+                      submissionPhase
+                    )
+                      ? 1
+                      : 0.3,
+                  }}></div>
+                <div
+                  className={`rounded-circle ${
+                    ["success", "redirecting"].includes(submissionPhase)
+                      ? "bg-white"
+                      : "bg-white-50"
+                  }`}
+                  style={{
+                    width: "12px",
+                    height: "12px",
+                    opacity: ["success", "redirecting"].includes(
+                      submissionPhase
+                    )
+                      ? 1
+                      : 0.3,
+                  }}></div>
               </div>
             </div>
           </div>
@@ -668,7 +875,12 @@ export default function Register() {
 
       {/* Submit Message */}
       {submitMessage && (
-        <div className={`alert ${submitMessage.includes('successfully') ? 'alert-success' : 'alert-danger'} mt-3`}>
+        <div
+          className={`alert ${
+            submitMessage.includes("successfully")
+              ? "alert-success"
+              : "alert-danger"
+          } mt-3`}>
           {submitMessage}
         </div>
       )}
@@ -929,16 +1141,21 @@ export default function Register() {
                   id="barangay"
                   className="form-select"
                   aria-label="Barangay"
-                  required
-                >
-                  <option value="" disabled selected>Select Barangay</option>
+                  required>
+                  <option value="" disabled selected>
+                    Select Barangay
+                  </option>
                   <option value="Burol">Burol</option>
                   <option value="Burol I">Burol I</option>
                   <option value="Burol II">Burol II</option>
                   <option value="Burol III">Burol III</option>
-                  <option value="Datu Esmael (Bago-a-ingud)">Datu Esmael (Bago-a-ingud)</option>
+                  <option value="Datu Esmael (Bago-a-ingud)">
+                    Datu Esmael (Bago-a-ingud)
+                  </option>
                   <option value="Emmanuel Bergado I">Emmanuel Bergado I</option>
-                  <option value="Emmanuel Bergado II">Emmanuel Bergado II</option>
+                  <option value="Emmanuel Bergado II">
+                    Emmanuel Bergado II
+                  </option>
                   <option value="Fatima I">Fatima I</option>
                   <option value="Fatima II">Fatima II</option>
                   <option value="Fatima III">Fatima III</option>
@@ -962,24 +1179,42 @@ export default function Register() {
                   <option value="Sampaloc II">Sampaloc II</option>
                   <option value="Sampaloc III">Sampaloc III</option>
                   <option value="Sampaloc IV">Sampaloc IV</option>
-                  <option value="Sampaloc V (New Era)">Sampaloc V (New Era)</option>
+                  <option value="Sampaloc V (New Era)">
+                    Sampaloc V (New Era)
+                  </option>
                   <option value="San Agustin I">San Agustin I</option>
                   <option value="San Agustin II">San Agustin II</option>
                   <option value="San Agustin III">San Agustin III</option>
                   <option value="San Andres I">San Andres I</option>
                   <option value="San Andres II">San Andres II</option>
-                  <option value="San Antonio De Padua I">San Antonio De Padua I</option>
-                  <option value="San Antonio De Padua II">San Antonio De Padua II</option>
-                  <option value="San Dionisio (Barangay 1)">San Dionisio (Barangay 1)</option>
-                  <option value="San Esteban (Barangay 4)">San Esteban (Barangay 4)</option>
+                  <option value="San Antonio De Padua I">
+                    San Antonio De Padua I
+                  </option>
+                  <option value="San Antonio De Padua II">
+                    San Antonio De Padua II
+                  </option>
+                  <option value="San Dionisio (Barangay 1)">
+                    San Dionisio (Barangay 1)
+                  </option>
+                  <option value="San Esteban (Barangay 4)">
+                    San Esteban (Barangay 4)
+                  </option>
                   <option value="San Francisco I">San Francisco I</option>
                   <option value="San Francisco II">San Francisco II</option>
-                  <option value="San Isidro Labrador I">San Isidro Labrador I</option>
-                  <option value="San Isidro Labrador II">San Isidro Labrador II</option>
+                  <option value="San Isidro Labrador I">
+                    San Isidro Labrador I
+                  </option>
+                  <option value="San Isidro Labrador II">
+                    San Isidro Labrador II
+                  </option>
                   <option value="San Jose">San Jose</option>
-                  <option value="San Juan (San Juan I)">San Juan (San Juan I)</option>
+                  <option value="San Juan (San Juan I)">
+                    San Juan (San Juan I)
+                  </option>
                   <option value="San Lorenzo Ruiz I">San Lorenzo Ruiz I</option>
-                  <option value="San Lorenzo Ruiz II">San Lorenzo Ruiz II</option>
+                  <option value="San Lorenzo Ruiz II">
+                    San Lorenzo Ruiz II
+                  </option>
                   <option value="San Luis I">San Luis I</option>
                   <option value="San Luis II">San Luis II</option>
                   <option value="San Manuel I">San Manuel I</option>
@@ -989,19 +1224,31 @@ export default function Register() {
                   <option value="San Miguel II">San Miguel II</option>
                   <option value="San Nicolas I">San Nicolas I</option>
                   <option value="San Nicolas II">San Nicolas II</option>
-                  <option value="San Roque (Sta. Cristina II)">San Roque (Sta. Cristina II)</option>
-                  <option value="San Simon (Barangay 7)">San Simon (Barangay 7)</option>
+                  <option value="San Roque (Sta. Cristina II)">
+                    San Roque (Sta. Cristina II)
+                  </option>
+                  <option value="San Simon (Barangay 7)">
+                    San Simon (Barangay 7)
+                  </option>
                   <option value="Santa Cristina I">Santa Cristina I</option>
                   <option value="Santa Cristina II">Santa Cristina II</option>
                   <option value="Santa Cruz I">Santa Cruz I</option>
                   <option value="Santa Cruz II">Santa Cruz II</option>
                   <option value="Santa Fe">Santa Fe</option>
-                  <option value="Santa Lucia (San Juan II)">Santa Lucia (San Juan II)</option>
-                  <option value="Santa Maria (Barangay 20)">Santa Maria (Barangay 20)</option>
-                  <option value="Santo Cristo (Barangay 3)">Santo Cristo (Barangay 3)</option>
+                  <option value="Santa Lucia (San Juan II)">
+                    Santa Lucia (San Juan II)
+                  </option>
+                  <option value="Santa Maria (Barangay 20)">
+                    Santa Maria (Barangay 20)
+                  </option>
+                  <option value="Santo Cristo (Barangay 3)">
+                    Santo Cristo (Barangay 3)
+                  </option>
                   <option value="Santo Niño I">Santo Niño I</option>
                   <option value="Santo Niño II">Santo Niño II</option>
-                  <option value="Victoria Reyes Pag-asa">Victoria Reyes Pag-asa</option>
+                  <option value="Victoria Reyes Pag-asa">
+                    Victoria Reyes Pag-asa
+                  </option>
                   <option value="Zone I (Pob.)">Zone I (Pob.)</option>
                   <option value="Zone I-A">Zone I-A</option>
                   <option value="Zone I-B">Zone I-B</option>
@@ -1077,13 +1324,15 @@ export default function Register() {
               <div className="form-floating">
                 <input
                   type="tel"
-                  className={`form-control ${phoneErrors.mobile ? 'is-invalid' : ''}`}
+                  className={`form-control ${
+                    phoneErrors.mobile ? "is-invalid" : ""
+                  }`}
                   id="mobile"
                   name="mobile"
                   placeholder="09XXXXXXXXX"
                   pattern="09[0-9]{9}"
                   aria-describedby="mobileHelp"
-                  onInput={(e) => handlePhoneInput(e, 'mobile')}
+                  onInput={(e) => handlePhoneInput(e, "mobile")}
                   required
                 />
                 <label htmlFor="mobile" className="required-field">
@@ -1120,18 +1369,26 @@ export default function Register() {
                 <div id="emailHelp" className="form-text">
                   {emailValidation.checking && (
                     <span className="text-info">
-                      <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                      <span
+                        className="spinner-border spinner-border-sm me-1"
+                        role="status"
+                        aria-hidden="true"></span>
                       Checking email availability...
                     </span>
                   )}
                   {!emailValidation.checking && emailValidation.message && (
-                    <span className={emailValidation.exists ? 'text-danger fw-bold' : 'text-success fw-bold'}>
+                    <span
+                      className={
+                        emailValidation.exists
+                          ? "text-danger fw-bold"
+                          : "text-success fw-bold"
+                      }>
                       {emailValidation.message}
                     </span>
                   )}
-                  {!emailValidation.checking && !emailValidation.message && (
-                    "We'll never share your email"
-                  )}
+                  {!emailValidation.checking &&
+                    !emailValidation.message &&
+                    "We'll never share your email"}
                 </div>
               </div>
             </div>
@@ -1171,8 +1428,7 @@ export default function Register() {
                   id="sex"
                   name="sex"
                   aria-describedby="sexHelp"
-                  required
-                >
+                  required>
                   <option value="" disabled selected>
                     Select Gender
                   </option>
@@ -1195,8 +1451,7 @@ export default function Register() {
                   name="nationality"
                   aria-describedby="nationalityHelp"
                   required
-                  defaultValue="Philippines"
-                >
+                  defaultValue="Philippines">
                   <option value="" disabled>
                     Select Nationality
                   </option>
@@ -1407,8 +1662,7 @@ export default function Register() {
                   className="form-select"
                   id="blood"
                   name="blood"
-                  aria-describedby="bloodHelp"
-                >
+                  aria-describedby="bloodHelp">
                   <option value="" disabled selected>
                     Select Blood Type
                   </option>
@@ -1521,22 +1775,28 @@ export default function Register() {
                 <input
                   type="tel"
                   name="emergencyPhone"
-                  className={`form-control ${phoneErrors.emergency ? 'is-invalid' : ''}`}
+                  className={`form-control ${
+                    phoneErrors.emergency ? "is-invalid" : ""
+                  }`}
                   placeholder="09XXXXXXXXX"
                   aria-label="Emergency Contact Phone Number"
                   aria-describedby="emergencyPhoneHelp"
                   pattern="09[0-9]{9}"
-                  onInput={(e) => handlePhoneInput(e, 'emergency')}
+                  onInput={(e) => handlePhoneInput(e, "emergency")}
                   required
                 />
                 {phoneErrors.emergency && (
-                  <div id="emergencyPhoneHelp" className="invalid-feedback d-block text-danger small mt-1">
+                  <div
+                    id="emergencyPhoneHelp"
+                    className="invalid-feedback d-block text-danger small mt-1">
                     <i className="fas fa-exclamation-circle me-1"></i>
                     {phoneErrors.emergency}
                   </div>
                 )}
                 {!phoneErrors.emergency && (
-                  <small className="form-text text-muted">Format: 09XXXXXXXXX (exactly 11 digits)</small>
+                  <small className="form-text text-muted">
+                    Format: 09XXXXXXXXX (exactly 11 digits)
+                  </small>
                 )}
               </div>
               <div className="col-md-6">
@@ -1546,8 +1806,7 @@ export default function Register() {
                   className="form-select"
                   aria-label="Relationship to Emergency Contact"
                   required
-                  defaultValue=""
-                >
+                  defaultValue="">
                   <option value="" disabled>
                     Select Relationship
                   </option>
@@ -1599,8 +1858,7 @@ export default function Register() {
                 <p className="text-danger small mb-3">
                   <i
                     className="fas fa-exclamation-circle me-1"
-                    aria-hidden="true"
-                  ></i>
+                    aria-hidden="true"></i>
                   Ensure all details are readable and the ID is not expired.
                 </p>
                 <input
@@ -1613,7 +1871,7 @@ export default function Register() {
                   ref={identityRef}
                   onChange={(e) => {
                     updateFileName(identityRef, "idBtn");
-                    handleFileSelect(e, 'identity_proof');
+                    handleFileSelect(e, "identity_proof");
                   }}
                 />
                 <button
@@ -1621,21 +1879,23 @@ export default function Register() {
                   className="btn upload-btn"
                   id="idBtn"
                   onClick={() => identityRef.current?.click()}
-                  disabled={uploading}
-                >
+                  disabled={uploading}>
                   <i className="fas fa-upload me-2" aria-hidden="true"></i>
                   Upload ID Document
                 </button>
                 {fileValidation.identity_proof.valid && (
                   <small className="d-block text-success mt-2">
-                    <i className="fas fa-check me-1"></i>{fileValidation.identity_proof.message}
+                    <i className="fas fa-check me-1"></i>
+                    {fileValidation.identity_proof.message}
                   </small>
                 )}
-                {!fileValidation.identity_proof.valid && fileValidation.identity_proof.message && (
-                  <small className="d-block text-danger mt-2">
-                    <i className="fas fa-exclamation-circle me-1"></i>{fileValidation.identity_proof.message}
-                  </small>
-                )}
+                {!fileValidation.identity_proof.valid &&
+                  fileValidation.identity_proof.message && (
+                    <small className="d-block text-danger mt-2">
+                      <i className="fas fa-exclamation-circle me-1"></i>
+                      {fileValidation.identity_proof.message}
+                    </small>
+                  )}
               </div>
             </div>
 
@@ -1658,8 +1918,7 @@ export default function Register() {
                 <p className="text-danger small mb-3">
                   <i
                     className="fas fa-exclamation-circle me-1"
-                    aria-hidden="true"
-                  ></i>
+                    aria-hidden="true"></i>
                   Certificate must be issued within the last 6 months and
                   clearly state your diagnosis.
                 </p>
@@ -1673,7 +1932,7 @@ export default function Register() {
                   ref={disabilityRef}
                   onChange={(e) => {
                     updateFileName(disabilityRef, "medBtn");
-                    handleFileSelect(e, 'medical_certificate');
+                    handleFileSelect(e, "medical_certificate");
                   }}
                 />
                 <button
@@ -1681,112 +1940,127 @@ export default function Register() {
                   className="btn upload-btn"
                   id="medBtn"
                   onClick={() => disabilityRef.current?.click()}
-                  disabled={uploading}
-                >
+                  disabled={uploading}>
                   <i className="fas fa-upload me-2" aria-hidden="true"></i>
                   Upload Medical Certificate
                 </button>
                 {fileValidation.medical_certificate.valid && (
                   <small className="d-block text-success mt-2">
-                    <i className="fas fa-check me-1"></i>{fileValidation.medical_certificate.message}
+                    <i className="fas fa-check me-1"></i>
+                    {fileValidation.medical_certificate.message}
                   </small>
                 )}
-                {!fileValidation.medical_certificate.valid && fileValidation.medical_certificate.message && (
-                  <small className="d-block text-danger mt-2">
-                    <i className="fas fa-exclamation-circle me-1"></i>{fileValidation.medical_certificate.message}
-                  </small>
-                )}
+                {!fileValidation.medical_certificate.valid &&
+                  fileValidation.medical_certificate.message && (
+                    <small className="d-block text-danger mt-2">
+                      <i className="fas fa-exclamation-circle me-1"></i>
+                      {fileValidation.medical_certificate.message}
+                    </small>
+                  )}
               </div>
             </div>
           </div>
         </section>
-
 
         {/* Certification Section */}
         <section className="form-section" aria-labelledby="certification-info">
           <h2 id="certification-info" className="section-title h4">
             Certification
           </h2>
-          
+
           <div className="card border-0 bg-light">
             <div className="card-body">
-              <p className="fw-bold text-center mb-4">This is to certify that:</p>
-              
+              <p className="fw-bold text-center mb-4">
+                This is to certify that:
+              </p>
+
               <div className="certification-list">
                 <div className="form-check mb-3">
-                  <input 
-                    className="form-check-input" 
-                    type="checkbox" 
-                    id="certify1" 
-                    name="certify1" 
-                    required 
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="certify1"
+                    name="certify1"
+                    onChange={handleIndividualCertify}
+                    required
                   />
                   <label className="form-check-label" htmlFor="certify1">
                     The information entered above is true and correct.
                   </label>
                 </div>
-                
+
                 <div className="form-check mb-3">
-                  <input 
-                    className="form-check-input" 
-                    type="checkbox" 
-                    id="certify2" 
-                    name="certify2" 
-                    required 
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="certify2"
+                    name="certify2"
+                    onChange={handleIndividualCertify}
+                    required
                   />
                   <label className="form-check-label" htmlFor="certify2">
-                    I have the full knowledge in providing the above information.
+                    I have the full knowledge in providing the above
+                    information.
                   </label>
                 </div>
-                
+
                 <div className="form-check mb-3">
-                  <input 
-                    className="form-check-input" 
-                    type="checkbox" 
-                    id="certify3" 
-                    name="certify3" 
-                    required 
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="certify3"
+                    name="certify3"
+                    onChange={handleIndividualCertify}
+                    required
                   />
                   <label className="form-check-label" htmlFor="certify3">
-                    I understand the purpose of enrolling myself in the City of Dasmariñas registry of Persons with Disabilities.
+                    I understand the purpose of enrolling myself in the City of
+                    Dasmariñas registry of Persons with Disabilities.
                   </label>
                 </div>
-                
+
                 <div className="form-check mb-3">
-                  <input 
-                    className="form-check-input" 
-                    type="checkbox" 
-                    id="certify4" 
-                    name="certify4" 
-                    required 
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="certify4"
+                    name="certify4"
+                    onChange={handleIndividualCertify}
+                    required
                   />
                   <label className="form-check-label" htmlFor="certify4">
-                    I have personally given my consent to allow the use of the information contained in this form.
+                    I have personally given my consent to allow the use of the
+                    information contained in this form.
                   </label>
                 </div>
-                
+
                 <div className="form-check mb-3">
-                  <input 
-                    className="form-check-input" 
-                    type="checkbox" 
-                    id="certify5" 
-                    name="certify5" 
-                    required 
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="certify5"
+                    name="certify5"
+                    onChange={handleIndividualCertify}
+                    required
                   />
                   <label className="form-check-label" htmlFor="certify5">
-                    I understand that this form contains my personal information to be stored in the PWD database.
+                    I understand that this form contains my personal information
+                    to be stored in the PWD database.
                   </label>
                 </div>
-                
+
                 <div className="form-check mb-4">
-                  <input 
-                    className="form-check-input" 
-                    type="checkbox" 
-                    id="certify6" 
-                    name="certify6" 
-                    required 
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="certify6"
+                    name="certify6"
+                    onChange={handleCertifyAllToggle}
+                    required
                   />
-                  <label className="form-check-label fw-bold" htmlFor="certify6">
+                  <label
+                    className="form-check-label fw-bold"
+                    htmlFor="certify6">
                     I confirm and agree to all of the above.
                   </label>
                 </div>
@@ -1805,32 +2079,38 @@ export default function Register() {
 
           {/* Buttons Group */}
           <div className="d-flex justify-content-center gap-3">
-          <button 
-            type="submit" 
-            className="btn btn-success btn-lg px-5"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Submitting...
-              </>
-            ) : (
-              <>
-                <i className="fas fa-paper-plane me-2" aria-hidden="true"></i>
-                Submit Application
-              </>
-            )}
-          </button>
+            <button
+              type="submit"
+              className="btn btn-success btn-lg px-5"
+              disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"></span>
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-paper-plane me-2" aria-hidden="true"></i>
+                  Submit Application
+                </>
+              )}
+            </button>
 
-          <button type="button" className="btn btn-outline-secondary btn-lg px-5">
-            Cancel
-          </button>
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-lg px-5">
+              Cancel
+            </button>
           </div>
 
           <p className="text-secondary mt-3 small">
             By submitting this form, you agree to our
-            <Link to="/faq" className="p-1 text-decoration-none">Privacy Policy</Link>
+            <Link to="/faq" className="p-1 text-decoration-none">
+              Privacy Policy
+            </Link>
           </p>
         </section>
       </form>

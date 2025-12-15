@@ -33,7 +33,7 @@ const AdminVerify = () => {
   const handleFileStatusUpdate = async (fileId, newStatus) => {
     try {
       const response = await fetch(
-        `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/update-file-status.php`,
+        `http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/update-file-status.php`,
         {
           method: "POST",
           headers: {
@@ -47,7 +47,7 @@ const AdminVerify = () => {
         data = await response.json();
       } catch (jsonErr) {
         const text = await response.text();
-        console.error('Non-JSON response:', text);
+        console.error("Non-JSON response:", text);
         alert("Server error: " + text);
         return;
       }
@@ -58,30 +58,33 @@ const AdminVerify = () => {
           )
         );
       } else {
-        alert("Failed to update document status: " + (data.error || data.message || "Unknown error"));
+        alert(
+          "Failed to update document status: " +
+            (data.error || data.message || "Unknown error")
+        );
       }
     } catch (error) {
-      console.error('Error updating document status:', error);
+      console.error("Error updating document status:", error);
       alert("Error updating document status: " + error.message);
     }
   };
 
   /**
    * @summary Opens document in new browser tab for viewing.
-   * 
+   *
    * @param {number} fileId - File ID from pwd_file_uploads table
-   * 
+   *
    * @remarks
    * Uses file-view.php endpoint to serve files inline for browser viewing.
    * Opens in new tab using browser's native viewer (PDF, images, etc.)
    */
   const handleViewDocument = (fileId) => {
     if (!fileId) {
-      alert('No file available to view');
+      alert("No file available to view");
       return;
     }
-    const viewUrl = `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-view.php?fileId=${fileId}`;
-    window.open(viewUrl, '_blank');
+    const viewUrl = `http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-view.php?fileId=${fileId}`;
+    window.open(viewUrl, "_blank");
   };
 
   /**
@@ -133,7 +136,7 @@ const AdminVerify = () => {
       setFilesLoading(true);
       setApplicantFiles([]);
       fetch(
-        `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/files.php?regNumber=${applicant.regNumber}`
+        `http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/files.php?regNumber=${applicant.regNumber}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -144,7 +147,7 @@ const AdminVerify = () => {
           }
         })
         .catch((error) => {
-          console.error('Error fetching applicant files:', error);
+          console.error("Error fetching applicant files:", error);
           setApplicantFiles([]);
         })
         .finally(() => {
@@ -206,8 +209,7 @@ const AdminVerify = () => {
           <h4 className="text-muted">No pending applicants found.</h4>
           <button
             className="btn btn-secondary mt-3"
-            onClick={() => navigate("/adminpage")}
-          >
+            onClick={() => navigate("/adminpage")}>
             <i className="fas fa-arrow-left me-2"></i> Back to Dashboard
           </button>
         </main>
@@ -221,7 +223,7 @@ const AdminVerify = () => {
       : normalized === "denied"
       ? "#dc3545"
       : "#ffc107";
-  
+
   return (
     <div className="admin-page">
       <AdminSidebar />
@@ -242,8 +244,7 @@ const AdminVerify = () => {
               style={{
                 backgroundColor: statusColor,
                 color: normalized === "pending" ? "#212529" : "#fff",
-              }}
-            >
+              }}>
               {normalized}
             </span>
           </h5>
@@ -345,12 +346,15 @@ const AdminVerify = () => {
                     {applicantFiles.map((file) => (
                       <tr key={file.id}>
                         <td>
-                          <i className={`fas ${
-                            file.type === 'medical_certificate'
-                              ? 'fa-file-medical text-danger'
-                              : 'fa-id-card text-primary'
-                          }`}></i>{' '}
-                          {file.type === 'medical_certificate' ? 'Medical Certificate' : 'Identity Proof'}
+                          <i
+                            className={`fas ${
+                              file.type === "medical_certificate"
+                                ? "fa-file-medical text-danger"
+                                : "fa-id-card text-primary"
+                            }`}></i>{" "}
+                          {file.type === "medical_certificate"
+                            ? "Medical Certificate"
+                            : "Identity Proof"}
                         </td>
                         <td>
                           <small>{file.originalFilename}</small>
@@ -359,16 +363,22 @@ const AdminVerify = () => {
                           <small>{(file.size / 1024).toFixed(1)} KB</small>
                         </td>
                         <td>
-                          <span className={`badge bg-${
-                            file.status === 'approved' ? 'success' :
-                            file.status === 'rejected' ? 'danger' :
-                            'warning'
-                          }`}>
-                            {file.status.charAt(0).toUpperCase() + file.status.slice(1)}
+                          <span
+                            className={`badge bg-${
+                              file.status === "approved"
+                                ? "success"
+                                : file.status === "rejected"
+                                ? "danger"
+                                : "warning"
+                            }`}>
+                            {file.status.charAt(0).toUpperCase() +
+                              file.status.slice(1)}
                           </span>
                         </td>
                         <td>
-                          <small>{new Date(file.uploadedAt).toLocaleDateString()}</small>
+                          <small>
+                            {new Date(file.uploadedAt).toLocaleDateString()}
+                          </small>
                         </td>
                         <td>
                           <div className="btn-group" role="group">
@@ -376,26 +386,27 @@ const AdminVerify = () => {
                               type="button"
                               className="btn btn-sm btn-success"
                               title="Approve document"
-                              disabled={file.status === 'approved'}
-                              onClick={() => handleFileStatusUpdate(file.id, 'approved')}
-                            >
+                              disabled={file.status === "approved"}
+                              onClick={() =>
+                                handleFileStatusUpdate(file.id, "approved")
+                              }>
                               <i className="fas fa-check"></i>
                             </button>
                             <button
                               type="button"
                               className="btn btn-sm btn-danger"
                               title="Reject document"
-                              disabled={file.status === 'rejected'}
-                              onClick={() => handleFileStatusUpdate(file.id, 'rejected')}
-                            >
+                              disabled={file.status === "rejected"}
+                              onClick={() =>
+                                handleFileStatusUpdate(file.id, "rejected")
+                              }>
                               <i className="fas fa-times"></i>
                             </button>
                             <button
                               type="button"
                               className="btn btn-sm btn-outline-info"
                               title="View document"
-                              onClick={() => handleViewDocument(file.id)}
-                            >
+                              onClick={() => handleViewDocument(file.id)}>
                               <i className="fas fa-eye"></i>
                             </button>
                           </div>
@@ -412,26 +423,22 @@ const AdminVerify = () => {
 
           <div
             className="d-flex justify-content-center mt-4"
-            style={{ gap: "1rem" }}
-          >
+            style={{ gap: "1rem" }}>
             <button
               className="btn btn-success"
               disabled={loading}
-              onClick={() => updateStatus("accepted")}
-            >
+              onClick={() => updateStatus("accepted")}>
               <i className="fas fa-check-circle me-2"></i> Accept
             </button>
             <button
               className="btn btn-danger"
               disabled={loading}
-              onClick={() => setShowRejectionModal(true)}
-            >
+              onClick={() => setShowRejectionModal(true)}>
               <i className="fas fa-times-circle me-2"></i> Deny
             </button>
             <button
               className="btn btn-secondary"
-              onClick={() => navigate("/adminpage")}
-            >
+              onClick={() => navigate("/adminpage")}>
               <i className="fas fa-arrow-left me-2"></i> Back
             </button>
           </div>
@@ -440,8 +447,7 @@ const AdminVerify = () => {
         {showRejectionModal && (
           <div
             className="modal"
-            style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
-          >
+            style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}>
             <div className="modal-dialog">
               <div className="modal-content">
                 <div className="modal-header">
@@ -453,8 +459,7 @@ const AdminVerify = () => {
                       setShowRejectionModal(false);
                       setRejectionReason("");
                       setOtherReason("");
-                    }}
-                  ></button>
+                    }}></button>
                 </div>
                 <div className="modal-body">
                   <div className="form-check">
@@ -516,8 +521,9 @@ const AdminVerify = () => {
                         rows="3"
                         placeholder="Please specify"
                         value={otherReason}
-                        onChange={(e) => setOtherReason(e.target.value)}
-                      ></textarea>
+                        onChange={(e) =>
+                          setOtherReason(e.target.value)
+                        }></textarea>
                     </div>
                   )}
                 </div>
@@ -529,8 +535,7 @@ const AdminVerify = () => {
                       setShowRejectionModal(false);
                       setRejectionReason("");
                       setOtherReason("");
-                    }}
-                  >
+                    }}>
                     Cancel
                   </button>
                   <button
@@ -547,8 +552,7 @@ const AdminVerify = () => {
                         return;
                       }
                       updateStatus("denied", finalReason);
-                    }}
-                  >
+                    }}>
                     Confirm Rejection
                   </button>
                 </div>
@@ -562,4 +566,3 @@ const AdminVerify = () => {
 };
 
 export default AdminVerify;
-
