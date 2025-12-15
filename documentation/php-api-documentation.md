@@ -2,9 +2,9 @@
 
 > **API Framework:** PHP 8.2 with MySQLi  
 > **Base URL:** `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/`  
-> **Frontend:** React 18+ (POST-React-Migration)  
-> **Version:** 2.0  
-> **Last Updated:** December 12, 2025
+> **Frontend:** React 19+ (POST-React-Migration)  
+> **Version:** 2.1  
+> **Last Updated:** December 15, 2025
 
 ---
 
@@ -15,10 +15,11 @@
 3. [User Management APIs](#user-management-apis)
 4. [Admin Management APIs](#admin-management-apis)
 5. [File Management APIs](#file-management-apis)
-6. [Utility APIs](#utility-apis)
-7. [Configuration](#configuration)
-8. [Error Handling](#error-handling)
-9. [Frontend Integration](#frontend-integration)
+6. [News Management APIs](#news-management-apis)
+7. [Utility APIs](#utility-apis)
+8. [Configuration](#configuration)
+9. [Error Handling](#error-handling)
+10. [Frontend Integration](#frontend-integration)
 
 ---
 
@@ -1110,9 +1111,395 @@ WHERE regNumber = ?
 
 ---
 
-## 🛠️ Utility APIs
+## News Management APIs
 
-### 17. Check Email
+### 17. Get Published News
+
+**Endpoint:** `news-get-published.php`  
+**Method:** GET  
+**Description:** Retrieves paginated list of published news posts for public display.
+
+#### Request Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `page` | int | No | 1 | Page number |
+| `limit` | int | No | 10 | Posts per page |
+| `category` | string | No | null | Filter by category |
+
+#### Response
+
+```json
+{
+  "success": true,
+  "posts": [
+    {
+      "id": 1,
+      "title": "PWD Registration Update",
+      "excerpt": "Important updates regarding...",
+      "slug": "pwd-registration-update",
+      "imagePath": "uploads/news/image.jpg",
+      "imageAlt": "News image",
+      "status": "published",
+      "publishedAt": "2025-12-15 10:00:00",
+      "category": "announcement",
+      "viewCount": 42
+    }
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "totalPages": 5,
+    "totalPosts": 48,
+    "hasMore": true
+  }
+}
+```
+
+#### Frontend Integration
+
+**Called from:** [news.jsx, newsApi.js](#called-from-jsx-files)
+
+```javascript
+export const getPublishedNews = async (page = 1, limit = 10, category = null) => {
+    let url = `/news-get-published.php?page=${page}&limit=${limit}`;
+    if (category) url += `&category=${category}`;
+    const res = await api.get(url);
+    return res.data;
+};
+```
+
+---
+
+### 18. Get Single News Article
+
+**Endpoint:** `news-get-single.php`  
+**Method:** GET  
+**Description:** Retrieves a single news article by slug and increments view count.
+
+#### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `slug` | string | Yes | URL-friendly post identifier |
+
+#### Response
+
+```json
+{
+  "success": true,
+  "post": {
+    "id": 1,
+    "title": "PWD Registration Update",
+    "excerpt": "Important updates regarding...",
+    "content": "<p>Full article content...</p>",
+    "slug": "pwd-registration-update",
+    "imagePath": "uploads/news/image.jpg",
+    "imageAlt": "News image",
+    "status": "published",
+    "publishedAt": "2025-12-15 10:00:00",
+    "category": "announcement",
+    "createdBy": "admin@dasma.gov.ph",
+    "createdAt": "2025-12-14 15:30:00",
+    "updatedAt": "2025-12-15 09:45:00",
+    "viewCount": 43
+  }
+}
+```
+
+#### Special Features
+- ✅ Auto-increments view count on each request
+- ✅ Only returns published posts to public
+- ✅ Slug-based URL for SEO-friendly links
+
+#### Frontend Integration
+
+**Called from:** [news-article.jsx, newsApi.js](#called-from-jsx-files)
+
+```javascript
+export const getNewsBySlug = async (slug) => {
+    const res = await api.get(`/news-get-single.php?slug=${encodeURIComponent(slug)}`);
+    return res.data;
+};
+```
+
+---
+
+### 19. Admin: Get All News Posts
+
+**Endpoint:** `news-admin-get-all.php`  
+**Method:** GET  
+**Description:** Retrieves all news posts (including drafts and archived) for admin management.
+
+#### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `status` | string | No | Filter: draft, published, archived |
+
+#### Response
+
+```json
+{
+  "success": true,
+  "posts": [
+    {
+      "id": 1,
+      "title": "Draft Post",
+      "excerpt": "Preview text...",
+      "content": "Full content...",
+      "slug": "draft-post",
+      "imagePath": null,
+      "imageAlt": null,
+      "status": "draft",
+      "publishedAt": null,
+      "category": "announcement",
+      "createdBy": "admin@dasma.gov.ph",
+      "createdAt": "2025-12-15 10:00:00",
+      "updatedBy": null,
+      "updatedAt": "2025-12-15 10:00:00",
+      "viewCount": 0
+    }
+  ],
+  "statusCounts": {
+    "all": 15,
+    "draft": 3,
+    "published": 10,
+    "archived": 2
+  }
+}
+```
+
+#### Frontend Integration
+
+**Called from:** [admin-news.jsx, newsApi.js](#called-from-jsx-files)
+
+```javascript
+export const getAdminNews = async ({ page = 1, limit = 10, status = 'all' } = {}) => {
+    let url = `/news-admin-get-all.php?page=${page}&limit=${limit}`;
+    if (status && status !== 'all') url += `&status=${status}`;
+    const res = await api.get(url);
+    return res.data;
+};
+```
+
+---
+
+### 20. Admin: Create News Post
+
+**Endpoint:** `news-admin-create.php`  
+**Method:** POST  
+**Description:** Creates a new news post (draft, published, or archived).
+
+#### Request
+
+```json
+{
+  "title": "New Announcement",
+  "excerpt": "Brief summary of the announcement...",
+  "content": "<p>Full HTML content of the article...</p>",
+  "slug": "new-announcement",
+  "imagePath": "uploads/news/image.jpg",
+  "imageAlt": "Description of image",
+  "status": "draft",
+  "category": "announcement",
+  "createdBy": "admin@dasma.gov.ph"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `title` | string | Yes | Post title (max 255 chars) |
+| `excerpt` | string | Yes | Short summary (max 500 chars) |
+| `content` | string | Yes | Full HTML content |
+| `slug` | string | No | URL slug (auto-generated from title) |
+| `imagePath` | string | No | Path to uploaded image |
+| `imageAlt` | string | No | Image alt text |
+| `status` | string | No | draft (default), published, archived |
+| `category` | string | No | Post category |
+| `createdBy` | string | No | Admin email |
+
+#### Response
+
+```json
+{
+  "success": true,
+  "message": "News post created successfully",
+  "post": {
+    "id": 5,
+    "slug": "new-announcement",
+    "status": "draft"
+  }
+}
+```
+
+#### Special Features
+- ✅ Auto-generates slug from title if not provided
+- ✅ Ensures unique slugs (appends timestamp if duplicate)
+- ✅ Auto-sets `published_at` when status is "published"
+
+#### Frontend Integration
+
+**Called from:** [admin-news.jsx, newsApi.js](#called-from-jsx-files)
+
+```javascript
+export const createNews = async (postData) => {
+    const res = await api.post('/news-admin-create.php', postData);
+    return res.data;
+};
+```
+
+---
+
+### 21. Admin: Update News Post
+
+**Endpoint:** `news-admin-update.php`  
+**Method:** POST  
+**Description:** Updates an existing news post.
+
+#### Request
+
+```json
+{
+  "id": 5,
+  "title": "Updated Announcement",
+  "excerpt": "Updated summary...",
+  "content": "<p>Updated content...</p>",
+  "slug": "updated-announcement",
+  "imagePath": "uploads/news/new-image.jpg",
+  "imageAlt": "Updated image description",
+  "status": "published",
+  "category": "news",
+  "updatedBy": "admin@dasma.gov.ph"
+}
+```
+
+#### Response
+
+```json
+{
+  "success": true,
+  "message": "News post updated successfully"
+}
+```
+
+#### Special Features
+- ✅ Validates post exists before update
+- ✅ Auto-sets `published_at` when changing status to "published"
+- ✅ Tracks `updated_by` and `updated_at`
+
+#### Frontend Integration
+
+**Called from:** [admin-news.jsx, newsApi.js](#called-from-jsx-files)
+
+```javascript
+export const updateNews = async (id, postData) => {
+    const res = await api.post('/news-admin-update.php', { id, ...postData });
+    return res.data;
+};
+```
+
+---
+
+### 22. Admin: Delete News Post
+
+**Endpoint:** `news-admin-delete.php`  
+**Method:** POST  
+**Description:** Permanently deletes a news post.
+
+#### Request
+
+```json
+{
+  "id": 5
+}
+```
+
+#### Response
+
+```json
+{
+  "success": true,
+  "message": "News post deleted successfully"
+}
+```
+
+#### Special Features
+- ⚠️ Permanent deletion (no soft delete)
+- ✅ Validates post exists before deletion
+
+#### Frontend Integration
+
+**Called from:** [admin-news.jsx, newsApi.js](#called-from-jsx-files)
+
+```javascript
+export const deleteNews = async (id) => {
+    const res = await api.post('/news-admin-delete.php', { id });
+    return res.data;
+};
+```
+
+---
+
+### 23. Admin: Upload News Image
+
+**Endpoint:** `news-upload-image.php`  
+**Method:** POST (multipart/form-data)  
+**Description:** Uploads an image for use in news posts.
+
+#### Request
+
+- **Content-Type:** `multipart/form-data`
+- **Field Name:** `image`
+- **Allowed Types:** JPEG, PNG, GIF, WebP
+- **Max Size:** 5 MB
+
+#### Response
+
+```json
+{
+  "success": true,
+  "imagePath": "uploads/news/1702634521_image.jpg"
+}
+```
+
+#### Error Response
+
+```json
+{
+  "success": false,
+  "error": "File too large. Maximum size is 5MB."
+}
+```
+
+#### Special Features
+- ✅ MIME type validation (image/jpeg, image/png, image/gif, image/webp)
+- ✅ File size validation (5MB max)
+- ✅ Unique filename generation (timestamp prefix)
+- ✅ Creates uploads/news/ directory if not exists
+
+#### Frontend Integration
+
+**Called from:** [admin-news.jsx, newsApi.js](#called-from-jsx-files)
+
+```javascript
+export const uploadNewsImage = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    const res = await axios.post(
+        `${API_BASE_URL}/news-upload-image.php`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+    return res.data;
+};
+```
+
+---
+
+## Utility APIs
+
+### 24. Check Email
 
 **Endpoint:** `check-email.php`  
 **Method:** POST  
@@ -1174,7 +1561,7 @@ export const checkEmailAvailability = async (email) => {
 
 ---
 
-### 18. Check Registration Number
+### 25. Check Registration Number
 
 **Endpoint:** `check-regnumber.php`  
 **Method:** POST  
@@ -1236,7 +1623,7 @@ export const checkRegNumberAvailability = async (regNumber) => {
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### config.php
 
@@ -1600,45 +1987,92 @@ const result = await updateApplicationStatus(
 
 ```mermaid
 graph TD
-    A["User/Admin Browser"] -->|POST Email/Password| B["login.jsx"]
-    B -->|Call loginApi.js| C["userLogin/adminLogin"]
-    C -->|POST JSON| D["user-login.php / admin-login.php"]
-    D -->|Query DB| E["pwd_users / admin_users"]
-    D -->|Return JSON| C
-    C -->|Store in sessionStorage| B
+    subgraph Authentication
+        A["User/Admin Browser"] -->|POST Email/Password| B["login.jsx"]
+        B -->|Call loginApi.js| C["userLogin/adminLogin"]
+        C -->|POST JSON| D["user-login.php / admin-login.php"]
+        D -->|Query DB| E["pwd_users / admin_users"]
+        D -->|Return JSON| C
+        C -->|Store in sessionStorage| B
+    end
     
-    F["User Authenticated"] -->|Load| G["userpage.jsx"]
-    G -->|Call userApi.js| H["getCurrentUserData"]
-    H -->|POST regNumber| I["get-user-data.php"]
-    I -->|Query DB| E
-    I -->|Return User Data| H
-    H -->|Display Profile| G
+    subgraph User Flow
+        F["User Authenticated"] -->|Load| G["userpage.jsx"]
+        G -->|Call userApi.js| H["getCurrentUserData"]
+        H -->|POST regNumber| I["get-user-data.php"]
+        I -->|Query DB| E
+        I -->|Return User Data| H
+        H -->|Display Profile| G
+        
+        G -->|Upload File| J["register.jsx / userpage.jsx"]
+        J -->|FormData| K["upload.php"]
+        K -->|Save File + DB| L["uploads/ + pwd_file_uploads"]
+    end
     
-    G -->|Upload File| J["register.jsx / userpage.jsx"]
-    J -->|FormData| K["upload.php"]
-    K -->|Save File + DB| L["uploads/ + pwd_file_uploads"]
+    subgraph Admin Application Flow
+        M["Admin Authenticated"] -->|Load| N["adminpage.jsx"]
+        N -->|Call adminApi.js| O["getAllApplications"]
+        O -->|GET| P["get-all-applications.php"]
+        P -->|Query DB| E
+        P -->|Return Apps| O
+        O -->|Display List| N
+        
+        N -->|Review App| Q["adminverify.jsx"]
+        Q -->|Call adminApi.js| R["getPendingApplication"]
+        R -->|GET| S["get-pending-application.php"]
+        S -->|Query DB| E
+        S -->|Return App| R
+        R -->|Fetch Files| T["files.php"]
+        T -->|Query DB| L
+        T -->|Return Files| R
+        R -->|Display + Review| Q
+        
+        Q -->|Accept/Deny| U["updateApplicationStatus"]
+        U -->|POST Status| V["update-application-status.php"]
+        V -->|Update DB + Sync Files| E
+        V -->|Update File Records| L
+    end
     
-    M["Admin Authenticated"] -->|Load| N["adminpage.jsx"]
-    N -->|Call adminApi.js| O["getAllApplications"]
-    O -->|GET| P["get-all-applications.php"]
-    P -->|Query DB| E
-    P -->|Return Apps| O
-    O -->|Display List| N
+    subgraph News Public Flow
+        W["Public User"] -->|Browse| X["news.jsx"]
+        X -->|Call newsApi.js| Y["getPublishedNews"]
+        Y -->|GET page,limit| Z["news-get-published.php"]
+        Z -->|Query DB| AA["pwd_news_posts"]
+        Z -->|Return Posts| Y
+        Y -->|Display List| X
+        
+        X -->|Click Article| AB["news-article.jsx"]
+        AB -->|Call newsApi.js| AC["getNewsBySlug"]
+        AC -->|GET slug| AD["news-get-single.php"]
+        AD -->|Query + Increment Views| AA
+        AD -->|Return Article| AC
+        AC -->|Display Article| AB
+    end
     
-    N -->|Review App| Q["adminverify.jsx"]
-    Q -->|Call adminApi.js| R["getPendingApplication"]
-    R -->|GET| S["get-pending-application.php"]
-    S -->|Query DB| E
-    S -->|Return App| R
-    R -->|Fetch Files| T["files.php"]
-    T -->|Query DB| L
-    T -->|Return Files| R
-    R -->|Display + Review| Q
-    
-    Q -->|Accept/Deny| U["updateApplicationStatus"]
-    U -->|POST Status| V["update-application-status.php"]
-    V -->|Update DB + Sync Files| E
-    V -->|Update File Records| L
+    subgraph Admin News Flow
+        N -->|Manage News| AE["admin-news.jsx"]
+        AE -->|Call newsApi.js| AF["getAdminNews"]
+        AF -->|GET status| AG["news-admin-get-all.php"]
+        AG -->|Query DB| AA
+        AG -->|Return All Posts| AF
+        AF -->|Display List| AE
+        
+        AE -->|Create Post| AH["createNews"]
+        AH -->|POST JSON| AI["news-admin-create.php"]
+        AI -->|Insert DB| AA
+        
+        AE -->|Edit Post| AJ["updateNews"]
+        AJ -->|POST JSON| AK["news-admin-update.php"]
+        AK -->|Update DB| AA
+        
+        AE -->|Delete Post| AL["deleteNews"]
+        AL -->|POST id| AM["news-admin-delete.php"]
+        AM -->|Delete DB| AA
+        
+        AE -->|Upload Image| AN["uploadNewsImage"]
+        AN -->|FormData| AO["news-upload-image.php"]
+        AO -->|Save File| AP["uploads/news/"]
+    end
 ```
 
 ---
@@ -1665,11 +2099,18 @@ graph TD
 | `update-all-files-status.php` | POST | (internal) | pwd_file_uploads | Bulk update files |
 | `check-email.php` | POST | register.jsx | pwd_users | Validate email unique |
 | `check-regnumber.php` | POST | register.jsx | pwd_users | Validate regNumber unique |
+| `news-get-published.php` | GET | news.jsx | pwd_news_posts | Get published news (paginated) |
+| `news-get-single.php` | GET | news-article.jsx | pwd_news_posts | Get single news by slug |
+| `news-admin-get-all.php` | GET | admin-news.jsx | pwd_news_posts | Admin: Get all news posts |
+| `news-admin-create.php` | POST | admin-news.jsx | pwd_news_posts | Admin: Create news post |
+| `news-admin-update.php` | POST | admin-news.jsx | pwd_news_posts | Admin: Update news post |
+| `news-admin-delete.php` | POST | admin-news.jsx | pwd_news_posts | Admin: Delete news post |
+| `news-upload-image.php` | POST | admin-news.jsx | (file storage) | Admin: Upload news image |
 
 ---
 
-**Last Updated:** December 12, 2025  
-**Maintained By:** Keanu Bembo
-**API Version:** 2.0  
+**Last Updated:** December 15, 2025  
+**Maintained By:** Keanu Bembo  
+**API Version:** 2.1  
 **PHP Version:** 8.2+  
 **Database:** MySQL (XAMPP)

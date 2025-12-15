@@ -8,7 +8,7 @@ A **PWD Automated Application System** built using **React**, **HTML, CSS, & Jav
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Tech Stack](#tech-stack)
-    - [Current Production Stack (v2.0)](#current-production-stack-v20)
+    - [Current Production Stack (v2.1)](#current-production-stack-v21)
     - [Architecture Diagram](#architecture-diagram)
   - [Project Structure (Partial Example)](#project-structure-partial-example)
   - [Setup Instructions](#setup-instructions)
@@ -116,6 +116,7 @@ A **PWD Automated Application System** built using **React**, **HTML, CSS, & Jav
       - [pwd\_users Table](#pwd_users-table)
       - [admin\_users Table](#admin_users-table)
       - [pwd\_file\_uploads Table](#pwd_file_uploads-table)
+      - [pwd\_news\_posts Table](#pwd_news_posts-table)
     - [File Upload System](#file-upload-system)
       - [Upload Directory Structure](#upload-directory-structure)
       - [Supported File Types](#supported-file-types)
@@ -147,7 +148,7 @@ This system is designed to:
 
 ## Tech Stack
 
-### Current Production Stack (v2.0)
+### Current Production Stack (v2.1)
 * **Frontend:** `ReactJS 19`, `Bootstrap 5`, `HTML5`/`CSS3`/`JavaScript`
 * **Backend:** `PHP 8.2` on XAMPP with MySQLi
 * **Database:** `MySQL` (PWDRegistry database with utf8mb4 collation)
@@ -159,13 +160,13 @@ graph TB
     subgraph Frontend["Frontend (React SPA)"]
         UI["React Components<br/>(Login, Register, Dashboard)<br/>Port 3000"]
         Router["React Router v6<br/>(11+ Routes)"]
-        API["API Wrapper Modules<br/>(loginApi, registrationApi,<br/>userApi, adminApi)"]
+        API["API Wrapper Modules<br/>(loginApi, registrationApi,<br/>userApi, adminApi, newsApi)"]
     end
     
     subgraph Backend["Backend (PHP/MySQL)"]
         XAMPP["XAMPP<br/>(Apache + PHP 8.2)<br/>Port 80"]
-        AUTH["18 PHP API Endpoints<br/>(Authentication, User,<br/>Admin, File Mgmt)"]
-        DB[("MySQL Database<br/>(PWDRegistry)<br/>3 Core Tables")]
+        AUTH["25 PHP API Endpoints<br/>(Authentication, User,<br/>Admin, File, News Mgmt)"]
+        DB[("MySQL Database<br/>(PWDRegistry)<br/>4 Core Tables")]
     end
     
     subgraph Storage["File Storage"]
@@ -198,19 +199,30 @@ PWD-AUTOMATED-APPLICATION/
 │   │   ├── manifest.json
 │   │   └── robots.txt
 │   ├── src/
+│   │   ├── api/                   # API wrapper modules
+│   │   │   ├── loginApi.js
+│   │   │   ├── registrationApi.js
+│   │   │   ├── userApi.js
+│   │   │   ├── adminApi.js
+│   │   │   ├── newsApi.js
+│   │   │   └── config.js
 │   │   ├── components/            # Reusable React components
 │   │   │   └── common/
 │   │   │       ├── public-header.jsx
 │   │   │       ├── public-footer.jsx
-│   │   │       └── user-sidebar.jsx
+│   │   │       ├── user-sidebar.jsx
+│   │   │       └── adminsidebar.jsx
 │   │   ├── pages/                 # Page components
 │   │   │   ├── adminpage/
-│   │   │   │   └── adminpage.jsx
+│   │   │   │   ├── adminpage.jsx
+│   │   │   │   ├── adminverify.jsx
+│   │   │   │   └── admin-news.jsx
 │   │   │   ├── homepage/
 │   │   │   │   ├── consent.jsx
 │   │   │   │   ├── contact.jsx
 │   │   │   │   ├── faq.jsx
 │   │   │   │   ├── news.jsx
+│   │   │   │   ├── news-article.jsx
 │   │   │   │   ├── register.jsx
 │   │   │   │   └── resources.jsx
 │   │   │   ├── userpage/
@@ -587,11 +599,12 @@ npm run build
    - ✅ UTF-8mb4 collation fix for proper character encoding
    - ✅ master-setup.sql v2.0 created for complete database initialization
 
-2. **PHP/XAMPP API Development:** 18 production-ready endpoints completed
+2. **PHP/XAMPP API Development:** 25 production-ready endpoints completed
    - ✅ **Authentication:** `user-login.php`, `admin-login.php`, `forgot-password.php`
    - ✅ **User Management:** `register.php`, `get-user-data.php`, `update-profile.php`, `change-password.php`
    - ✅ **Admin Functions:** `get-all-applications.php`, `get-pending-application.php`, `update-application-status.php`
    - ✅ **File Operations:** `files.php`, `file-upload.php`, `file-view.php`, `file-download.php`
+   - ✅ **News Management:** `news-get-published.php`, `news-get-single.php`, `news-admin-get-all.php`, `news-admin-create.php`, `news-admin-update.php`, `news-admin-delete.php`, `news-upload-image.php`
    - ✅ **Utilities:** `check-email.php`, `check-regnumber.php`, `update-all-files-status.php`
 
 3. **Security Implementation:** COMPLETED
@@ -625,7 +638,7 @@ graph LR
     B --> C["Phase 3:<br/>Frontend API<br/>(Oct 2025)"]
     C --> D["Phase 4:<br/>Backend PHP/MySQL<br/>(Oct-Dec 2025)"]
     D --> E["Phase 5:<br/>Testing & Docs<br/>(Dec 2025)"]
-    E --> F["✅ Production<br/>Ready<br/>(v2.0)"]
+    E --> F["✅ Production<br/>Ready<br/>(v2.1)"]
     
     style A fill:#61dafb,stroke:#333,color:#000
     style B fill:#61dafb,stroke:#333,color:#000
@@ -1039,17 +1052,18 @@ The PWD Automated Application System was chosen out of 3 titles presented to our
 #### Backend Integration & PHP/MySQL Implementation (October-December 2025)
 
 **1. Database Schema Migration to MySQL**
-- Migrated from SheetDB API to MySQL (PWDRegistry database)
-- Implemented 3 core tables: `pwd_users`, `admin_users`, `pwd_file_uploads`
+- Migrated from core tables: `pwd_users`, `admin_users`, `pwd_file_uploads`, `pwd_news_posts`
 - UTF-8 collation fix applied for proper character encoding
 - Created comprehensive master-setup.sql (v2.0) with 9 sections for complete database initialization
 
 **2. PHP/XAMPP Backend Implementation**
 - Deployed PHP 8.2 backend on XAMPP with MySQLi for database connectivity
-- Created 18 production-ready API endpoints:
+- Created 25 production-ready API endpoints:
   - **Authentication:** `user-login.php`, `admin-login.php`, `forgot-password.php`
   - **User Management:** `register.php`, `get-user-data.php`, `update-profile.php`, `change-password.php`
   - **Admin Functions:** `get-all-applications.php`, `get-pending-application.php`, `update-application-status.php`, `check-email.php`, `check-regnumber.php`
+  - **File Operations:** `files.php`, `file-upload.php`, `file-view.php`, `file-download.php`, `update-all-files-status.php`
+  - **News Management:** `news-get-published.php`, `news-get-single.php`, `news-admin-get-all.php`, `news-admin-create.php`, `news-admin-update.php`, `news-admin-delete.php`, `news-upload-imageheck-email.php`, `check-regnumber.php`
   - **File Operations:** `files.php`, `file-upload.php`, `file-view.php`, `file-download.php`, `update-all-files-status.php`
 - All endpoints use prepared statements for SQL injection prevention
 - Comprehensive error handling and response formatting
@@ -1080,6 +1094,7 @@ The PWD Automated Application System was chosen out of 3 titles presented to our
 - **loginApi.js** - Updated for PHP backend authentication
 - **registrationApi.js** - Connected to `register.php` with backend validation
 - **userApi.js** - Modified for MySQL-based user data retrieval
+- **newsApi.js** - Full CRUD operations for news & announcements feature
 - **adminApi.js** - Implemented full admin application management workflow
 - All modules use async/await pattern with proper error handling
 
@@ -1119,12 +1134,13 @@ The PWD Automated Application System was chosen out of 3 titles presented to our
 - Session management secured with authentication checks
 
 **Current Status (Final Term Completion):**
-- ✅ MySQL database fully implemented and optimized
-- ✅ 18 PHP API endpoints production-ready
+- ✅ 25 PHP API endpoints production-ready
 - ✅ React frontend fully integrated with PHP backend
 - ✅ Admin review tracking with audit trail
 - ✅ File upload/download system operational
+- ✅ News & Announcements feature complete
 - ✅ Session management implemented server-side
+- ✅ Complete documentation (7ented server-side
 - ✅ Complete documentation (6 major doc files)
 - ✅ All legacy code identified and archived
 - ✅ Security foundations in place (prepared statements, input validation)
@@ -1133,13 +1149,14 @@ The PWD Automated Application System was chosen out of 3 titles presented to our
 **Key Achievements Summary:**
 
 | Category | Achievement | Status |
-|----------|------------|--------|
-| Database | MySQL with 3 optimized tables | ✅ Complete |
-| Backend | 18 PHP endpoints with full validation | ✅ Complete |
+|----------|------------4 optimized tables | ✅ Complete |
+| Backend | 25 PHP endpoints with full validation | ✅ Complete |
 | Frontend | React SPA fully integrated | ✅ Complete |
 | API Integration | Frontend → PHP → MySQL workflow | ✅ Complete |
 | Admin Features | Review tracking with audit trail | ✅ Complete |
 | File Management | Upload/download/status tracking | ✅ Complete |
+| News Feature | CRUD, image upload, status workflow | ✅ Complete |
+| Documentation | 7 Upload/download/status tracking | ✅ Complete |
 | Documentation | 6 comprehensive doc files | ✅ Complete |
 | Code Quality | All warnings fixed, tested | ✅ Complete |
 | Security | Prepared statements, input validation | ✅ Complete |
@@ -1154,6 +1171,7 @@ The PWD Automated Application System was chosen out of 3 titles presented to our
 - **API Reference:** See `documentation/php-api-documentation.md`
 - **Database Setup:** See `documentation/database-documentation.md`
 - **Function Guide:** See `documentation/function-documentation.md`
+- **News Feature:** See `documentation/news-feature-documentation.md`
 - **Complete Summary:** See `documentation/DOCUMENTATION-REORGANIZATION-COMPLETE.md`
 
 ---
@@ -3137,6 +3155,40 @@ CREATE TABLE pwd_file_uploads (
 );
 ```
 
+#### pwd_news_posts Table
+
+Stores news and announcements managed by administrators.
+
+```sql
+CREATE TABLE pwd_news_posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    excerpt TEXT NOT NULL,
+    content LONGTEXT NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    image_path VARCHAR(500) DEFAULT NULL,
+    image_alt VARCHAR(255) DEFAULT NULL,
+    status ENUM('draft', 'published', 'archived') DEFAULT 'draft',
+    published_at DATETIME DEFAULT NULL,
+    category VARCHAR(100) DEFAULT 'announcement',
+    created_by VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(100) DEFAULT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    view_count INT DEFAULT 0,
+    
+    INDEX idx_status (status),
+    INDEX idx_published_at (published_at),
+    INDEX idx_created_at (created_at),
+    INDEX idx_slug (slug)
+);
+```
+
+**Status Values:**
+- `draft` - Not visible to public
+- `published` - Visible on /news page
+- `archived` - Hidden but preserved
+
 ---
 
 ### File Upload System
@@ -3152,6 +3204,8 @@ xampp-php-mysql-files/
     ├── identity/               # Government IDs
     │   ├── identity_PWD-2024-00001_1702540801.pdf
     │   └── identity_PWD-2024-00002_1702541001.png
+    ├── news/                   # News featured images
+    │   └── 1702634521_image.jpg
     └── thumbnails/             # (Future: resized images)
 ```
 

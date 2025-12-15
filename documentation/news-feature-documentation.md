@@ -258,7 +258,7 @@ CREATE TABLE IF NOT EXISTS pwd_news_posts (
     image_alt VARCHAR(255) DEFAULT NULL,
     status ENUM('draft', 'published', 'archived') DEFAULT 'draft',
     published_at DATETIME DEFAULT NULL,
-    category VARCHAR(100) DEFAULT 'Announcement',
+    category VARCHAR(100) DEFAULT 'announcement',
     created_by VARCHAR(100) NOT NULL DEFAULT 'admin@dasma.gov.ph',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_by VARCHAR(100) DEFAULT NULL,
@@ -940,9 +940,12 @@ const result = await createNews({
 
 ### 6. Delete Post (news-admin-delete.php)
 
-**Endpoint**: `DELETE /api/news-admin-delete.php?id=5`
+**Endpoint**: `DELETE /api/news-admin-delete.php`
 
-Or POST with body: `{"id": 5}`
+**Supported Methods**:
+- `DELETE` with JSON body: `{"id": 5}`
+- `DELETE` with query param: `?id=5`
+- `POST` with JSON body: `{"id": 5}`
 
 **Response**:
 ```json

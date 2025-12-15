@@ -12,7 +12,7 @@ A **PWD Automated Application System** built using **React 19**, **PHP 8.2**, an
   <img src="/documentation/images/homepage-screenshot.png" alt="Homepage Screenshot" width="600"/>
 </p>
 
-> **Version 2.0** — Production-ready with PHP/MySQL backend, 18 API endpoints, file upload system, and admin review workflow.
+> **Version 2.0** — Production-ready with PHP/MySQL backend, 25 API endpoints, file upload system, admin review workflow, and news management.
 
 ---
 
@@ -46,6 +46,7 @@ A **PWD Automated Application System** built using **React 19**, **PHP 8.2**, an
     - [User Management](#user-management)
     - [Admin Management](#admin-management)
     - [File Management](#file-management)
+    - [News Management](#news-management)
   - [How to Contribute](#how-to-contribute)
   - [Contributors](#contributors)
       - [All Team Members](#all-team-members)
@@ -79,6 +80,7 @@ This system is designed to:
 | **Admin Dashboard** | Statistics, charts, application list, and management tools |
 | **Admin Review** | Approve/reject applications with notes and document review |
 | **Status Tracking** | Color-coded status badges (Pending/Accepted/Denied) |
+| **News & Announcements** | Admin-managed news posts with image uploads, categories, and publish workflow |
 | **Dual Authentication** | Separate login for users and administrators |
 
 ---
@@ -105,7 +107,7 @@ This system is designed to:
 
 - **PHP 8.2** on XAMPP
 - **MySQLi** with prepared statements
-- **18 RESTful API endpoints**
+- **25 RESTful API endpoints**
 - **File upload handling** with MIME validation
 
 ### Database
@@ -116,7 +118,7 @@ This system is designed to:
 
 - **MySQL** (PWDRegistry database)
 - **utf8mb4** collation for full Unicode support
-- **3 tables:** `pwd_users`, `admin_users`, `pwd_file_uploads`
+- **4 tables:** `pwd_users`, `admin_users`, `pwd_file_uploads`, `pwd_news_posts`
 
 ### Tools
 
@@ -243,7 +245,8 @@ PWD-Automated-Application-System/
 │   │       │   ├── loginApi.js
 │   │       │   ├── registrationApi.js
 │   │       │   ├── userApi.js
-│   │       │   └── adminApi.js
+│   │       │   ├── adminApi.js
+│   │       │   └── newsApi.js
 │   │       ├── components/         # Reusable components
 │   │       ├── pages/              # Page components
 │   │       │   ├── homepage/       # Public pages
@@ -254,7 +257,7 @@ PWD-Automated-Application-System/
 │   ├── xampp-php-mysql-files/      # PHP Backend
 │   │   ├── config.php              # Database configuration
 │   │   ├── master-setup.sql        # Database initialization
-│   │   ├── api/                    # 18 PHP API endpoints
+│   │   ├── api/                    # 25 PHP API endpoints
 │   │   └── uploads/                # Uploaded files storage
 │   │
 │   └── documentation/              # Feature documentation
@@ -308,6 +311,17 @@ PWD-Automated-Application-System/
 | `update-file-status.php` | POST | Update file status |
 | `update-all-files-status.php` | POST | Bulk update file status |
 
+### News Management
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `news-get-published.php` | GET | Get published news (paginated) |
+| `news-get-single.php` | GET | Get single news article by slug |
+| `news-admin-get-all.php` | GET | Admin: Get all news posts |
+| `news-admin-create.php` | POST | Admin: Create news post |
+| `news-admin-update.php` | POST | Admin: Update news post |
+| `news-admin-delete.php` | POST | Admin: Delete news post |
+| `news-upload-image.php` | POST | Admin: Upload news image |
+
 ---
 
 ## How to Contribute
@@ -344,9 +358,9 @@ PWD-Automated-Application-System/
 ## Documentation Guide
 
 ### Getting Started
-1. **Read** \`documentation/init-documentation.md\` for project setup
-2. **Review** \`documentation/database-documentation.md\` for schema details
-3. **Study** \`documentation/php-api-documentation.md\` for API reference
+1. **Read** `documentation/init-documentation.md` for project setup
+2. **Review** `documentation/database-documentation.md` for schema details
+3. **Study** `documentation/php-api-documentation.md` for API reference
 
 ### Documentation Links
 
@@ -354,7 +368,7 @@ PWD-Automated-Application-System/
 |----------|-------------|
 | [Init Documentation](documentation/init-documentation.md) | Complete project setup guide |
 | [Database Documentation](documentation/database-documentation.md) | MySQL schema and ER diagram |
-| [PHP API Documentation](documentation/php-api-documentation.md) | All 18 API endpoints |
+| [PHP API Documentation](documentation/php-api-documentation.md) | All 25 API endpoints |
 | [Function Documentation](documentation/function-documentation.md) | React function reference |
 | [File Upload Documentation](documentation/file-upload-feature-documentation.md) | File upload system guide |
 | [API Documentation](documentation/api-documentation.md) | Frontend API integration |
