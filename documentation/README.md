@@ -157,6 +157,31 @@ Documentation for PWD ID card QR code generation.
 
 ---
 
+### 8. **News & Announcements Feature** (`news-feature-documentation.md`) 🆕
+Complete guide to the news management system.
+
+**Contains:**
+- Feature overview and architecture diagrams
+- Public news page (news.jsx, news-article.jsx)
+- Admin CRUD dashboard (admin-news.jsx)
+- API wrapper (newsApi.js)
+- 7 PHP backend endpoints
+- Database schema (pwd_news_posts table)
+- Image upload support
+- Status management (draft/published/archived)
+- Server-side pagination
+- Quick setup guide
+- Troubleshooting
+
+**When to use:**
+- Working with news/announcements
+- Adding content management features
+- Understanding admin dashboards
+- Implementing CRUD interfaces
+- Working with image uploads
+
+---
+
 ## Technical Reference
 
 ### 9. **Backend Migration Documentation** (`backend-migration-documentation.md`)

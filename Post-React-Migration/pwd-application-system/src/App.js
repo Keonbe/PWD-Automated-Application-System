@@ -5,6 +5,7 @@ import UserHeader from './components/public-header';
 import UserFooter from './components/public-footer';
 import HomePage from './pages/homepage';
 import News from './pages/homepage/news';
+import NewsArticle from './pages/homepage/news-article';
 import FAQ from './pages/homepage/faq';
 import Resources from './pages/homepage/resources';
 import Contact from './pages/homepage/contact';
@@ -15,6 +16,7 @@ import RegisterResult from './pages/homepage/register-result';
 import UserPage from './pages/userpage/userpage';
 import AdminPage from './pages/adminpage/adminpage';
 import AdminVerify from './pages/adminpage/adminverify';
+import AdminNews from './pages/adminpage/admin-news';
 import './App.css';
 
 // Wrapper component to handle conditional rendering
@@ -44,6 +46,7 @@ const AppWrapper = () => {
           {/* Public routes with public header and footer */}
           <Route path="/" element={<HomePage />} />
           <Route path="/news" element={<News />} />
+          <Route path="/news/:slug" element={<NewsArticle />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/contact" element={<Contact />} />
@@ -61,6 +64,7 @@ const AppWrapper = () => {
             <Route path="/user/*" element={<UserPage />} />
             <Route path="/adminpage" element={<AdminPage />} />
             <Route path="/admin/adminverify" element={<AdminVerify />} />
+            <Route path="/admin/news" element={<AdminNews />} />
           </Route>
           
 

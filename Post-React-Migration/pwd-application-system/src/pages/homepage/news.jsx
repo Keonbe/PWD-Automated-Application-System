@@ -1,98 +1,78 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import '../../assets/styles/news-styles.css';
+import { getPublishedNews, formatNewsDate } from '../../api/newsApi';
 
 /**
- * TODO: Future enhancement - Admin post announcement (feature planned for admin side)
- * When implemented, this component should be:
- * 1. Accept new posts from the admin panel
- * 2. Store posts in a backend database or API (Hopefully a database)
- * 3. Fetch posts dynamically instead of hardcoding them (By making them a component, as well as dynamic using State or Props)
- * 4. Allow admin to create, edit, and delete news posts from admin panel
+ * News Component - Displays announcements and updates from the database
+ * 
+ * Features:
+ * - Fetches news posts from MySQL database via PHP API
+ * - Server-side pagination for efficient loading
+ * - Loading and error states
+ * - Responsive card grid layout
  */
 
 export default function News() {
-    /** 
-     * @summary News component for displaying announcements and updates. Static news data array containing announcement information.
-     * @param {Array} newsData - Array of news objects
-     * @remarks Currently hardcoded but designed for future replacement with API/database integration.
-     * Simple news data structure - can be replaced with API call or database query in future */
-    const newsData = [
-        {
-        id: 1,
-        title: "New PWD Services Available",
-        excerpt: "The City of Dasmariñas has launched new services for Persons with Disabilities. These include online application processing and mobile assistance units that visit communities.",
-        date: "September 01, 2025",
-        dateTime: "2025-09-01",
-        image: "https://placehold.co/600x400",
-        imageAlt: "Illustration of accessible services",
-        link: "news-page-1.html"
-        },
-        {
-        id: 2,
-        title: "Community Outreach Program",
-        excerpt: "Join our upcoming community outreach program designed to support PWD individuals and their families. Registration is now open for the October sessions.",
-        date: "September 02, 2025",
-        dateTime: "2025-09-02",
-        image: "https://placehold.co/600x400",
-        imageAlt: "Community gathering illustration",
-        link: "news-page-2.html"
-        },
-        {
-        id: 3,
-        title: "PWD ID Application Process Simplified",
-        excerpt: "We've simplified the PWD ID application process. Applicants can now submit documents online for faster processing and reduced wait times.",
-        date: "September 03, 2025",
-        dateTime: "2025-09-03",
-        image: "https://placehold.co/600x400",
-        imageAlt: "Document processing illustration",
-        link: "news-page-3.html"
-        },
-        {
-        id: 4,
-        title: "Accessibility Improvements in Public Spaces",
-        excerpt: "Major accessibility improvements have been completed in public parks throughout Dasmariñas, including ramps, tactile paving, and accessible restrooms.",
-        date: "September 04, 2025",
-        dateTime: "2025-09-02",
-        image: "https://placehold.co/600x400",
-        imageAlt: "Accessibility ramp illustration",
-        link: "news-page-4.html"
-        }
-    ];
-
-    const ITEMS_PER_PAGE = 2; // Number of news items per page; Can be set to 4-6 when news pages are populated
-    const [currentPage, setCurrentPage] = useState(1); // Tracks which page of news articles is currently being displayed.
-
-    /** 
-     * @summary Calculates pagination details and current news items to display.
-     * 
-     * @remarks
-     * Computes total pages, start/end indices, and slices the news data for current page.
-     * Automatically updates when currentPage state changes.
-     * 
-     * @param {number} totalPages - Total number of pages
-     * @param {number} startIndex - Starting index for current page
-     * @param {number} endIndex - Ending index for current page
-     * @returns {Object} Pagination details including current page, total pages, and item range
-    */
-
-    const totalPages = Math.ceil(newsData.length / ITEMS_PER_PAGE);
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    const currentNews = newsData.slice(startIndex, endIndex);
+    const ITEMS_PER_PAGE = 4; // Number of news items per page
+    
+    const [newsData, setNewsData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     /**
-     * @summary Handles page navigation changes in the pagination system.
-     * 
-     * @param {number} page - The target page number to navigate to.
-     * 
-     * @remarks
-     * Validates page boundaries before updating current page state.
-     * Prevents navigation to invalid pages outside the available range.
+     * Fetch news posts from API when component mounts or page changes
      */
-    // Handle page change
+    useEffect(() => {
+        const fetchNews = async () => {
+            setLoading(true);
+            setError(null);
+            
+            try {
+                const result = await getPublishedNews({
+                    page: currentPage,
+                    limit: ITEMS_PER_PAGE
+                });
+                
+                // Transform API data to match component structure
+                const transformedPosts = result.posts.map(post => ({
+                    id: post.id,
+                    title: post.title,
+                    excerpt: post.excerpt,
+                    date: formatNewsDate(post.publishedAt),
+                    dateTime: post.publishedAt?.split(' ')[0] || '',
+                    image: post.imagePath 
+                        ? `http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/${post.imagePath}`
+                        : 'https://placehold.co/600x400?text=News',
+                    imageAlt: post.imageAlt || post.title,
+                    slug: post.slug,
+                    category: post.category,
+                    viewCount: post.viewCount
+                }));
+                
+                setNewsData(transformedPosts);
+                setTotalPages(result.pagination.totalPages || 1);
+            } catch (err) {
+                console.error('Failed to fetch news:', err);
+                setError('Unable to load news. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchNews();
+    }, [currentPage]);
+
+    /**
+     * Handles page navigation changes in the pagination system.
+     * @param {number} page - The target page number to navigate to.
+     */
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPages) {
-        setCurrentPage(page);
+            setCurrentPage(page);
+            // Scroll to top of news section
+            document.getElementById('main-content')?.scrollIntoView({ behavior: 'smooth' });
         }
     };
 
@@ -112,13 +92,48 @@ export default function News() {
                 </div>
             </section>
 
+            {/* Loading State */}
+            {loading && (
+                <div className="text-center py-5">
+                    <div className="spinner-border text-success" role="status">
+                        <span className="visually-hidden">Loading news...</span>
+                    </div>
+                    <p className="mt-3 text-muted">Loading latest news...</p>
+                </div>
+            )}
+
+            {/* Error State */}
+            {error && !loading && (
+                <div className="alert alert-warning text-center" role="alert">
+                    <i className="fas fa-exclamation-triangle me-2"></i>
+                    {error}
+                    <button 
+                        className="btn btn-outline-warning btn-sm ms-3"
+                        onClick={() => setCurrentPage(1)}
+                    >
+                        <i className="fas fa-sync-alt me-1"></i> Retry
+                    </button>
+                </div>
+            )}
+
+            {/* Empty State */}
+            {!loading && !error && newsData.length === 0 && (
+                <div className="text-center py-5">
+                    <i className="fas fa-newspaper fa-3x text-muted mb-3"></i>
+                    <h3 className="text-muted">No News Available</h3>
+                    <p className="text-muted">Check back later for updates and announcements.</p>
+                </div>
+            )}
+
             {/* NEWS GRID COMPONENT */}
-            <NewsGrid 
-                news={currentNews} 
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-            />
+            {!loading && !error && newsData.length > 0 && (
+                <NewsGrid 
+                    news={newsData} 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
+            )}
             </section>
         </main>
         </>
@@ -134,10 +149,6 @@ export default function News() {
  * @param {number} totalPages - Total number of pages
  * @param {Function} onPageChange - Callback function for page changes
  * @returns {JSX.Element} Returns a grid of news cards with pagination controls
- * 
- * @remarks
- * Renders news articles in a responsive grid layout with top and bottom pagination.
- * Provides accessible navigation and semantic HTML structure for news content.
  */
 function NewsGrid({ news, currentPage, totalPages, onPageChange }) {
     return (
@@ -151,21 +162,26 @@ function NewsGrid({ news, currentPage, totalPages, onPageChange }) {
         />
 
         {/* NEWS GRID */}
-        {/* newsData object value */}
         <div className="row">
             {news.map((item) => (
             <div key={item.id} className="col-12 col-lg-6 mb-4">
                 <article className="news-card h-100">
-                <a href={item.link} className="text-decoration-none text-reset" aria-label={`Read more about ${item.title}`}>
+                <a href={`/news/${item.slug}`} className="text-decoration-none text-reset" aria-label={`Read more about ${item.title}`}>
                     <img className="card-image" src={item.image} alt={item.imageAlt} />
                     <div className="card-body">
                     <h2 className="post-title">{item.title}</h2>
                     <div className="post-sub">
                         <i className="fa-regular fa-calendar" aria-hidden="true"></i>
                         <time dateTime={item.dateTime}>{item.date}</time>
+                        {item.category && (
+                            <span className="ms-3">
+                                <i className="fa-solid fa-tag" aria-hidden="true"></i>
+                                <span className="ms-1">{item.category}</span>
+                            </span>
+                        )}
                     </div>
                     <p className="post-excerpt">{item.excerpt}</p>
-                    <a className="btn btn-success mt-3" href={item.link} role="button">Read More</a>
+                    <span className="btn btn-success mt-3" role="button">Read More</span>
                     </div>
                 </a>
                 </article>
