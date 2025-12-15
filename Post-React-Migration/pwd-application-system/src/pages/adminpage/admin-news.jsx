@@ -55,6 +55,8 @@ const AdminNews = () => {
         imageAlt: ''
     });
     const [imageFile, setImageFile] = useState(null);
+    const [fieldErrors, setFieldErrors] = useState({});  // Field-level validation errors
+    const [imageError, setImageError] = useState('');    // Image-specific error
 
     /**
      * Scroll to section in help modal
@@ -105,21 +107,79 @@ const AdminNews = () => {
      */
     const handleImageChange = (e) => {
         const file = e.target.files[0];
+        setImageError(''); // Clear previous error
+        console.log('File selected:', file ? file.name : 'No file');
+        
         if (file) {
+            console.log('File details:', {
+                name: file.name,
+                type: file.type,
+                size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
+            });
+            
             // Validate file type
             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
             if (!allowedTypes.includes(file.type)) {
-                setFormError('Invalid file type. Please upload JPG, PNG, GIF, or WebP.');
+                const errorMsg = `❌ Invalid file type "${file.type}". Please upload JPG, PNG, GIF, or WebP only.`;
+                console.log('❌ File rejected: Invalid type', file.type);
+                setImageError(errorMsg);
+                setImageFile(null);
+                e.target.value = ''; // Reset file input
                 return;
             }
+            
             // Validate file size (5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                setFormError('File size exceeds 5MB limit.');
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
+                const errorMsg = `❌ File too large (${fileSizeMB} MB). Maximum size is 5 MB.`;
+                console.log('❌ File rejected: Too large', file.size);
+                setImageError(errorMsg);
+                setImageFile(null);
+                e.target.value = ''; // Reset file input
                 return;
             }
+            
+            console.log('✅ File accepted, ready for upload');
             setImageFile(file);
-            setFormError('');
+            setImageError('');
         }
+    };
+
+    /**
+     * Validate form fields
+     */
+    const validateForm = () => {
+        const errors = {};
+        
+        if (!formData.title.trim()) {
+            errors.title = 'Title is required';
+        } else if (formData.title.trim().length < 5) {
+            errors.title = 'Title must be at least 5 characters';
+        } else if (formData.title.trim().length > 255) {
+            errors.title = 'Title must be less than 255 characters';
+        }
+        
+        if (!formData.excerpt.trim()) {
+            errors.excerpt = 'Excerpt is required';
+        } else if (formData.excerpt.trim().length < 10) {
+            errors.excerpt = 'Excerpt must be at least 10 characters';
+        } else if (formData.excerpt.trim().length > 500) {
+            errors.excerpt = 'Excerpt must be less than 500 characters';
+        }
+        
+        if (!formData.content.trim()) {
+            errors.content = 'Content is required';
+        } else if (formData.content.trim().length < 20) {
+            errors.content = 'Content must be at least 20 characters';
+        }
+        
+        if (!formData.category) {
+            errors.category = 'Please select a category';
+        }
+        
+        setFieldErrors(errors);
+        return Object.keys(errors).length === 0;
     };
 
     /**
@@ -137,6 +197,8 @@ const AdminNews = () => {
         });
         setImageFile(null);
         setFormError('');
+        setFieldErrors({});
+        setImageError('');
         setSelectedPost(null);
     };
 
@@ -164,6 +226,8 @@ const AdminNews = () => {
         });
         setImageFile(null);
         setFormError('');
+        setFieldErrors({});
+        setImageError('');
         setShowEditModal(true);
     };
 
@@ -180,15 +244,36 @@ const AdminNews = () => {
      */
     const handleCreate = async (e) => {
         e.preventDefault();
-        setFormLoading(true);
         setFormError('');
+        
+        // Validate form first
+        if (!validateForm()) {
+            setFormError('Please fix the errors below before submitting.');
+            return;
+        }
+        
+        // Check for image error
+        if (imageError) {
+            setFormError('Please fix the image error before submitting.');
+            return;
+        }
+        
+        setFormLoading(true);
 
         try {
             // Upload image if selected
             let imagePath = '';
             if (imageFile) {
-                const uploadResult = await uploadNewsImage(imageFile);
-                imagePath = uploadResult.path;
+                try {
+                    const uploadResult = await uploadNewsImage(imageFile);
+                    imagePath = uploadResult.path;
+                    console.log('✅ Image uploaded successfully:', uploadResult);
+                } catch (uploadErr) {
+                    console.error('❌ Image upload failed:', uploadErr);
+                    setFormError(`❌ Image upload failed: ${uploadErr.message}`);
+                    setFormLoading(false);
+                    return; // Stop if image upload fails
+                }
             }
 
             await createNews({
@@ -200,7 +285,7 @@ const AdminNews = () => {
             resetForm();
             fetchNews();
         } catch (err) {
-            setFormError(err.message || 'Failed to create post');
+            setFormError(`❌ Failed to create post: ${err.message}`);
         } finally {
             setFormLoading(false);
         }
@@ -213,15 +298,36 @@ const AdminNews = () => {
         e.preventDefault();
         if (!selectedPost) return;
         
-        setFormLoading(true);
         setFormError('');
+        
+        // Validate form first
+        if (!validateForm()) {
+            setFormError('Please fix the errors below before submitting.');
+            return;
+        }
+        
+        // Check for image error
+        if (imageError) {
+            setFormError('Please fix the image error before submitting.');
+            return;
+        }
+        
+        setFormLoading(true);
 
         try {
             // Upload new image if selected
             let imagePath = formData.imagePath;
             if (imageFile) {
-                const uploadResult = await uploadNewsImage(imageFile);
-                imagePath = uploadResult.path;
+                try {
+                    const uploadResult = await uploadNewsImage(imageFile);
+                    imagePath = uploadResult.path;
+                    console.log('✅ Image uploaded successfully:', uploadResult);
+                } catch (uploadErr) {
+                    console.error('❌ Image upload failed:', uploadErr);
+                    setFormError(`❌ Image upload failed: ${uploadErr.message}`);
+                    setFormLoading(false);
+                    return; // Stop if image upload fails
+                }
             }
 
             await updateNews(selectedPost.id, {
@@ -233,7 +339,7 @@ const AdminNews = () => {
             resetForm();
             fetchNews();
         } catch (err) {
-            setFormError(err.message || 'Failed to update post');
+            setFormError(`❌ Failed to update post: ${err.message}`);
         } finally {
             setFormLoading(false);
         }
@@ -465,46 +571,67 @@ const AdminNews = () => {
                             <form onSubmit={showCreateModal ? handleCreate : handleUpdate} style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
                                 <div className="modal-body" style={{ overflowY: 'auto', flex: 1 }}>
                                     {formError && (
-                                        <div className="alert alert-danger">{formError}</div>
+                                        <div className="alert alert-danger">
+                                            <i className="fas fa-exclamation-circle me-2"></i>
+                                            {formError}
+                                        </div>
                                     )}
 
                                     <div className="mb-3">
                                         <label className="form-label">Title *</label>
                                         <input
                                             type="text"
-                                            className="form-control"
+                                            className={`form-control ${fieldErrors.title ? 'is-invalid' : formData.title.trim().length >= 5 ? 'is-valid' : ''}`}
                                             name="title"
                                             value={formData.title}
                                             onChange={handleInputChange}
-                                            required
-                                            placeholder="Enter post title"
+                                            placeholder="Enter post title (min 5 characters)"
                                         />
+                                        {fieldErrors.title && (
+                                            <div className="invalid-feedback">
+                                                <i className="fas fa-exclamation-triangle me-1"></i>
+                                                {fieldErrors.title}
+                                            </div>
+                                        )}
+                                        <small className="text-muted">{formData.title.length}/255 characters</small>
                                     </div>
 
                                     <div className="mb-3">
                                         <label className="form-label">Excerpt *</label>
                                         <textarea
-                                            className="form-control"
+                                            className={`form-control ${fieldErrors.excerpt ? 'is-invalid' : formData.excerpt.trim().length >= 10 ? 'is-valid' : ''}`}
                                             name="excerpt"
                                             value={formData.excerpt}
                                             onChange={handleInputChange}
-                                            required
                                             rows="2"
-                                            placeholder="Brief description for preview cards"
+                                            placeholder="Brief description for preview cards (min 10 characters)"
                                         />
+                                        {fieldErrors.excerpt && (
+                                            <div className="invalid-feedback">
+                                                <i className="fas fa-exclamation-triangle me-1"></i>
+                                                {fieldErrors.excerpt}
+                                            </div>
+                                        )}
+                                        <small className="text-muted">{formData.excerpt.length}/500 characters</small>
                                     </div>
 
                                     <div className="mb-3">
                                         <label className="form-label">Content * (HTML supported)</label>
                                         <textarea
-                                            className="form-control"
+                                            className={`form-control ${fieldErrors.content ? 'is-invalid' : formData.content.trim().length >= 20 ? 'is-valid' : ''}`}
                                             name="content"
                                             value={formData.content}
                                             onChange={handleInputChange}
-                                            required
                                             rows="8"
-                                            placeholder="Full article content (HTML tags supported)"
+                                            placeholder="Full article content - HTML tags supported (min 20 characters)"
                                         />
+                                        {fieldErrors.content && (
+                                            <div className="invalid-feedback">
+                                                <i className="fas fa-exclamation-triangle me-1"></i>
+                                                {fieldErrors.content}
+                                            </div>
+                                        )}
+                                        <small className="text-muted">{formData.content.length} characters</small>
                                     </div>
 
                                     <div className="row">
@@ -522,9 +649,9 @@ const AdminNews = () => {
                                             </select>
                                         </div>
                                         <div className="col-md-6 mb-3">
-                                            <label className="form-label">Category</label>
+                                            <label className="form-label">Category *</label>
                                             <select
-                                                className="form-select"
+                                                className={`form-select ${fieldErrors.category ? 'is-invalid' : formData.category ? 'is-valid' : ''}`}
                                                 name="category"
                                                 value={formData.category}
                                                 onChange={handleInputChange}
@@ -538,6 +665,12 @@ const AdminNews = () => {
                                                 <option value="Partnership">Partnership</option>
                                                 <option value="Other">Other</option>
                                             </select>
+                                            {fieldErrors.category && (
+                                                <div className="invalid-feedback">
+                                                    <i className="fas fa-exclamation-triangle me-1"></i>
+                                                    {fieldErrors.category}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
@@ -545,24 +678,33 @@ const AdminNews = () => {
                                         <label className="form-label">Featured Image</label>
                                         <input
                                             type="file"
-                                            className="form-control"
+                                            className={`form-control ${imageError ? 'is-invalid' : imageFile ? 'is-valid' : ''}`}
                                             accept="image/jpeg,image/png,image/gif,image/webp"
                                             onChange={handleImageChange}
                                         />
-                                        <small className="text-muted">Max 5MB. Supported: JPG, PNG, GIF, WebP</small>
-                                        {formData.imagePath && !imageFile && (
-                                            <div className="mt-2">
-                                                <small className="text-success">
+                                        {imageError && (
+                                            <div className="invalid-feedback d-block">
+                                                <i className="fas fa-exclamation-triangle me-1"></i>
+                                                {imageError}
+                                            </div>
+                                        )}
+                                        <small className="text-muted d-block mt-1">
+                                            <i className="fas fa-info-circle me-1"></i>
+                                            Max 5MB. Supported formats: JPG, PNG, GIF, WebP
+                                        </small>
+                                        {formData.imagePath && !imageFile && !imageError && (
+                                            <div className="mt-2 alert alert-info py-1 px-2">
+                                                <small>
                                                     <i className="fas fa-image me-1"></i>
-                                                    Current: {formData.imagePath}
+                                                    Current image: {formData.imagePath}
                                                 </small>
                                             </div>
                                         )}
-                                        {imageFile && (
-                                            <div className="mt-2">
-                                                <small className="text-info">
-                                                    <i className="fas fa-upload me-1"></i>
-                                                    New file: {imageFile.name}
+                                        {imageFile && !imageError && (
+                                            <div className="mt-2 alert alert-success py-1 px-2">
+                                                <small>
+                                                    <i className="fas fa-check-circle me-1"></i>
+                                                    Ready to upload: {imageFile.name} ({(imageFile.size / 1024 / 1024).toFixed(2)} MB)
                                                 </small>
                                             </div>
                                         )}

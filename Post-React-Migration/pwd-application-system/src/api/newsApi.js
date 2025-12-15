@@ -227,20 +227,31 @@ export const deleteNews = async (postId) => {
  * @returns {Promise<Object>} - Upload result with file path
  */
 export const uploadNewsImage = async (imageFile) => {
+  console.log('[uploadNewsImage] Starting upload...');
+  console.log('[uploadNewsImage] File:', imageFile.name, imageFile.type, `${(imageFile.size / 1024 / 1024).toFixed(2)} MB`);
+  
   try {
     const formData = new FormData();
     formData.append('image', imageFile);
+    
+    console.log('[uploadNewsImage] Sending to:', `${API_BASE}/news-upload-image.php`);
     
     const response = await fetch(`${API_BASE}/news-upload-image.php`, {
       method: 'POST',
       body: formData
     });
     
+    console.log('[uploadNewsImage] Response status:', response.status);
+    
     const data = await response.json();
+    console.log('[uploadNewsImage] Response data:', data);
     
     if (!data.success) {
+      console.error('❌ [uploadNewsImage] Server error:', data.error);
       throw new Error(data.error || 'Failed to upload image');
     }
+    
+    console.log('✅ [uploadNewsImage] Upload successful:', data.data.path);
     
     return {
       filename: data.data.filename,
@@ -250,7 +261,7 @@ export const uploadNewsImage = async (imageFile) => {
       mimeType: data.data.mimeType
     };
   } catch (error) {
-    console.error('Error uploading news image:', error);
+    console.error('❌ [uploadNewsImage] Error:', error);
     throw error;
   }
 };
