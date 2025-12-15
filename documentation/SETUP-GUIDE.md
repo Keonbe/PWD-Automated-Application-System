@@ -279,22 +279,18 @@ cd "Post-React-Migration/xampp-php-mysql-files"
 mkdir -p uploads
 
 # Create subdirectories for each file type
-mkdir -p uploads/id_picture
-mkdir -p uploads/valid_id
-mkdir -p uploads/medical_certificate
-mkdir -p uploads/barangay_certificate
-mkdir -p uploads/signature
+mkdir -p uploads/certificates
+mkdir -p uploads/identity
+mkdir -p uploads/thumbnails
 mkdir -p uploads/news  # For news feature
 ```
 
 **Windows (PowerShell):**
 ```powershell
 $basePath = "Post-React-Migration/xampp-php-mysql-files/uploads"
-New-Item -ItemType Directory -Force -Path "$basePath/id_picture"
-New-Item -ItemType Directory -Force -Path "$basePath/valid_id"
-New-Item -ItemType Directory -Force -Path "$basePath/medical_certificate"
-New-Item -ItemType Directory -Force -Path "$basePath/barangay_certificate"
-New-Item -ItemType Directory -Force -Path "$basePath/signature"
+New-Item -ItemType Directory -Force -Path "$basePath/certificates"
+New-Item -ItemType Directory -Force -Path "$basePath/identity"
+New-Item -ItemType Directory -Force -Path "$basePath/thumbnails"
 New-Item -ItemType Directory -Force -Path "$basePath/news"
 ```
 
@@ -610,3 +606,28 @@ If you encounter issues not covered in this guide:
 ---
 
 *This documentation is for the PWD Automated Application System developed for the City of Dasmariñas.*
+
+---
+**BIG NOTE — Local URL spacing issue (Action Required)**
+
+- **Issue:** Some example URLs and the `PHP_BASE_URL` in `src/api/config.js` contain unescaped spaces because the project path includes the folder name "PWD AUTOMATED APPLICATION SYSTEM". Unescaped spaces in URLs can cause requests from browsers, `curl`, or libraries like `axios` to fail or behave inconsistently.
+
+- **Why it matters:** Developers running the app locally may see intermittent CORS/fetch errors, 404s, or malformed-request errors when the URL is not encoded or when tools do not automatically escape spaces.
+
+- **Workarounds / Fixes:**
+    - Percent-encode spaces in URLs (replace spaces with `%20`). Example:
+
+```text
+http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api
+```
+
+    - Better: configure a local virtual host or alias (recommended). Map a host like `pwd.local` to your project directory and use cleaner URLs:
+
+```text
+http://pwd.local/xampp-php-mysql-files/api
+```
+
+    - Update `src/api/config.js` to use the percent-encoded path or the virtual-host URL before starting the React dev server.
+
+- **Status:** This is a known issue and is being investigated. Please follow one of the workarounds above to avoid runtime URL problems. We will update the documentation and codebase with a permanent fix (virtual host recommendation and example `hosts`/Apache config) soon.
+
