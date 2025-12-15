@@ -20,6 +20,53 @@ const AdminVerify = () => {
   const [filesLoading, setFilesLoading] = useState(false);
 
   /**
+   * @summary Updates the status of an individual applicant file (document).
+   *
+   * @param {number} fileId - The file's unique ID.
+   * @param {string} newStatus - The new status: 'approved' or 'rejected'.
+   * @returns {Promise<void>}
+   *
+   * @remarks
+   * Calls update-file-status.php endpoint to update a single document's status.
+   * Updates UI state on success.
+   */
+  const handleFileStatusUpdate = async (fileId, newStatus) => {
+    try {
+      const response = await fetch(
+        `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/update-file-status.php`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ fileId, status: newStatus }),
+        }
+      );
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonErr) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        alert("Server error: " + text);
+        return;
+      }
+      if (data.success) {
+        setApplicantFiles((prevFiles) =>
+          prevFiles.map((file) =>
+            file.id === fileId ? { ...file, status: newStatus } : file
+          )
+        );
+      } else {
+        alert("Failed to update document status: " + (data.error || data.message || "Unknown error"));
+      }
+    } catch (error) {
+      console.error('Error updating document status:', error);
+      alert("Error updating document status: " + error.message);
+    }
+  };
+
+  /**
    * @summary Opens document in new browser tab for viewing.
    * 
    * @param {number} fileId - File ID from pwd_file_uploads table
@@ -324,14 +371,34 @@ const AdminVerify = () => {
                           <small>{new Date(file.uploadedAt).toLocaleDateString()}</small>
                         </td>
                         <td>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-info"
-                            title="View document"
-                            onClick={() => handleViewDocument(file.id)}
-                          >
-                            <i className="fas fa-eye"></i>
-                          </button>
+                          <div className="btn-group" role="group">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-success"
+                              title="Approve document"
+                              disabled={file.status === 'approved'}
+                              onClick={() => handleFileStatusUpdate(file.id, 'approved')}
+                            >
+                              <i className="fas fa-check"></i>
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-danger"
+                              title="Reject document"
+                              disabled={file.status === 'rejected'}
+                              onClick={() => handleFileStatusUpdate(file.id, 'rejected')}
+                            >
+                              <i className="fas fa-times"></i>
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-info"
+                              title="View document"
+                              onClick={() => handleViewDocument(file.id)}
+                            >
+                              <i className="fas fa-eye"></i>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
