@@ -382,14 +382,14 @@ const AdminNews = () => {
             <main className="admin-content">
                 <div className="container-fluid p-4">
                     {/* Header */}
-                    <div className="d-flex justify-content-between align-items-center mb-4">
+                    <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                         <div>
                             <h1 className="h3 mb-0">News Management</h1>
-                            <p className="text-muted mb-0">Create and manage news posts</p>
+                            <p className="text-muted mb-0 d-none d-sm-block">Create and manage news posts</p>
                         </div>
-                        <div className="d-flex gap-2">
+                        <div className="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto" style={{ maxWidth: '300px' }}>
                             <button 
-                                className="btn btn-outline-secondary"
+                                className="btn btn-outline-secondary flex-grow-1"
                                 onClick={() => setShowHelpModal(true)}
                                 title="Help & Guide"
                             >
@@ -397,7 +397,7 @@ const AdminNews = () => {
                                 Help
                             </button>
                             <button 
-                                className="btn btn-success"
+                                className="btn btn-success flex-grow-1"
                                 onClick={handleOpenCreate}
                             >
                                 <i className="fas fa-plus me-2"></i>
@@ -409,19 +409,20 @@ const AdminNews = () => {
                     {/* Status Filter Tabs */}
                     <div className="card mb-4">
                         <div className="card-body p-2">
-                            <div className="btn-group w-100" role="group">
+                            <div className="row g-2" role="group">
                                 {['all', 'published', 'draft', 'archived'].map(status => (
-                                    <button
-                                        key={status}
-                                        type="button"
-                                        className={`btn ${statusFilter === status ? 'btn-success' : 'btn-outline-success'}`}
-                                        onClick={() => { setStatusFilter(status); setCurrentPage(1); }}
-                                    >
-                                        {status.charAt(0).toUpperCase() + status.slice(1)}
-                                        <span className="badge bg-light text-dark ms-2">
-                                            {statusCounts[status] || 0}
-                                        </span>
-                                    </button>
+                                    <div key={status} className="col-6 col-sm-3">
+                                        <button
+                                            type="button"
+                                            className={`btn w-100 ${statusFilter === status ? 'btn-success' : 'btn-outline-success'}`}
+                                            onClick={() => { setStatusFilter(status); setCurrentPage(1); }}
+                                        >
+                                            {status.charAt(0).toUpperCase() + status.slice(1)}
+                                            <span className="badge bg-light text-dark ms-1">
+                                                {statusCounts[status] || 0}
+                                            </span>
+                                        </button>
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -444,14 +445,14 @@ const AdminNews = () => {
                                 </div>
                             ) : (
                                 <div className="table-responsive">
-                                    <table className="table table-hover">
+                                    <table className="table table-hover align-middle">
                                         <thead>
                                             <tr>
                                                 <th>Title</th>
                                                 <th>Status</th>
-                                                <th>Category</th>
-                                                <th>Views</th>
-                                                <th>Created</th>
+                                                <th className="d-none d-lg-table-cell">Category</th>
+                                                <th className="d-none d-md-table-cell">Views</th>
+                                                <th className="d-none d-md-table-cell">Created</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -459,17 +460,17 @@ const AdminNews = () => {
                                             {posts.map(post => (
                                                 <tr key={post.id}>
                                                     <td>
-                                                        <div className="fw-medium">{post.title}</div>
-                                                        <small className="text-muted">{post.slug}</small>
+                                                        <div className="fw-medium text-truncate" style={{ maxWidth: '200px' }}>{post.title}</div>
+                                                        <small className="text-muted d-none d-sm-block text-truncate" style={{ maxWidth: '180px' }}>{post.slug}</small>
                                                     </td>
                                                     <td>
                                                         <span className={`badge ${getStatusBadgeClass(post.status)}`}>
                                                             {post.status}
                                                         </span>
                                                     </td>
-                                                    <td>{post.category || '-'}</td>
-                                                    <td>{post.viewCount || 0}</td>
-                                                    <td>{formatNewsDate(post.createdAt)}</td>
+                                                    <td className="d-none d-lg-table-cell">{post.category || '-'}</td>
+                                                    <td className="d-none d-md-table-cell">{post.viewCount || 0}</td>
+                                                    <td className="d-none d-md-table-cell">{formatNewsDate(post.createdAt)}</td>
                                                     <td>
                                                         <div className="btn-group btn-group-sm">
                                                             <button
