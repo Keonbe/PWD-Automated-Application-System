@@ -341,7 +341,7 @@ Verify the API is working:
 **Test Published News Endpoint:**
 ```bash
 # Using curl
-curl "http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/news-get-published.php"
+curl "http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/news-get-published.php"
 
 # Expected response (with sample data):
 # {"success":true,"posts":[...],"pagination":{"total":4,...}}
@@ -349,12 +349,12 @@ curl "http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-
 
 **Test Single Post Endpoint:**
 ```bash
-curl "http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/news-get-single.php?slug=new-pwd-services-available"
+curl "http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/news-get-single.php?slug=new-pwd-services-available"
 ```
 
 **Using PowerShell:**
 ```powershell
-(Invoke-WebRequest -Uri 'http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/news-get-published.php' -UseBasicParsing).Content
+(Invoke-WebRequest -Uri 'http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/news-get-published.php' -UseBasicParsing).Content
 ```
 
 ### Step 3: React Frontend Setup
@@ -588,9 +588,9 @@ npm start
 1. **Public News**: Navigate to http://localhost:3000/news - should show 4 sample posts
 2. **Admin News**: Navigate to http://localhost:3000/admin/news - should show management table
 3. **API Test**: Run in terminal:
-   ```bash
-   curl "http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/news-get-published.php"
-   ```
+    ```bash
+    curl "http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/news-get-published.php"
+    ```
    Should return JSON with `success: true` and posts array
 
 ---

@@ -103,7 +103,7 @@ echo json_encode([
     'data' => [
         'filename' => $newFilename,
         'path' => $relativePath,
-        'url' => "http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/{$relativePath}",
+        'url' => "http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/{$relativePath}",
         'size' => $file['size'],
         'mimeType' => $mimeType
     ]

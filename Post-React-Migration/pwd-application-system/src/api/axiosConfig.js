@@ -12,5 +12,5 @@ const api = axios.create({
 
 export default api;
 
-// To be read as(see example, enclose in brackets `{}`):
-// C:\Users\admin\xampp\8.2.12-0\htdocs\{webdev_finals\PWD AUTOMATED APPLICATION SYSTEM\PWD-Automated-Application-System\Post-React-Migration\xampp-php-mysql-files/api}
+// To be read as (see example, enclose in brackets `{}`):
+// C:\Users\admin\xampp\8.2.12-0\htdocs\webdev_finals\PWD-Automated-Application-System\Post-React-Migration\xampp-php-mysql-files\api\
