@@ -106,7 +106,7 @@ C:\xampp\htdocs\
 
 **Create Symbolic Link (Run as Administrator):**
 ```cmd
-mklink /D "C:\xampp\htdocs\pwd-api" "C:\Users\admin\Documents\PROGRAMMING FILES\WebDev Projects and Files\WebDev Subject\Project\PWD AUTOMATED APPLICATION SYSTEM\PWD-Automated-Application-System\Post-React-Migration\xampp-php-mysql-files\api"
+mklink /D "C:\xampp\htdocs\pwd-api" "C:\Users\admin\Documents\PROGRAMMING FILES\WebDev Projects and Files\WebDev Subject\Project\PWD-Automated-Application-System\PWD-Automated-Application-System\Post-React-Migration\xampp-php-mysql-files\api"
 ```
 
 **Benefits:**

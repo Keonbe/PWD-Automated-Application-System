@@ -1108,7 +1108,7 @@ The file upload feature integrates with the PHP backend through direct fetch cal
 
 ```javascript
 // Upload API endpoint
-const API_BASE = 'http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api';
+const API_BASE = 'http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api';
 
 // Upload file after registration
 await fetch(`${API_BASE}/upload.php`, {

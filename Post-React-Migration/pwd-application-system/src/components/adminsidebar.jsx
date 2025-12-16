@@ -33,6 +33,11 @@ const AdminSidebar = () => {
       label: "Applicants",
     },
     {
+      path: "/admin/news",
+      iconClass: "fas fa-newspaper me-2",
+      label: "News",
+    },
+    {
       path: "/logout",
       iconClass: "fas fa-right-from-bracket me-2",
       label: "Log Out",
