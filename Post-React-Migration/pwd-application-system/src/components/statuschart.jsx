@@ -19,14 +19,13 @@ export default function StatusChart({
   height = 400,
   invert = false,
 }) {
-  const [data, setData] = useState(chartData || []);
-
-  // normalizeStatus and barColors are imported from shared utils
+  // Use prop directly if provided, otherwise manage fetched data in state
+  const [fetchedData, setFetchedData] = useState([]);
+  const data = chartData && chartData.length > 0 ? chartData : fetchedData;
 
   useEffect(() => {
-    // If chartData prop provided, use it and skip fetch
-    if (chartData) {
-      setData(chartData);
+    // Only fetch if no chartData prop provided
+    if (chartData && chartData.length > 0) {
       return;
     }
 
@@ -47,19 +46,23 @@ export default function StatusChart({
           Applications: count,
         }));
 
-        setData(chart);
+        setFetchedData(chart);
       } catch (err) {
         console.error("Error fetching chart data:", err);
       }
     };
 
     fetchData();
-  }, [chartData]);
+  }, []);
 
   const legendItems = Object.keys(barColors).map((key) => ({
     label: key.charAt(0).toUpperCase() + key.slice(1),
     color: barColors[key],
   }));
+
+  // Filter out zero values for cleaner chart
+  const filteredData = data.filter((item) => item.Applications > 0);
+  const hasZeroValues = data.length > filteredData.length;
 
   return (
     <div
@@ -70,18 +73,30 @@ export default function StatusChart({
         boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
         padding: "1.5em",
       }}>
-      {data && data.length > 0 ? (
+      {data && data.length > 0 && filteredData.length > 0 ? (
         <>
           <ResponsiveContainer width="100%" height={height}>
             <BarChart
-              data={data}
+              data={filteredData}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Bar dataKey="Applications" radius={[10, 10, 0, 0]}>
-                {data.map((entry, index) => (
+              <CartesianGrid
+                strokeDasharray="0"
+                stroke="#f0f0f0"
+                vertical={false}
+              />
+              <XAxis dataKey="name" stroke="#888" />
+              <YAxis allowDecimals={false} stroke="#888" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#fff",
+                  border: "1px solid #e0e0e0",
+                  borderRadius: "0.5rem",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                }}
+                formatter={(value) => [`${value} applications`, "Count"]}
+              />
+              <Bar dataKey="Applications" radius={[12, 12, 0, 0]}>
+                {filteredData.map((entry, index) => (
                   <Cell
                     key={index}
                     fill={barColors[normalizeStatus(entry.name)] || "#6c757d"}
@@ -92,8 +107,8 @@ export default function StatusChart({
           </ResponsiveContainer>
 
           <div
-            className="chart-legend d-flex justify-content-center mt-2"
-            style={{ gap: "1rem", flexWrap: "wrap", alignItems: "center" }}
+            className="chart-legend d-flex justify-content-center mt-4"
+            style={{ gap: "1.2rem", flexWrap: "wrap", alignItems: "center" }}
             role="list"
             aria-label="Application status legend">
             {legendItems.map((item) => (
@@ -103,28 +118,28 @@ export default function StatusChart({
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.5rem",
+                  gap: "0.6rem",
                   color: invert ? "#fff" : "#212529",
                   fontSize: "0.9rem",
                 }}>
                 <span
                   aria-hidden="true"
                   style={{
-                    width: 10,
-                    height: 10,
+                    width: 12,
+                    height: 12,
                     borderRadius: "50%",
                     background: item.color,
                     display: "inline-block",
                     boxShadow: invert
                       ? "0 0 0 2px rgba(255,255,255,0.12) inset"
-                      : "none",
+                      : "0 2px 4px rgba(0,0,0,0.1)",
                     border: invert
                       ? "1px solid rgba(255,255,255,0.08)"
                       : "none",
                   }}></span>
                 <span
                   style={{
-                    color: invert ? "#fff" : item.color,
+                    color: invert ? "#fff" : "#333",
                     fontWeight: 500,
                   }}>
                   {item.label}
@@ -134,7 +149,10 @@ export default function StatusChart({
           </div>
         </>
       ) : (
-        <p className="text-center text-muted">Loading chart data...</p>
+        <div className="text-center text-muted py-5">
+          <i className="fas fa-inbox fa-2x mb-3 d-block opacity-50"></i>
+          <p className="mb-0">No results found</p>
+        </div>
       )}
     </div>
   );
