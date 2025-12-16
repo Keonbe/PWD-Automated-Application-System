@@ -300,12 +300,12 @@ Test that the API is accessible:
 
 ```bash
 # Test a simple endpoint
-curl "http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/get-all-applications.php"
+curl "http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/get-all-applications.php"
 ```
 
 **PowerShell:**
 ```powershell
-(Invoke-WebRequest -Uri 'http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/get-all-applications.php' -UseBasicParsing).Content
+(Invoke-WebRequest -Uri 'http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/get-all-applications.php' -UseBasicParsing).Content
 ```
 
 **Expected response:**
@@ -336,7 +336,7 @@ This may take 2-5 minutes. Wait for completion.
 Check `src/api/config.js` has the correct API URL:
 
 ```javascript
-export const PHP_BASE_URL = 'http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api';
+export const PHP_BASE_URL = 'http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api';
 ```
 
 **Adjust the path if your project is in a different location!**
@@ -618,7 +618,7 @@ If you encounter issues not covered in this guide:
     - Percent-encode spaces in URLs (replace spaces with `%20`). Example:
 
 ```text
-http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api
+http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api
 ```
 
     - Better: configure a local virtual host or alias (recommended). Map a host like `pwd.local` to your project directory and use cleaner URLs:

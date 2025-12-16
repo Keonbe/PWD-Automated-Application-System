@@ -28,7 +28,7 @@ export default function UserPage() {
 
   // View document in new tab
   const handleViewDocument = (fileId) => {
-    const viewUrl = `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-view.php?fileId=${fileId}`;
+    const viewUrl = `http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-view.php?fileId=${fileId}`;
     window.open(viewUrl, '_blank');
   };
 
@@ -113,7 +113,7 @@ export default function UserPage() {
     setFilesError(null);
     try {
       const response = await fetch(
-        `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/files.php?regNumber=${userData.regNumber}`
+        `http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/files.php?regNumber=${userData.regNumber}`
       );
       const data = await response.json();
       if (data.success) {
@@ -847,7 +847,7 @@ export default function UserPage() {
                                 <i className="fas fa-eye"></i>
                               </button>
                               <a 
-                                href={`http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-download.php?fileId=${file.id}`}
+                                href={`http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-download.php?fileId=${file.id}`}
                                 className="btn btn-outline-primary"
                                 title="Download document"
                                 download

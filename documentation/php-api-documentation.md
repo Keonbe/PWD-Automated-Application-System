@@ -1,7 +1,7 @@
 # PWD Automated Application System - PHP API Documentation
 
 > **API Framework:** PHP 8.2 with MySQLi  
-> **Base URL:** `http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/`  
+> **Base URL:** `http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/`  
 > **Frontend:** React 19+ (POST-React-Migration)  
 > **Version:** 2.1  
 > **Last Updated:** December 15, 2025
@@ -1679,10 +1679,10 @@ $database = getenv('DB_NAME') ?? 'PWDRegistry';
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api',
-    headers: {
-        'Content-Type': 'application/json',
-    }
+  baseURL: 'http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api',
+  headers: {
+    'Content-Type': 'application/json',
+  }
 });
 
 // Add request interceptor for authentication

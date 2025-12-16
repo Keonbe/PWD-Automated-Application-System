@@ -296,7 +296,7 @@ $conn->set_charset("utf8mb4");
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api",
+  baseURL: "http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -310,7 +310,7 @@ export default api;
 ```javascript
 export const API_MODE = 'php';  // Production mode
 
-export const PHP_BASE_URL = 'http://localhost/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api';
+export const PHP_BASE_URL = 'http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api';
 
 export const isPhpMode = () => API_MODE === 'php';
 ```
@@ -347,7 +347,7 @@ npm start
 
 ```bash
 # Test user login endpoint
-curl -X POST http://localhost/webdev_finals/PWD%20AUTOMATED%20APPLICATION%20SYSTEM/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/user-login.php \
+curl -X POST http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/user-login.php \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"test123"}'
 ```
