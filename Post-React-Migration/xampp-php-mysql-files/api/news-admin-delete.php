@@ -22,7 +22,12 @@ require_once '../config.php';
 
 // Support both DELETE with query param and POST with body
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    // Try to get ID from query param first, then from body
     $postId = isset($_GET['id']) ? intval($_GET['id']) : null;
+    if (!$postId) {
+        $input = json_decode(file_get_contents('php://input'), true);
+        $postId = isset($input['id']) ? intval($input['id']) : null;
+    }
 } else {
     $input = json_decode(file_get_contents('php://input'), true);
     $postId = isset($input['id']) ? intval($input['id']) : null;

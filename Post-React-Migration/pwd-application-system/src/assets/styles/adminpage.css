@@ -235,56 +235,56 @@
     align-items: flex-start !important;
     gap: 1rem;
   }
-  
+
   .admin-content .d-flex.justify-content-between > div:first-child {
     width: 100%;
   }
-  
+
   .admin-content .d-flex.justify-content-between > .d-flex.gap-2,
   .admin-content .d-flex.justify-content-between > button {
     width: 100%;
     display: flex;
     gap: 0.5rem;
   }
-  
+
   .admin-content .d-flex.justify-content-between > .d-flex.gap-2 > button,
   .admin-content .d-flex.justify-content-between > .d-flex.gap-2 > .btn {
     flex: 1;
   }
-  
+
   /* Status filter tabs - make scrollable */
   .admin-content .btn-group.w-100 {
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   .admin-content .btn-group.w-100 .btn {
     flex: 0 0 auto;
     white-space: nowrap;
     padding: 0.5rem 0.75rem;
     font-size: 0.85rem;
   }
-  
+
   .admin-content .btn-group.w-100 .btn .badge {
     font-size: 0.7rem;
   }
-  
+
   /* Table responsive improvements */
   .table-responsive {
     margin: 0 -0.5rem;
   }
-  
+
   .table {
     font-size: 0.85rem;
   }
-  
+
   .table th,
   .table td {
     padding: 0.5rem;
     white-space: nowrap;
   }
-  
+
   /* Hide less important columns on mobile */
   .table th:nth-child(4),
   .table td:nth-child(4),
@@ -292,18 +292,18 @@
   .table td:nth-child(5) {
     display: none;
   }
-  
+
   /* Action buttons smaller */
   .btn-group-sm .btn {
     padding: 0.25rem 0.4rem;
     font-size: 0.75rem;
   }
-  
+
   /* Page title */
   .admin-content h1.h3 {
     font-size: 1.25rem;
   }
-  
+
   .admin-content p.text-muted {
     font-size: 0.85rem;
   }
@@ -314,48 +314,48 @@
   .admin-content {
     padding: 0.75rem;
   }
-  
+
   .admin-content .container-fluid {
     padding: 0.5rem !important;
   }
-  
+
   .admin-content .card {
     border-radius: 0.5rem;
   }
-  
+
   .admin-content .card-body {
     padding: 0.75rem;
   }
-  
+
   /* Stack header buttons vertically */
   .admin-content .d-flex.gap-2 {
     flex-direction: column;
     width: 100%;
   }
-  
+
   .admin-content .d-flex.gap-2 > button,
   .admin-content .d-flex.gap-2 > .btn {
     width: 100%;
   }
-  
+
   /* Filter tabs - stack or scroll */
   .admin-content .btn-group.w-100 {
     display: flex;
     flex-wrap: wrap;
   }
-  
+
   .admin-content .btn-group.w-100 .btn {
     flex: 1 1 45%;
     margin: 2px;
     border-radius: 0.375rem !important;
   }
-  
+
   /* Hide even more columns on very small screens */
   .table th:nth-child(3),
   .table td:nth-child(3) {
     display: none;
   }
-  
+
   /* Make title column expand */
   .table th:first-child,
   .table td:first-child {
@@ -363,36 +363,36 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
+
   /* Pagination smaller */
   .pagination .page-link {
     padding: 0.35rem 0.6rem;
     font-size: 0.8rem;
   }
-  
+
   /* Modal adjustments */
   .modal-dialog {
     margin: 0.5rem;
   }
-  
+
   .modal-content {
     max-height: 95vh !important;
   }
-  
+
   .modal-body {
     padding: 1rem;
   }
-  
+
   .modal-header,
   .modal-footer {
     padding: 0.75rem 1rem;
   }
-  
+
   /* Form fields */
   .form-label {
     font-size: 0.9rem;
   }
-  
+
   .form-control,
   .form-select {
     font-size: 0.9rem;
@@ -404,8 +404,192 @@
   .modal-content {
     max-height: 85vh !important;
   }
-  
+
   .modal-body {
     max-height: 60vh;
+  }
+}
+
+/* ===== ENHANCED RESPONSIVE IMPROVEMENTS ===== */
+
+/* Mobile first - Extra small screens (< 576px) */
+@media (max-width: 575.98px) {
+  .admin-content {
+    padding: 1rem 0.75rem;
+  }
+
+  .admin-header {
+    text-align: left;
+  }
+
+  .admin-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .admin-header p {
+    font-size: 0.9rem;
+  }
+
+  /* Summary cards - single column on mobile */
+  .summary-cards {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .summary-card {
+    padding: 1.2rem 0.8rem;
+    border-radius: 0.75rem;
+  }
+
+  .summary-card i {
+    font-size: 1.5rem;
+  }
+
+  .summary-card h6 {
+    font-size: 0.9rem;
+  }
+
+  .summary-card p {
+    font-size: 1.25rem;
+  }
+
+  /* Chart section - smaller on mobile */
+  .chart-card {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .chart-card h5 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Table optimizations for mobile */
+  .table-card {
+    padding: 0.75rem;
+  }
+
+  .table-sm th,
+  .table-sm td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.85rem;
+  }
+
+  .table th {
+    font-size: 0.8rem;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.4em 0.6em;
+  }
+
+  /* Responsive button sizing */
+  .btn-sm {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  /* Stack flex items on mobile */
+  .d-flex.flex-column.flex-sm-row {
+    flex-direction: column !important;
+  }
+
+  .d-flex.flex-column.flex-sm-row > * {
+    width: 100%;
+  }
+}
+
+/* Tablet screens (576px - 768px) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .admin-content {
+    padding: 1.5rem;
+  }
+
+  /* Summary cards - 2 columns on tablet */
+  .summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .summary-card {
+    padding: 1.3rem 0.9rem;
+  }
+
+  .table-sm th,
+  .table-sm td {
+    padding: 0.6rem 0.35rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Small tablets to desktop (768px+) */
+@media (min-width: 768px) {
+  /* Summary cards - 4 columns on desktop */
+  .summary-cards {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
+  }
+}
+
+/* Medium devices (992px+) */
+@media (min-width: 992px) {
+  .admin-content {
+    padding: 2rem;
+  }
+
+  /* Header responsive layout */
+  .admin-header.d-flex {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+/* Large screens (1200px+) */
+@media (min-width: 1200px) {
+  .admin-content {
+    padding: 2.5rem;
+  }
+
+  .summary-card {
+    padding: 1.8rem 1.2rem;
+  }
+}
+
+/* Landscape mode adjustments */
+@media (max-height: 600px) {
+  .admin-content {
+    padding: 1rem;
+  }
+
+  .admin-header {
+    margin-bottom: 1rem;
+  }
+
+  .summary-cards {
+    margin-bottom: 1rem;
+  }
+
+  .chart-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .admin-sidebar,
+  .btn,
+  .alert {
+    display: none;
+  }
+
+  .admin-page {
+    flex-direction: column;
+  }
+
+  .admin-content {
+    padding: 0;
   }
 }
