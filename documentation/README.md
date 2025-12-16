@@ -389,6 +389,207 @@ Summary of v2.0 documentation updates.
 
 ---
 
+## System Architecture
+
+### Application Flow
+
+```mermaid
+graph TD
+	subgraph Authentication
+		A[User/Admin Browser] -->|POST Email/Password| B[login.jsx]
+		B -->|Call loginApi.js| C[userLogin/adminLogin]
+		C -->|POST JSON| D[user-login.php / admin-login.php]
+		D -->|Query DB| DB[(pwd_users / admin_users)]
+		D -->|Return JSON| C
+		C -->|Store in sessionStorage| B
+	end
+
+	subgraph User Flow
+		U[User Authenticated] -->|Load| UP[userpage.jsx]
+		UP -->|Call userApi.js| G[getCurrentUserData]
+		G -->|POST regNumber| GET_USER[get-user-data.php]
+		GET_USER -->|Query DB| DB
+		GET_USER -->|Return User Data| G
+		UP -->|Upload File| REG[register.jsx / userpage.jsx]
+		REG -->|FormData| UPLOAD[upload.php]
+		UPLOAD -->|Save File + DB| FS[uploads/ + pwd_file_uploads]
+	end
+
+	subgraph Admin Application Flow
+		AM[Admin Authenticated] -->|Load| AP[adminpage.jsx]
+		AP -->|Call adminApi.js| ALL[getAllApplications]
+		ALL -->|GET| GET_ALL[get-all-applications.php]
+		GET_ALL -->|Query DB| DB
+		AP -->|Review App| VERIFY[adminverify.jsx]
+		VERIFY -->|Call adminApi.js| PEND[getPendingApplication]
+		PEND -->|GET| GET_PEND[get-pending-application.php]
+		GET_PEND -->|Query DB| DB
+		VERIFY -->|Accept/Deny| UPDATE[update-application-status.php]
+		UPDATE -->|Update DB + Sync Files| DB
+		UPDATE -->|Update File Records| FS
+	end
+
+	subgraph News Public Flow
+		PUB[Public User] -->|Browse| NLIST[news.jsx]
+		NLIST -->|Call newsApi.js| NGET[getPublishedNews]
+		NGET -->|GET page,limit| NEWS_GET[news-get-published.php]
+		NEWS_GET -->|Query DB| NEWS_DB[pwd_news_posts]
+		NLIST -->|Click Article| NARTICLE[news-article.jsx]
+		NARTICLE -->|Call newsApi.js| NSINGLE[getNewsBySlug]
+		NSINGLE -->|GET slug| NEWS_SINGLE[news-get-single.php]
+		NEWS_SINGLE -->|Query + Increment Views| NEWS_DB
+	end
+
+	%% Note: DB and FS nodes are shared across subgraphs
+```
+
+---
+
+## Database Schema
+
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+	PWD_USERS ||--o{ PWD_FILE_UPLOADS : "contains"
+	ADMIN_USERS ||--o{ PWD_FILE_UPLOADS : "reviews"
+	PWD_USERS ||--o{ PWD_NEWS_POSTS : "creates"
+
+	PWD_USERS {
+		int id PK
+		string regNumber UK "Unique registration number"
+		date regDate
+		string firstName
+		string lastName
+		string email UK
+	}
+
+	ADMIN_USERS {
+		int id PK
+		string adminEmail UK
+		string adminName
+	}
+
+	PWD_FILE_UPLOADS {
+		int id PK
+		string regNumber FK "References pwd_users"
+		string stored_filename
+		string file_path
+		enum status
+	}
+
+	PWD_NEWS_POSTS {
+		int id PK
+		string title
+		string slug UK
+		string status
+		datetime created_at
+	}
+```
+
+### Database Tables (project schema)
+
+#### `pwd_users` — Applicant records
+
+|Column|Type|Constraints|Description|
+|---|---|---|---|
+|id|INT|PRIMARY KEY, AUTO_INCREMENT|Unique user identifier|
+|regNumber|VARCHAR(20)|NOT NULL, UNIQUE|Registration number|
+|regDate|DATE|NOT NULL|Registration date|
+|lastName|VARCHAR(100)|NOT NULL|Applicant last name|
+|firstName|VARCHAR(100)|NOT NULL|Applicant first name|
+|middleName|VARCHAR(100)||Applicant middle name|
+|disability|VARCHAR(100)|NOT NULL|Type of disability|
+|street|VARCHAR(200)|NOT NULL|Street address|
+|barangay|VARCHAR(100)|NOT NULL|Barangay|
+|municipality|VARCHAR(100)|NOT NULL|Municipality|
+|province|VARCHAR(100)|NOT NULL|Province|
+|region|VARCHAR(50)|NOT NULL|Region|
+|tel|VARCHAR(20)||Telephone number|
+|mobile|VARCHAR(20)|NOT NULL|Mobile number|
+|email|VARCHAR(150)|NOT NULL, UNIQUE|Email (login)
+|dob|DATE|NOT NULL|Date of birth|
+|sex|VARCHAR(10)|NOT NULL|Gender|
+|nationality|VARCHAR(50)||Nationality|
+|blood|VARCHAR(5)||Blood type|
+|civil|VARCHAR(20)|NOT NULL|Civil status|
+|emergencyName|VARCHAR(150)|NOT NULL|Emergency contact name|
+|emergencyPhone|VARCHAR(20)|NOT NULL|Emergency contact phone|
+|emergencyRelationship|VARCHAR(50)|NOT NULL|Relationship to emergency contact|
+|proofIdentity|VARCHAR(200)||Legacy identity filename|
+|proofDisability|VARCHAR(200)||Legacy disability filename|
+|password|VARCHAR(100)|NOT NULL|Authentication password (consider hashing)
+|status|VARCHAR(20)|NOT NULL, DEFAULT 'pending'|Application status|
+|rejectionReason|TEXT||Rejection reason (v2.0)
+|createdAt|DATETIME|DEFAULT CURRENT_TIMESTAMP|Record creation timestamp|
+|updatedAt|DATETIME|DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP|Last update timestamp|
+
+**Indexes:** `idx_status`, `idx_regDate`, `idx_email`
+
+---
+
+#### `admin_users` — Administrators
+
+|Column|Type|Constraints|Description|
+|---|---|---|---|
+|id|INT|PRIMARY KEY, AUTO_INCREMENT|Unique admin identifier|
+|adminEmail|VARCHAR(150)|NOT NULL, UNIQUE|Admin login email|
+|adminPassword|VARCHAR(255)|NOT NULL|Admin password (store hashed in production)|
+|adminName|VARCHAR(100)||Admin display name|
+|createdAt|TIMESTAMP|DEFAULT CURRENT_TIMESTAMP|Account creation timestamp|
+
+**Default account:** `admin@dasma.gov.ph` / `admin123` (change in production)
+
+---
+
+#### `pwd_file_uploads` — Uploaded documents
+
+|Column|Type|Constraints|Description|
+|---|---|---|---|
+|id|INT|PRIMARY KEY, AUTO_INCREMENT|Unique file identifier|
+|regNumber|VARCHAR(20)|FOREIGN KEY → `pwd_users.regNumber`|Links to applicant|
+|file_type|ENUM|('medical_certificate','identity_proof')|Document type|
+|original_filename|VARCHAR(255)|NOT NULL|Original upload filename|
+|stored_filename|VARCHAR(255)|NOT NULL|Server-stored filename|
+|file_path|VARCHAR(500)|NOT NULL|Full file path on server|
+|file_size|INT|NOT NULL|File size in bytes|
+|mime_type|VARCHAR(100)|NOT NULL|MIME type|
+|uploaded_at|TIMESTAMP|DEFAULT CURRENT_TIMESTAMP|Upload timestamp|
+|status|ENUM|DEFAULT 'pending'|File review status|
+|admin_notes|TEXT||Admin comments/rejection reason (v2.0)
+|reviewed_by|VARCHAR(100)||Admin who reviewed (v2.0)
+|reviewed_at|TIMESTAMP||Review timestamp (v2.0)
+
+**Foreign Key:** `FOREIGN KEY (regNumber) REFERENCES pwd_users(regNumber) ON DELETE CASCADE`
+
+**Indexes:** `idx_regNumber`, `idx_status`, `idx_file_type`, `idx_uploaded_at`
+
+---
+
+#### `pwd_news_posts` — News & announcements
+
+|Column|Type|Constraints|Description|
+|---|---|---|---|
+|id|INT|PRIMARY KEY, AUTO_INCREMENT|Unique post identifier|
+|title|VARCHAR(255)|NOT NULL|Post title|
+|excerpt|TEXT|NOT NULL|Short summary|
+|content|LONGTEXT|NOT NULL|Full HTML content|
+|slug|VARCHAR(255)|UNIQUE, NOT NULL|SEO-friendly slug|
+|image_path|VARCHAR(500)||Optional image path|
+|image_alt|VARCHAR(255)||Image alt text|
+|status|ENUM|('draft','published','archived')|Publishing status|
+|published_at|DATETIME||Publish timestamp|
+|category|VARCHAR(100)|DEFAULT 'announcement'|Category/tag|
+|created_by|VARCHAR(100)|NOT NULL|Creator (admin email)
+|created_at|TIMESTAMP|DEFAULT CURRENT_TIMESTAMP|Creation timestamp|
+|updated_by|VARCHAR(100)||Last editor
+|updated_at|TIMESTAMP|DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP|Last update timestamp|
+|view_count|INT|DEFAULT 0|View counter for analytics|
+
+**Indexes:** `idx_status`, `idx_published_at`, `idx_created_at`, `idx_slug`
+
+---
+
 ## Learning Path
 
 ### Day 1-3: Setup & Basics
