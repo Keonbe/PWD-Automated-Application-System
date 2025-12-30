@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS admin_users (
 CREATE TABLE IF NOT EXISTS pwd_file_uploads (
     id INT AUTO_INCREMENT PRIMARY KEY,
     regNumber VARCHAR(20),
-    file_type ENUM('medical_certificate', 'identity_proof') NOT NULL,
+    file_type ENUM('medical_certificate', 'identity_proof', 'id_photo') NOT NULL,
     original_filename VARCHAR(255) NOT NULL,
     stored_filename VARCHAR(255) NOT NULL,
     file_path VARCHAR(500) NOT NULL,

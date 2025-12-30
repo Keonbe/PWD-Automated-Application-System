@@ -29,22 +29,30 @@ export default function Register() {
 
   /** File input refs: @remarks Provides direct access to the identity proof file input for validation and file name retrieval. */
 
+
   /** @summary File input reference for identity document upload. */
   const identityRef = useRef(null);
 
+  /** @summary File input reference for 1x1 ID photo upload. */
+  const idPhotoRef = useRef(null);
+
   /** @summary File input reference for disability document upload. */
   const disabilityRef = useRef(null);
+
 
   /** @summary Stores selected file objects for upload after registration. */
   const [selectedFiles, setSelectedFiles] = useState({
     identity_proof: null,
     medical_certificate: null,
+    id_photo: null, // 1x1 ID photo
   });
+
 
   /** @summary File validation status for each file type. */
   const [fileValidation, setFileValidation] = useState({
     identity_proof: { valid: false, message: "" },
     medical_certificate: { valid: false, message: "" },
+    id_photo: { valid: false, message: "" },
   });
 
   /** @summary Loading state during file upload operations. */
@@ -115,6 +123,13 @@ export default function Register() {
       console.error("[Form Validation] Phone error:", errorMsg);
       return;
     }
+
+      // Validate 1x1 ID photo upload before submission
+      if (!selectedFiles.id_photo || !fileValidation.id_photo.valid) {
+        setSubmitMessage("Please upload your latest 1x1 ID photo (JPG/PNG, max 2MB, white background recommended).");
+        console.error("[Form Validation] error: 1x1 ID photo missing or invalid");
+        return;
+      }
 
     setIsSubmitting(true);
     setSubmitMessage("");
@@ -205,6 +220,7 @@ export default function Register() {
         setSubmissionPhase("uploading");
         const uploadPromises = [];
 
+
         // Debug: Log selected files state
         console.log("[File Upload] Selected files state:", {
           identity_proof: selectedFiles.identity_proof
@@ -212,6 +228,9 @@ export default function Register() {
             : "null",
           medical_certificate: selectedFiles.medical_certificate
             ? selectedFiles.medical_certificate.name
+            : "null",
+          id_photo: selectedFiles.id_photo
+            ? selectedFiles.id_photo.name
             : "null",
         });
 
@@ -245,6 +264,22 @@ export default function Register() {
           );
         } else {
           console.warn("[File Upload] No medical_certificate file selected!");
+        }
+
+        if (selectedFiles.id_photo) {
+          console.log(
+            "[File Upload] Uploading 1x1 ID photo with regNumber:",
+            formData.regNumber
+          );
+          uploadPromises.push(
+            uploadFileToServer(
+              selectedFiles.id_photo,
+              "id_photo",
+              formData.regNumber
+            )
+          );
+        } else {
+          console.warn("[File Upload] No 1x1 ID photo file selected!");
         }
 
         // Wait for all uploads to complete
@@ -1839,9 +1874,10 @@ export default function Register() {
             documents.
           </p>
 
+
           <div className="row">
             {/* Proof of Identity */}
-            <div className="col-md-6 mb-4">
+            <div className="col-md-4 mb-4">
               <div className="upload-section h-100">
                 <h5 className="fw-bold text-success mb-3">Proof of Identity</h5>
                 <img
@@ -1899,8 +1935,60 @@ export default function Register() {
               </div>
             </div>
 
+            {/* 1x1 ID Photo */}
+            <div className="col-md-4 mb-4">
+              <div className="upload-section h-100">
+                <h5 className="fw-bold text-success mb-3">1x1 ID Photo</h5>
+                <div className="sample-image mb-3 d-flex align-items-center justify-content-center" style={{height: '150px', background: '#fff'}}>
+                  <span className="text-muted">1x1 Photo Preview</span>
+                </div>
+                <p className="mb-2">
+                  Upload a recent 1x1 photo (JPG/PNG, max 2MB, white background recommended).
+                </p>
+                <p className="text-danger small mb-3">
+                  <i className="fas fa-exclamation-circle me-1" aria-hidden="true"></i>
+                  Please use your latest 1x1 picture with a white background. Outdated or unclear photos may delay your application.
+                </p>
+                <input
+                  type="file"
+                  className="form-control d-none"
+                  id="idPhoto"
+                  name="idPhoto"
+                  accept=".jpg,.jpeg,.png"
+                  required
+                  ref={idPhotoRef}
+                  onChange={e => {
+                    updateFileName(idPhotoRef, "idPhotoBtn");
+                    handleFileSelect(e, "id_photo");
+                  }}
+                />
+                <button
+                  type="button"
+                  className="btn upload-btn mt-2"
+                  id="idPhotoBtn"
+                  onClick={() => idPhotoRef.current?.click()}
+                  disabled={uploading}
+                >
+                  <i className="fas fa-upload me-2" aria-hidden="true"></i>
+                  Upload 1x1 ID Photo
+                </button>
+                {fileValidation.id_photo.valid && (
+                  <small className="d-block text-success mt-2">
+                    <i className="fas fa-check me-1"></i>
+                    {fileValidation.id_photo.message}
+                  </small>
+                )}
+                {!fileValidation.id_photo.valid && fileValidation.id_photo.message && (
+                  <small className="d-block text-danger mt-2">
+                    <i className="fas fa-exclamation-circle me-1"></i>
+                    {fileValidation.id_photo.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
             {/* Proof of Disability */}
-            <div className="col-md-6 mb-4">
+            <div className="col-md-4 mb-4">
               <div className="upload-section h-100">
                 <h5 className="fw-bold text-success mb-3">
                   Medical Certificate

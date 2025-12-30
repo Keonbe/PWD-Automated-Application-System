@@ -693,8 +693,40 @@ export default function UserPage() {
 
                 <div className="pwd-card-body">
                   <div className="pwd-card-photo">
-                    <i className="fas fa-user"></i>
-                    <span className="photo-placeholder-text">Photo</span>
+                    {(() => {
+                      // Find the uploaded 1x1 ID photo from userFiles (type or file_type)
+                      const idPhotoFile = userFiles.find(f => f.type === 'id_photo' || f.fileType === 'id_photo');
+                      if (idPhotoFile) {
+                        return (
+                          <img
+                            src={`http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api/file-view.php?fileId=${idPhotoFile.id}`}
+                            alt="1x1 ID Photo"
+                            className="pwd-id-photo-img"
+                            style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: '8px', border: '1px solid #ccc' }}
+                          />
+                        );
+                      } else if (userData.proofIdentity) {
+                        return (
+                          <img
+                            src={
+                              userData.proofIdentity.startsWith('http')
+                                ? userData.proofIdentity
+                                : `/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/uploads/identity/${userData.proofIdentity}`
+                            }
+                            alt="ID Photo"
+                            className="pwd-id-photo-img"
+                            style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: '8px', border: '1px solid #ccc' }}
+                          />
+                        );
+                      } else {
+                        return (
+                          <>
+                            <i className="fas fa-user"></i>
+                            <span className="photo-placeholder-text">Photo</span>
+                          </>
+                        );
+                      }
+                    })()}
                   </div>
                   <div className="pwd-card-info">
                     <div className="pwd-card-row">
