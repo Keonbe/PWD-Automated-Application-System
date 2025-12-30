@@ -22,7 +22,14 @@ define('ALLOWED_EXTENSIONS', ['pdf', 'jpg', 'jpeg', 'png']);
 
 // Create uploads directory if not exists
 $uploadBaseDir = __DIR__ . '/../uploads/';
-$uploadSubDir = $_POST['fileType'] == 'medical_certificate' ? 'certificates/' : 'identity/';
+$uploadSubDir = 'identity/';
+if (isset($_POST['fileType'])) {
+    if ($_POST['fileType'] == 'medical_certificate') {
+        $uploadSubDir = 'certificates/';
+    } elseif ($_POST['fileType'] == 'id_photo') {
+        $uploadSubDir = 'idphoto/';
+    }
+}
 $uploadDir = $uploadBaseDir . $uploadSubDir;
 
 if (!file_exists($uploadDir)) {

@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS admin_users (
 CREATE TABLE IF NOT EXISTS pwd_file_uploads (
     id INT AUTO_INCREMENT PRIMARY KEY,
     regNumber VARCHAR(20),
-    file_type ENUM('medical_certificate', 'identity_proof') NOT NULL,
+    file_type ENUM('medical_certificate', 'identity_proof', 'id_photo') NOT NULL,
     original_filename VARCHAR(255) NOT NULL,
     stored_filename VARCHAR(255) NOT NULL,
     file_path VARCHAR(500) NOT NULL,
@@ -155,6 +155,10 @@ CREATE TABLE IF NOT EXISTS pwd_file_uploads (
     INDEX idx_file_type (file_type),
     INDEX idx_uploaded_at (uploaded_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Ensure file_type ENUM is consistent for all environments
+-- After adding new file types i.e., new document categories(id_photo), run this command to update the ENUM
+ALTER TABLE pwd_file_uploads MODIFY file_type ENUM('medical_certificate', 'identity_proof', 'id_photo') NOT NULL;
 
 -- ===============================================================
 --              SECTION 3: DEFAULT DATA INSERTION
