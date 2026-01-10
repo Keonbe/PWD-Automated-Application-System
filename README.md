@@ -28,16 +28,20 @@ A **PWD Automated Application System** built using **React 19**, **PHP 8.2**, an
     - [Database](#database)
     - [Tools](#tools)
   - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
+  - [Getting Started (5-Minute Setup)](#getting-started-5-minute-setup)
+    - [Path Structure](#path-structure)
+    - [Installation Checklist](#installation-checklist)
+    - [Quick Start (5 minutes)](#quick-start-5-minutes)
     - [1. Clone the Repository](#1-clone-the-repository)
     - [2. Install Frontend Dependencies](#2-install-frontend-dependencies)
-    - [3. Set Up PHP Backend](#3-set-up-php-backend)
+    - [3. Configure API (Environment Variables)](#3-configure-api-environment-variables)
+    - [4. Set Up PHP Backend](#4-set-up-php-backend)
   - [Database Setup](#database-setup)
     - [1. Start XAMPP Services](#1-start-xampp-services)
     - [2. Create Database](#2-create-database)
-    - [3. Run Setup Script](#3-run-setup-script)
+    - [3. Run SQL Setup Script](#3-run-sql-setup-script)
   - [Run Development](#run-development)
-    - [Start Frontend (React)](#start-frontend-react)
+    - [Start Frontend (React with Vite)](#start-frontend-react-with-vite)
     - [Start Backend (XAMPP)](#start-backend-xampp)
   - [Build Production](#build-production)
   - [Project Structure](#project-structure)
@@ -51,8 +55,14 @@ A **PWD Automated Application System** built using **React 19**, **PHP 8.2**, an
   - [Contributors](#contributors)
       - [All Team Members](#all-team-members)
   - [Documentation Guide](#documentation-guide)
-    - [Getting Started](#getting-started)
-    - [Documentation Links](#documentation-links)
+    - [🚀 Quick Setup](#-quick-setup)
+    - [❓ Need Help?](#-need-help)
+    - [📚 Complete Documentation Reference](#-complete-documentation-reference)
+      - [Development Setup](#development-setup)
+      - [API \& Development](#api--development)
+      - [Features](#features)
+      - [Development Tools \& Vite](#development-tools--vite)
+      - [Contributing](#contributing)
   - [License](#license)
 
 ---
@@ -89,7 +99,7 @@ This system is designed to:
 
 ### Frontend
 <p align="left">
-  <img src="https://skillicons.dev/icons?i=react,bootstrap,html,css,js" alt="Frontend Icons">
+  <img src="https://skillicons.dev/icons?i=react,vite,bootstrap,html,css,js" alt="Frontend Icons">
 </p>
 
 - **React 19** with React Router v7
@@ -142,7 +152,31 @@ This system is designed to:
 
 ---
 
-## Installation
+## Getting Started (5-Minute Setup)
+
+### Path Structure
+Your project should be in one of these locations:
+- **Windows (XAMPP Default):** `C:\xampp\htdocs\webdev_finals\PWD-Automated-Application-System`
+- **Windows (Scoop):** `C:\Users\<username>\scoop\apps\xampp\8.2.12-0\htdocs\webdev_finals\PWD-Automated-Application-System`
+
+### Installation Checklist
+```
+✅ [ ] Clone the repository (git clone)
+✅ [ ] Install Node dependencies (npm install)
+✅ [ ] Configure .env file with VITE_API_URL
+✅ [ ] Set up database (create PWDRegistry, run master-setup.sql)
+✅ [ ] Start XAMPP (Apache + MySQL)
+✅ [ ] Start Vite dev server (npm run dev)
+✅ [ ] Open http://localhost:3000
+```
+
+For **detailed step-by-step instructions**, see [SETUP-GUIDE.md](documentation/SETUP-GUIDE.md).
+
+---
+
+### Quick Start (5 minutes)
+
+For detailed setup instructions, see **[SETUP-GUIDE.md](documentation/SETUP-GUIDE.md)**
 
 ### 1. Clone the Repository
 
@@ -158,16 +192,28 @@ cd Post-React-Migration/pwd-application-system
 npm install
 ```
 
-### 3. Set Up PHP Backend
+### 3. Configure API (Environment Variables)
 
-Copy or symlink the PHP files to your XAMPP htdocs:
+Create `.env` file in `pwd-application-system/` directory:
+
+```env
+VITE_API_URL=http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api
+VITE_APP_NAME=PWD Automated Application System
+VITE_ENVIRONMENT=development
+```
+
+**Note:** Adjust the path based on your XAMPP htdocs location.
+
+### 4. Set Up PHP Backend
+
+Copy the PHP files to your XAMPP htdocs:
 
 ```bash
-# Option A: Create symbolic link (Windows Admin PowerShell)
-mklink /D "C:\xampp\htdocs\pwd-api" "C:\path\to\PWD-Automated-Application-System\Post-React-Migration\xampp-php-mysql-files\api"
+# Windows (PowerShell - Admin):
+New-Item -ItemType SymbolicLink -Path "C:\xampp\htdocs\pwd-api" -Target "C:\path\to\PWD-Automated-Application-System\Post-React-Migration\xampp-php-mysql-files\api"
 
-# Option B: Copy files directly
-xcopy "Post-React-Migration\xampp-php-mysql-files" "C:\xampp\htdocs\pwd-api" /E /I
+# Or copy files directly:
+xcopy "Post-React-Migration\xampp-php-mysql-files\api" "C:\xampp\htdocs\pwd-api\api" /E /I
 ```
 
 ---
@@ -177,29 +223,27 @@ xcopy "Post-React-Migration\xampp-php-mysql-files" "C:\xampp\htdocs\pwd-api" /E 
 ### 1. Start XAMPP Services
 
 1. Open **XAMPP Control Panel**
-2. Start **Apache** (port 80)
-3. Start **MySQL** (port 3306)
+2. Click **Start** next to **Apache** (should show green "Running")
+3. Click **Start** next to **MySQL** (should show green "Running")
 
 ### 2. Create Database
 
-Open phpMyAdmin (`http://localhost/phpmyadmin`) and run:
+Open phpMyAdmin at `http://localhost/phpmyadmin`:
 
-```sql
-CREATE DATABASE IF NOT EXISTS PWDRegistry
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
-```
+1. Click **New** in left sidebar
+2. Enter database name: `PWDRegistry`
+3. Select collation: `utf8mb4_unicode_ci`
+4. Click **Create**
 
-### 3. Run Setup Script
-
-Execute the master setup script in phpMyAdmin:
+### 3. Run SQL Setup Script
 
 1. Select `PWDRegistry` database
 2. Go to **SQL** tab
-3. Copy contents from `Post-React-Migration/xampp-php-mysql-files/master-setup.sql`
-4. Click **Go**
+3. Copy all contents from `Post-React-Migration/xampp-php-mysql-files/master-setup.sql`
+4. Paste into SQL editor
+5. Click **Go** or **Execute**
 
-This creates all tables and inserts sample data including a default admin account:
+This creates all tables and sample data with default admin account:
 - **Email:** `admin@dasma.gov.ph`
 - **Password:** `admin123`
 
@@ -365,23 +409,45 @@ PWD-Automated-Application-System/
 
 ## Documentation Guide
 
-### Getting Started
-1. **Read** `documentation/init-documentation.md` for project setup
-2. **Review** `documentation/database-documentation.md` for schema details
-3. **Study** `documentation/php-api-documentation.md` for API reference
+### 🚀 Quick Setup
+**New to the project?** Start with:
+1. **[SETUP-GUIDE.md](documentation/SETUP-GUIDE.md)** — Complete step-by-step installation
+2. **[init-documentation.md](documentation/init-documentation.md)** — Project architecture overview
+3. **[database-documentation.md](documentation/database-documentation.md)** — Database schema
 
-### Documentation Links
+### ❓ Need Help?
+**Having issues during setup?** Check these:
+- **[VITE-COMPLETE-DOCUMENTATION.md](Post-React-Migration/documentation/VITE-COMPLETE-DOCUMENTATION.md)** — Comprehensive Vite migration guide with troubleshooting
+- **[VITE-DOCUMENTATION-INDEX.md](Post-React-Migration/documentation/VITE-DOCUMENTATION-INDEX.md)** — Quick Vite reference guide
+- [Backend Documentation](documentation/backend-documentation.md) — PHP and MySQL setup help
 
-| Document | Description |
-|----------|-------------|
-| [Init Documentation](documentation/init-documentation.md) | Complete project setup guide |
-| [Database Documentation](documentation/database-documentation.md) | MySQL schema and ER diagram |
-| [PHP API Documentation](documentation/php-api-documentation.md) | All 25 API endpoints |
-| [Function Documentation](documentation/function-documentation.md) | React function reference |
-| [File Upload Documentation](documentation/file-upload-feature-documentation.md) | File upload system guide |
-| [API Documentation](documentation/api-documentation.md) | Frontend API integration |
-| [Contribution Guide](documentation/contribution_guide-documentation.md) | How to contribute |
-| [Vite Complete Documentation](Post-React-Migration/documentation/VITE-COMPLETE-DOCUMENTATION.md) | Comprehensive Vite migration guide with setup, troubleshooting, and configuration |
+### 📚 Complete Documentation Reference
+
+#### Development Setup
+- [SETUP-GUIDE.md](documentation/SETUP-GUIDE.md) — Installation and configuration guide
+- [Init Documentation](documentation/init-documentation.md) — Complete project setup
+- [Database Documentation](documentation/database-documentation.md) — MySQL schema and design
+- [Backend Documentation](documentation/backend-documentation.md) — PHP backend architecture
+
+#### API & Development
+- [API Documentation](documentation/api-documentation.md) — Frontend to backend integration
+- [PHP API Documentation](documentation/php-api-documentation.md) — All 25 API endpoints reference
+- [Function Documentation](documentation/function-documentation.md) — React function reference
+- [NPM Scripts Documentation](documentation/npm-script.md) — All npm commands
+
+#### Features
+- [File Upload Feature](documentation/file-upload-feature-documentation.md) — File upload system
+- [News Feature Documentation](documentation/news-feature-documentation.md) — News management system
+- [QR Code Feature Documentation](documentation/qrcode-feature-documentation.md) — QR generation
+- [ID Photo Feature Documentation](documentation/id-photo-feature-documentation.md) — ID photo handling
+
+#### Development Tools & Vite
+- **[Vite Complete Documentation](Post-React-Migration/documentation/VITE-COMPLETE-DOCUMENTATION.md)** — Comprehensive Vite guide
+- **[Vite Documentation Index](Post-React-Migration/documentation/VITE-DOCUMENTATION-INDEX.md)** — Quick Vite reference
+
+#### Contributing
+- [Contribution Guide](documentation/contribution_guide-documentation.md) — How to contribute
+- [Backend Migration Documentation](documentation/backend-migration-documentation.md) — Backend development history
 
 ---
 
