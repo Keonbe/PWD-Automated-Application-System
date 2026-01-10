@@ -789,8 +789,9 @@ if (existingUsers.length > 0) {
 ### Recommended Security Improvements
 
 ```javascript
-// Example: Environment variables (React)
-const API_BASE_URL = process.env.REACT_APP_API_URL;
+// Example: Environment variables (Vite - Current Implementation)
+// Note: Project now uses Vite instead of Create React App
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 // Example: Authorization header instead of URL params
 const response = await fetch(`${API_BASE_URL}/login`, {
@@ -802,6 +803,11 @@ const response = await fetch(`${API_BASE_URL}/login`, {
     body: JSON.stringify({ username, password })
 });
 ```
+
+**Vite Environment Variables:**
+- Set in `.env` file with `VITE_` prefix
+- Access with `import.meta.env.VITE_*` (not `process.env.REACT_APP_*`)
+- Provides better security and performance compared to Create React App
 
 ---
 

@@ -93,6 +93,7 @@ This system is designed to:
 </p>
 
 - **React 19** with React Router v7
+- **Vite v7** as build tool (lightning-fast development server with HMR)
 - **Bootstrap 5** with React-Bootstrap
 - **Axios** for HTTP requests
 - **Recharts** for data visualization
@@ -206,14 +207,16 @@ This creates all tables and inserts sample data including a default admin accoun
 
 ## Run Development
 
-### Start Frontend (React)
+### Start Frontend (React with Vite)
 
 ```bash
 cd Post-React-Migration/pwd-application-system
-npm start
+npm run dev
 ```
 
-Opens at `http://localhost:3000`
+Opens at `http://localhost:3000` (uses Vite development server with hot module replacement)
+
+**Note:** This project was migrated from Create React App to Vite for faster development and builds. See [VITE-COMPLETE-DOCUMENTATION.md](Post-React-Migration/documentation/VITE-COMPLETE-DOCUMENTATION.md) for migration details.
 
 ### Start Backend (XAMPP)
 
@@ -229,7 +232,12 @@ cd Post-React-Migration/pwd-application-system
 npm run build
 ```
 
-The optimized build will be in the `build/` folder.
+The optimized build will be in the `dist/` folder (Vite generates smaller, faster bundles than Create React App).
+
+To preview the production build locally:
+```bash
+npm run preview
+```
 
 ---
 
@@ -373,6 +381,7 @@ PWD-Automated-Application-System/
 | [File Upload Documentation](documentation/file-upload-feature-documentation.md) | File upload system guide |
 | [API Documentation](documentation/api-documentation.md) | Frontend API integration |
 | [Contribution Guide](documentation/contribution_guide-documentation.md) | How to contribute |
+| [Vite Complete Documentation](Post-React-Migration/documentation/VITE-COMPLETE-DOCUMENTATION.md) | Comprehensive Vite migration guide with setup, troubleshooting, and configuration |
 
 ---
 

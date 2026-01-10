@@ -331,15 +331,20 @@ npm install
 
 This may take 2-5 minutes. Wait for completion.
 
-### 5.3 Verify API Configuration
+### 5.3 Verify Environment Variables (Vite)
 
-Check `src/api/config.js` has the correct API URL:
+Check `.env` file in the project root has the correct API URL:
 
-```javascript
-export const PHP_BASE_URL = 'http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api';
+```env
+VITE_API_URL=http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api
+VITE_APP_NAME=PWD Automated Application System
+VITE_ENVIRONMENT=development
 ```
 
-**Adjust the path if your project is in a different location!**
+**Note:** This project uses **Vite** (not Create React App). Environment variables must:
+- Start with `VITE_` prefix
+- Be accessed with `import.meta.env.VITE_*` in code (not `process.env`)
+- Adjust the path if your project is in a different location!
 
 ### 5.4 Fix Common Issues Before Starting
 
@@ -366,20 +371,22 @@ Before running, verify:
 - [ ] Upload directories exist
 - [ ] npm dependencies installed
 
-### 6.2 Start React Development Server
+### 6.2 Start React Development Server (Vite)
 
 ```bash
 # Navigate to React project (if not already there)
 cd "Post-React-Migration/pwd-application-system"
 
-# Start the development server
-npm start
+# Start the Vite development server
+npm run dev
 ```
 
 **Full command for XAMPP htdocs location:**
 ```bash
-cd "/c/Users/admin/scoop/apps/xampp/8.2.12-0/htdocs/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/pwd-application-system" && npm start
+cd "/c/Users/admin/scoop/apps/xampp/8.2.12-0/htdocs/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/pwd-application-system" && npm run dev
 ```
+
+**Note:** This project uses Vite (not Create React App) for faster development server and builds.
 
 ### 6.3 Access the Application
 
@@ -450,8 +457,8 @@ Use this checklist to verify everything works:
 
 ```bash
 # 1. Start XAMPP (do this via XAMPP Control Panel)
-# 2. Start React:
-cd "/c/Users/admin/scoop/apps/xampp/8.2.12-0/htdocs/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/pwd-application-system" && npm start
+# 2. Start React with Vite:
+cd "/c/Users/admin/scoop/apps/xampp/8.2.12-0/htdocs/webdev_finals/PWD AUTOMATED APPLICATION SYSTEM/PWD-Automated-Application-System/Post-React-Migration/pwd-application-system" && npm run dev
 ```
 
 ### Database Commands
@@ -473,21 +480,29 @@ DESCRIBE users;
 mysql -u root PWDRegistry < filename.sql
 ```
 
-### NPM Commands
+### NPM Commands (Vite)
 
 ```bash
 # Install dependencies
 npm install
 
-# Start development server
-npm start
+# Start development server (Vite - replaces CRA's npm start)
+npm run dev
 
-# Build for production
+# Build for production (creates dist/ folder, not build/)
 npm run build
+
+# Preview production build locally
+npm run preview
 
 # Clean reinstall
 rm -rf node_modules && npm cache clean --force && npm install
 ```
+
+**Note:** This project uses **Vite** instead of Create React App:
+- Start with `npm run dev` (not `npm start`)
+- Build output is in `dist/` folder (not `build/`)
+- Faster development server with HMR
 
 ### Git Commands
 
@@ -569,13 +584,21 @@ netstat -ano | findstr :3000
 taskkill /PID <PID> /F
 
 # Or use a different port
-PORT=3001 npm start
+npm run dev -- --port 3001
 ```
 
-### Issue: npm start fails with dependency errors
+### Issue: npm run dev fails with dependency errors
 
-**Solution**: Clean reinstall
+**Solution**:
 ```bash
+# Clean reinstall
+rm -rf node_modules
+npm cache clean --force
+npm install
+
+# Try again
+npm run dev
+```
 rm -rf node_modules
 rm package-lock.json
 npm cache clean --force

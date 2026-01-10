@@ -335,13 +335,15 @@ CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 -- Then import master-setup.sql
 ```
 
-### 3. Start React Development Server
+### 3. Start React Development Server (Vite)
 
 ```bash
 cd Post-React-Migration/pwd-application-system
 npm install
-npm start
+npm run dev  # Uses Vite (faster than Create React App)
 ```
+
+**Note:** This project uses **Vite** instead of Create React App. The dev server will start at http://localhost:3000 with Hot Module Replacement (HMR).
 
 ### 4. Test API Connection
 

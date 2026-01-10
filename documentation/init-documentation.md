@@ -21,7 +21,7 @@ A **PWD Automated Application System** built using **React**, **HTML, CSS, & Jav
       - [src/App.js](#srcappjs)
       - [src/components/common/Header.js](#srccomponentscommonheaderjs)
       - [src/pages/Homepage.js](#srcpageshomepagejs)
-    - [5. Start Development Server](#5-start-development-server)
+    - [5. Start Development Server (Vite)](#5-start-development-server-vite)
     - [6. Build for Production](#6-build-for-production)
   - [Migration Strategy](#migration-strategy)
     - [Phase 1: Component Creation](#phase-1-component-creation)
@@ -149,7 +149,7 @@ This system is designed to:
 ## Tech Stack
 
 ### Current Production Stack (v2.1)
-* **Frontend:** `ReactJS 19`, `Bootstrap 5`, `HTML5`/`CSS3`/`JavaScript`
+* **Frontend:** `ReactJS 19`, `Vite v7` (lightning-fast build tool), `Bootstrap 5`, `HTML5`/`CSS3`/`JavaScript`
 * **Backend:** `PHP 8.2` on XAMPP with MySQLi
 * **Database:** `MySQL` (PWDRegistry database with utf8mb4 collation)
 * **Tools:** `Visual Studio Code`, `Chrome DevTools`, `Postman` for API Testing
@@ -559,19 +559,28 @@ export default Homepage;
 ### 5. Start Development Server
 
 ```bash
-# Start the development server
-npm start
+# Start the Vite development server (replaces CRA's npm start)
+npm run dev
 ```
 
-The application will open at `http://localhost:3000`
+The application will open at `http://localhost:3000` with:
+- **Hot Module Replacement (HMR):** Changes reflect instantly without full page reload
+- **Lightning-fast dev server:** Vite provides significantly faster startup and compilation
+- **Better DX:** Faster feedback loop than Create React App
+
+**Note:** This project was migrated from Create React App to **Vite** for better performance. See [VITE-COMPLETE-DOCUMENTATION.md](../Post-React-Migration/documentation/VITE-COMPLETE-DOCUMENTATION.md) for migration details.
 
 ### 6. Build for Production
 
 ```bash
-# Create production build
+# Create production build using Vite
 npm run build
 
-# The build folder will contain optimized production files
+# The dist/ folder will contain optimized production files
+# (Smaller bundles and faster load times compared to Create React App)
+
+# To preview production build locally:
+npm run preview
 ```
 
 ## Migration Strategy
@@ -2274,17 +2283,15 @@ npm run build
 ✓ Build completed successfully
 ✓ No compilation errors
 ⚠ ESLint warnings (acceptable if accessibility-only)
-✓ Build folder generated with optimized files
+✓ dist folder generated with optimized files (Vite output)
 ```
 
 **Check Build Output:**
 ```bash
-ls -la build/
+ls -la dist/
 # Should contain:
 # - index.html
-# - static/css/
-# - static/js/
-# - static/media/
+# - assets/ (CSS, JS, media files)
 ```
 
 ##### 5.2 Development Server Testing
