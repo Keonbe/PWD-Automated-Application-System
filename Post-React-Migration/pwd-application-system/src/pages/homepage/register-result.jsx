@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { QRCodeSVG } from 'qrcode.react';
-import "../../assets/styles/register_result-styles.css";
+import "@assets/styles/register_result-styles.css";
 
 export default function RegisterResult() {
   const location = useLocation(); /** @summary React Router location object for accessing navigation state. */

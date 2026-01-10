@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminSidebar from "../../components/adminsidebar";
+import AdminSidebar from "@components/adminsidebar";
 import {
   getPendingApplication,
   updateApplicationStatus,
-} from "../../api/adminApi";
+} from "@api/adminApi";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../assets/styles/adminpage.css";
+import "@assets/styles/adminpage.css";
 
 const AdminVerify = () => {
   const navigate = useNavigate();

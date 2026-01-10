@@ -1,5 +1,5 @@
 import React  from "react";
-import '../../assets/styles/faq-styles.css';
+import '@assets/styles/faq-styles.css';
 import { Link } from "react-router-dom";
 
 export default function FAQ() {

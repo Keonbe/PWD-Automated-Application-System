@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo } from "react";
-import AdminSidebar from "../../components/adminsidebar";
+import AdminSidebar from "@components/adminsidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../assets/styles/adminpage.css";
-import StatusChart from "../../components/statuschart";
-import { normalizeStatus, barColors, getColor } from "../../utils/statusUtils";
+import "@assets/styles/adminpage.css";
+import StatusChart from "@components/statuschart";
+import { normalizeStatus, barColors, getColor } from "@utils/statusUtils";
 
-import { getAllApplications } from "../../api/adminApi";
+import { getAllApplications } from "@api/adminApi";
 
 const AdminPage = () => {
   const [applications, setApplications] = useState([]);

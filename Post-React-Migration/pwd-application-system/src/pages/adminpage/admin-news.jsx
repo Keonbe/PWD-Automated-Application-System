@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminSidebar from "../../components/adminsidebar";
+import AdminSidebar from "@components/adminsidebar";
 import {
   getAdminNews,
   createNews,
@@ -8,9 +8,9 @@ import {
   deleteNews,
   uploadNewsImage,
   formatNewsDate,
-} from "../../api/newsApi";
+} from "@api/newsApi";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../assets/styles/adminpage.css";
+import "@assets/styles/adminpage.css";
 
 /**
  * AdminNews Component - News Management Dashboard

@@ -217,7 +217,7 @@ Before starting, ensure you have:
 - [ ] Node.js (v16 or higher) and npm installed
 - [ ] The PWD Application System project cloned locally
 - [ ] MySQL database `PWDRegistry` exists
-- [ ] React development server can start (`npm start`)
+- [ ] React development server can start (`npm run dev` - Uses Vite)
 
 ### Step 1: Database Setup
 

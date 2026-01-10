@@ -1,6 +1,6 @@
 import React from "react";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import '../../assets/styles/resources-styles.css';
+import '@assets/styles/resources-styles.css';
 /*No Font Awesome Icons - Install/Import here*/
 
 export default function Resources() {

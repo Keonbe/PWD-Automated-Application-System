@@ -1,12 +1,12 @@
 import React, { useRef, useState } from "react";
-import "../../assets/styles/register-styles.css";
-import id from "../../assets/images/sample-id.png";
-import medCert from "../../assets/images/sample-medcert.png";
+import "@assets/styles/register-styles.css";
+import id from "@assets/images/sample-id.png";
+import medCert from "@assets/images/sample-medcert.png";
 import { Link, useNavigate } from "react-router-dom";
 import {
   submitRegistration,
   checkEmailExists,
-} from "../../api/registrationApi";
+} from "@api/registrationApi";
 
 export default function Register() {
   /** @summary Form submission loading state for registration process. */
