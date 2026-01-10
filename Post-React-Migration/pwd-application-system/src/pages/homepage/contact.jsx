@@ -1,6 +1,6 @@
 import React  from "react";
 import { Link } from "react-router-dom";
-import '../../assets/styles/contact-styles.css';
+import '@assets/styles/contact-styles.css';
 /*No Font Awesome Icons - Install/Import here*/
 
 export default function Contact() {

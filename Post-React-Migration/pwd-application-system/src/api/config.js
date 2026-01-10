@@ -8,8 +8,7 @@ export const API_MODE = "php"; // Change to 'php' when ready to use XAMPP backen
 
 // Base URLs
 export const SHEETDB_USERS_URL = "https://sheetdb.io/api/v1/ljqq6umrhu60o";
-export const PHP_BASE_URL =
-  "http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api"; // baseURL for PHP backend should match the axiosConfig.js configuration string
+export const PHP_BASE_URL = import.meta.env.VITE_API_URL; // Load from environment variables
 
 /**
  * Get the appropriate base URL based on API_MODE

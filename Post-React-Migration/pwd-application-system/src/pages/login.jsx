@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import '../assets/styles/login-styles.css';
-import logo from '../assets/images/dasma-logo-only.png';
+import '@assets/styles/login-styles.css';
+import logo from '@assets/images/dasma-logo-only.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
-import { userLogin, adminLogin, forgotPassword } from '../api/loginApi'; // Import login API functions from xampp-php-mysql-files/api
+import { userLogin, adminLogin, forgotPassword } from '@api/loginApi'; // Import login API functions from xampp-php-mysql-files/api
 
 export default function Login() {
 

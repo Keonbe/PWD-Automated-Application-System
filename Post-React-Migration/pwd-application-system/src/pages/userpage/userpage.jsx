@@ -1,16 +1,16 @@
-import "../../assets/styles/userpage-styles.css";
+import "@assets/styles/userpage-styles.css";
 import { useState, useEffect, useCallback } from "react";
 import {
   getCurrentUserData,
   logoutUser,
   changeUserPassword,
   updateUserProfile,
-} from "../../api/userApi";
+} from "@api/userApi";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import { QRCodeSVG } from "qrcode.react";
-import logo from "../../assets/images/dasma-logo-only.png";
-import UserSidebar from "../../components/usersidebar";
+import logo from "@assets/images/dasma-logo-only.png";
+import UserSidebar from "@components/usersidebar";
 
 export default function UserPage() {
   const navigate = useNavigate();

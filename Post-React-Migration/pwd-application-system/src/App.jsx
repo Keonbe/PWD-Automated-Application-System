@@ -1,22 +1,22 @@
 /* NEED DIFFERENT PAGE FOR USER +  ADMIN + LOGIN(No Header & Footer) */
 import React from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Outlet } from 'react-router-dom';
-import UserHeader from './components/public-header';
-import UserFooter from './components/public-footer';
-import HomePage from './pages/homepage';
-import News from './pages/homepage/news';
-import NewsArticle from './pages/homepage/news-article';
-import FAQ from './pages/homepage/faq';
-import Resources from './pages/homepage/resources';
-import Contact from './pages/homepage/contact';
-import Consent from './pages/homepage/consent';
-import Register from './pages/homepage/register';
-import Login from './pages/login';
-import RegisterResult from './pages/homepage/register-result';
-import UserPage from './pages/userpage/userpage';
-import AdminPage from './pages/adminpage/adminpage';
-import AdminVerify from './pages/adminpage/adminverify';
-import AdminNews from './pages/adminpage/admin-news';
+import UserHeader from '@components/public-header';
+import UserFooter from '@components/public-footer';
+import HomePage from '@pages/homepage';
+import News from '@pages/homepage/news';
+import NewsArticle from '@pages/homepage/news-article';
+import FAQ from '@pages/homepage/faq';
+import Resources from '@pages/homepage/resources';
+import Contact from '@pages/homepage/contact';
+import Consent from '@pages/homepage/consent';
+import Register from '@pages/homepage/register';
+import Login from '@pages/login';
+import RegisterResult from '@pages/homepage/register-result';
+import UserPage from '@pages/userpage/userpage';
+import AdminPage from '@pages/adminpage/adminpage';
+import AdminVerify from '@pages/adminpage/adminverify';
+import AdminNews from '@pages/adminpage/admin-news';
 import './App.css';
 
 // Wrapper component to handle conditional rendering

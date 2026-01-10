@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import '../assets/styles/header.css';
-import logo from '../assets/images/dasma-logo-only.png';
+import '@assets/styles/header.css';
+import logo from '@assets/images/dasma-logo-only.png';
 import { Link } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 

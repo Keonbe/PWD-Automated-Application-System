@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import "../../assets/styles/news-styles.css";
-import { getSinglePost, formatNewsDate } from "../../api/newsApi";
+import "@assets/styles/news-styles.css";
+import { getSinglePost, formatNewsDate } from "@api/newsApi";
 
 /**
  * NewsArticle Component - Displays a single news article

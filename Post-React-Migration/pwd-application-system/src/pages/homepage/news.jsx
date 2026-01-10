@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import "../../assets/styles/news-styles.css";
-import { getPublishedNews, formatNewsDate } from "../../api/newsApi";
+import "@assets/styles/news-styles.css";
+import { getPublishedNews, formatNewsDate } from "@api/newsApi";
 
 /**
  * News Component - Displays announcements and updates from the database
