@@ -61,7 +61,7 @@ A **PWD Automated Application System** built using **React 19**, **Vite 7**, **P
       - [Development Setup](#development-setup)
       - [API \& Development](#api--development)
       - [Features](#features)
-      - [Development Tools \& Vite](#development-tools--vite)
+      - [Build Tool \& Configuration](#build-tool--configuration)
       - [Contributing](#contributing)
   - [License](#license)
 
