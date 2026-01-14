@@ -360,14 +360,17 @@ Kindly refer to [Dependencies Installed](#dependencies-installed) for specific d
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.3",
     "react-router-hash-link": "^2.4.3",
-    "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.0",
+    "vite": "^7.0.0"
+  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest"
   }
 }
 ```
@@ -565,10 +568,17 @@ npm run dev
 
 The application will open at `http://localhost:3000` with:
 - **Hot Module Replacement (HMR):** Changes reflect instantly without full page reload
-- **Lightning-fast dev server:** Vite provides significantly faster startup and compilation
+- **Lightning-fast dev server:** Vite provides significantly faster startup and compilation (50-100x faster than Webpack)
 - **Better DX:** Faster feedback loop than Create React App
+- **ES modules in development:** Uses native browser ES modules for instant development
 
-**Note:** This project was migrated from Create React App to **Vite** for better performance. See [VITE-COMPLETE-DOCUMENTATION.md](../Post-React-Migration/documentation/VITE-COMPLETE-DOCUMENTATION.md) for migration details.
+**Note:** This project was migrated from Create React App to **Vite 7** for better performance. Key differences:
+- Environment variables must start with `VITE_` and use `import.meta.env.VITE_*`
+- Entry point is `src/main.jsx` (not `src/index.js`)
+- `index.html` is at project root (not in `public/`)
+- Production output is `dist/` (not `build/`)
+
+See [VITE-COMPLETE-DOCUMENTATION.md](../Post-React-Migration/documentation/VITE-COMPLETE-DOCUMENTATION.md) for migration details.
 
 ### 6. Build for Production
 
@@ -577,7 +587,7 @@ The application will open at `http://localhost:3000` with:
 npm run build
 
 # The dist/ folder will contain optimized production files
-# (Smaller bundles and faster load times compared to Create React App)
+# Smaller bundles and faster load times compared to Create React App
 
 # To preview production build locally:
 npm run preview

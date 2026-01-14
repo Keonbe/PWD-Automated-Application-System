@@ -1,9 +1,9 @@
 # PWD Automated Application System - Documentation Index
 
-> **Version:** 2.0  
+> **Version:** 2.1  
 > **Backend:** PHP/MySQL (XAMPP)  
-> **Frontend:** React 19  
-> **Last Updated:** December 14, 2025
+> **Frontend:** React 19 + Vite 7  
+> **Last Updated:** January 14, 2026
 
 ## Quick Reference Guide
 
@@ -82,7 +82,8 @@ Comprehensive documentation of all 19 PHP backend endpoints.
 Detailed documentation of all React functions and components.
 
 **Contains:**
-- Current PHP/MySQL implementations (v2.0)
+- Current PHP/MySQL implementations (v2.1)
+- Vite-based component structure
 - Login functions (login.jsx)
 - Registration functions (register.jsx)
 - User dashboard functions (userpage.jsx)
@@ -92,7 +93,7 @@ Detailed documentation of all React functions and components.
 
 **When to use:**
 - Understanding React component behavior
-- Implementing new features
+- Implementing new features with Vite
 - Debugging form submissions
 - Learning project patterns
 - Refactoring code
@@ -179,6 +180,41 @@ Complete guide to the news management system.
 - Understanding admin dashboards
 - Implementing CRUD interfaces
 - Working with image uploads
+
+---
+
+## Build Tool & Configuration
+
+### **🟢 Vite Comprehensive Guide** (`vite-comprehensive-guide.md`) 🆕
+Complete setup, configuration, and troubleshooting guide for Vite build tool.
+
+**Contains:**
+- Quick start (5 minutes)
+- Why Vite (performance benefits)
+- Complete installation guide
+- Environment variable setup (VITE_ prefix)
+- Configuration reference (vite.config.js, index.html, src/main.jsx)
+- Path aliases for clean imports
+- Common issues and solutions
+- Troubleshooting checklist
+- Advanced configuration examples
+- Deployment instructions
+
+**Key Topics:**
+- ✅ Environment variables: `import.meta.env.VITE_*` (not `process.env.REACT_APP_*`)
+- ✅ File structure: `index.html` at root (not in `public/`)
+- ✅ Commands: `npm run dev` (not `npm start`)
+- ✅ Build output: `dist/` folder (not `build/`)
+- ✅ HMR: Hot Module Replacement for instant feedback
+- ✅ Path aliases: `@api`, `@components`, `@assets`, etc.
+
+**When to use:**
+- Setting up development environment
+- Understanding Vite configuration
+- Troubleshooting Vite issues
+- Working with environment variables
+- Understanding build process
+- Deployment procedures
 
 ---
 
@@ -277,25 +313,29 @@ Summary of v2.0 documentation updates.
 ### For New Developers
 
 1. **Start Here:** Read `init-documentation.md` for project overview and setup
-2. **Database Setup:** Follow `database-documentation.md` to create MySQL database
-3. **Learn APIs:** Review `php-api-documentation.md` for backend endpoints
-4. **Study Code:** Read `function-documentation.md` for React implementation patterns
-5. **Git Workflow:** Check `contribution_guide-documentation.md` for collaboration
+2. **Setup Vite:** Follow `vite-comprehensive-guide.md` Section 1 (5 minutes)
+3. **Database Setup:** Follow `database-documentation.md` to create MySQL database
+4. **Complete Setup:** Follow `SETUP-GUIDE.md` for full project setup
+5. **Learn APIs:** Review `php-api-documentation.md` for backend endpoints
+6. **Study Code:** Read `function-documentation.md` for React implementation patterns
+7. **Git Workflow:** Check `contribution_guide-documentation.md` for collaboration
 
 ### For Feature Development
 
-1. **Check Existing:** `function-documentation.md` - See if similar functionality exists
-2. **Review Database:** `database-documentation.md` - Understand data structure
-3. **Plan APIs:** `php-api-documentation.md` - Use established patterns
-4. **Implement:** Follow conventions in `init-documentation.md`
-5. **Document:** Update relevant documentation files
+1. **Setup Environment:** Follow `vite-comprehensive-guide.md` for Vite setup
+2. **Check Existing:** `function-documentation.md` - See if similar functionality exists
+3. **Review Database:** `database-documentation.md` - Understand data structure
+4. **Plan APIs:** `php-api-documentation.md` - Use established patterns
+5. **Implement:** Follow conventions in `init-documentation.md`
+6. **Document:** Update relevant documentation files
 
-### For Bug Fixes
+### For Troubleshooting
 
-1. **Identify Component:** Use `function-documentation.md` index
-2. **Check Database:** Review `database-documentation.md` for data issues
-3. **Verify API:** Test with `php-api-documentation.md` examples
-4. **Common Issues:** Check `utf8-collation-fix.md` for known problems
+1. **Vite Issues:** See `vite-comprehensive-guide.md` Section 5-6
+2. **Identify Component:** Use `function-documentation.md` index
+3. **Check Database:** Review `database-documentation.md` for data issues
+4. **Verify API:** Test with `php-api-documentation.md` examples
+5. **Common Issues:** Check `utf8-collation-fix.md` for known database problems
 
 ---
 

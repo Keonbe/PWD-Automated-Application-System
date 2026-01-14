@@ -1,8 +1,10 @@
 # Backend Documentation
 
-> **Version:** 2.0 (Production)  
+> **Version:** 2.1 (Production)  
 > **Status:** ✅ Complete  
-> **Stack:** PHP 8.2 + MySQL on XAMPP
+> **Stack:** PHP 8.2 + MySQL on XAMPP  
+> **Frontend:** React 19 + Vite 7  
+> **Last Updated:** January 14, 2026
 
 ---
 

@@ -1,8 +1,9 @@
 # PWD Automated Application System - Complete Setup Guide
 
 > **Master Setup Documentation**  
-> Last Updated: December 15, 2025  
-> Branch: `test-news` (includes News feature)
+> Last Updated: January 14, 2026  
+> Branch: `new-features` (includes News feature & Vite)  
+> **Build Tool:** Vite 7 (replaces Create React App)
 
 This guide provides step-by-step instructions to set up the entire PWD Automated Application System from scratch, including the PHP/MySQL backend and React frontend.
 
@@ -16,8 +17,8 @@ This guide provides step-by-step instructions to set up the entire PWD Automated
 4. [Step 2: Clone/Setup Project Files](#step-2-clonesetup-project-files)
 5. [Step 3: Database Setup](#step-3-database-setup)
 6. [Step 4: PHP Backend Setup](#step-4-php-backend-setup)
-7. [Step 5: React Frontend Setup](#step-5-react-frontend-setup)
-8. [Step 6: Running the Application](#step-6-running-the-application)
+7. [Step 5: React Frontend Setup (Vite)](#step-5-react-frontend-setup-vite)
+8. [Step 5b: Running the Application (Vite)](#step-5b-running-the-application-vite)
 9. [Testing Checklist](#testing-checklist)
 10. [Quick Reference Commands](#quick-reference-commands)
 11. [Troubleshooting](#troubleshooting)
@@ -315,7 +316,7 @@ curl "http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React
 
 ---
 
-## Step 5: React Frontend Setup
+## Step 5: React Frontend Setup (Vite)
 
 ### 5.1 Navigate to React Project
 
@@ -329,11 +330,26 @@ cd "Post-React-Migration/pwd-application-system"
 npm install
 ```
 
-This may take 2-5 minutes. Wait for completion.
+This may take 2-5 minutes. Wait for completion. This installs all packages including Vite, React, and required plugins.
 
-### 5.3 Verify Environment Variables (Vite)
+### 5.3 Verify Vite Configuration
 
-Check `.env` file in the project root has the correct API URL:
+The project includes `vite.config.js` with React support. Verify it exists:
+
+```bash
+ls vite.config.js  # Should exist
+cat vite.config.js # View configuration
+```
+
+**Key Vite features in this project:**
+- **Fast HMR (Hot Module Replacement):** Changes reflect instantly without page reload
+- **Optimized builds:** Creates `dist/` folder (not `build/`) for production
+- **Path aliases:** Uses `@components`, `@api`, `@utils`, etc. for cleaner imports
+- **Environment variables:** All variables must start with `VITE_` prefix
+
+### 5.4 Environment Variables for Vite
+
+Check `.env` file in the project root:
 
 ```env
 VITE_API_URL=http://localhost/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/xampp-php-mysql-files/api
@@ -341,37 +357,76 @@ VITE_APP_NAME=PWD Automated Application System
 VITE_ENVIRONMENT=development
 ```
 
-**Note:** This project uses **Vite** (not Create React App). Environment variables must:
-- Start with `VITE_` prefix
-- Be accessed with `import.meta.env.VITE_*` in code (not `process.env`)
-- Adjust the path if your project is in a different location!
+**Important Vite notes:**
+- Environment variables **MUST** start with `VITE_` prefix (case-sensitive)
+- Access in code with `import.meta.env.VITE_*` (NOT `process.env.VITE_*`)
+- Variables without `VITE_` prefix are ignored for security
+- Adjust `VITE_API_URL` if your project path is different
+- Create `.env.local` for local overrides (don't commit)
 
-### 5.4 Fix Common Issues Before Starting
+### 5.5 Vite-Specific File Structure
+
+**Key files for Vite to work:**
+
+```
+Post-React-Migration/pwd-application-system/
+├── index.html                    ← Entry point (root level, not in public/)
+├── src/
+│   ├── main.jsx                  ← React app entry (replaces index.js in CRA)
+│   ├── App.jsx
+│   └── pages/
+├── public/                        ← Static assets (referenced as `/filename`)
+├── vite.config.js                 ← Vite configuration
+├── package.json                   ← Scripts use Vite (not react-scripts)
+└── .env                           ← Environment variables
+```
+
+**Critical difference from Create React App:**
+- `index.html` is at project root (not in `public/`)
+- Entry point is `src/main.jsx` (not `src/index.js`)
+- Uses `vite.config.js` (not create-react-app config)
+
+### 5.6 Fix Common Vite Issues Before Starting
 
 If you encounter issues, try:
 
 ```bash
-# Clean reinstall
-rm -rf node_modules
+# Clear everything and reinstall
+rm -rf node_modules package-lock.json
 npm cache clean --force
 npm install
+
+# Verify vite is installed
+npm list vite
+
+# Check Node version (should be 14.18+)
+node -v
 ```
+
+**Common issues:**
+| Issue | Solution |
+|-------|----------|
+| Cannot find module 'vite' | Run `npm install -D vite @vitejs/plugin-react` |
+| Port 3000 already in use | Use `npm run dev -- --port 3001` for different port |
+| `.env` variables not working | Ensure they start with `VITE_` prefix |
+| Import paths not resolving | Check `vite.config.js` aliases match your code |
 
 ---
 
-## Step 6: Running the Application
+## Step 5b: Running the Application (Vite)
 
-### 6.1 Startup Checklist
+### 5b.1 Startup Checklist
 
 Before running, verify:
 
 - [ ] XAMPP Apache is running (green)
 - [ ] XAMPP MySQL is running (green)
 - [ ] Database `PWDRegistry` exists with tables
-- [ ] Upload directories exist
-- [ ] npm dependencies installed
+- [ ] Upload directories created
+- [ ] npm dependencies installed (`node_modules/` exists)
+- [ ] `.env` file configured with correct `VITE_API_URL`
 
-### 6.2 Start React Development Server (Vite)
+### 5b.2 Start React Development Server (Vite)
 
 ```bash
 # Navigate to React project (if not already there)
@@ -386,9 +441,25 @@ npm run dev
 cd "/c/Users/admin/scoop/apps/xampp/8.2.12-0/htdocs/webdev_finals/PWD-Automated-Application-System/Post-React-Migration/pwd-application-system" && npm run dev
 ```
 
-**Note:** This project uses Vite (not Create React App) for faster development server and builds.
+**Expected terminal output:**
 
-### 6.3 Access the Application
+```
+✓ 123 modules transformed
+
+VITE v7.x.x  ready in 250 ms
+
+➜  Local:   http://localhost:3000/
+➜  press h to show help
+```
+
+If you don't see this output, check the error message above it in the terminal.
+
+**Vite commands:**
+- `npm run dev` - Start development server (replaces `npm start` from CRA)
+- `npm run build` - Create production build in `dist/` folder
+- `npm run preview` - Preview production build locally
+
+### 5b.3 Access the Application
 
 Once started, open in browser:
 
@@ -397,6 +468,27 @@ Once started, open in browser:
 | **Homepage** | http://localhost:3000 |
 | **User Registration** | http://localhost:3000/register |
 | **User Login** | http://localhost:3000/login |
+| **Admin Login** | http://localhost:3000/admin |
+| **News Page** | http://localhost:3000/news |
+| **Admin News** | http://localhost:3000/admin/news |
+
+### 5b.4 Verify Application is Working
+
+Check these to confirm Vite is working:
+
+1. **Browser loads without errors** - Page displays correctly
+2. **No red errors in console** - Press F12 → Console tab, should be clean
+3. **Hot Module Replacement works** - Edit a file and save, page updates instantly
+4. **API calls work** - Can login, see data from database
+5. **Images and styles load** - All assets display correctly
+
+### 5b.5 Stopping the Application
+
+- **React/Vite:** Press `Ctrl+C` in the terminal running `npm run dev`
+- **XAMPP:** Click Stop on Apache and MySQL in XAMPP Control Panel
+- **Database:** MySQL stops when XAMPP stops
+
+
 | **Admin Login** | http://localhost:3000/admin |
 | **News Page** | http://localhost:3000/news |
 | **Admin News** | http://localhost:3000/admin/news |
@@ -502,7 +594,9 @@ rm -rf node_modules && npm cache clean --force && npm install
 **Note:** This project uses **Vite** instead of Create React App:
 - Start with `npm run dev` (not `npm start`)
 - Build output is in `dist/` folder (not `build/`)
-- Faster development server with HMR
+- Faster development server with HMR (Hot Module Replacement)
+- Environment variables require `VITE_` prefix
+- Access env vars with `import.meta.env.VITE_*` (not `process.env`)
 
 ### Git Commands
 

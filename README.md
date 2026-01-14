@@ -1,8 +1,8 @@
 # PWD-Automated-Application-System
 
-**A project for ITWB311 "Web Development" subject — Final Term v2.0**
+**A project for ITWB311 "Web Development" subject — Final Term v2.1**
 
-A **PWD Automated Application System** built using **React 19**, **PHP 8.2**, and **MySQL** — a full-stack web application for managing PWD (Persons with Disabilities) registrations in Dasmariñas City.
+A **PWD Automated Application System** built using **React 19**, **Vite 7**, **PHP 8.2**, and **MySQL** — a full-stack web application for managing PWD (Persons with Disabilities) registrations in Dasmariñas City.
 
 <p align="center">
   <img src="https://img.shields.io/github/last-commit/Keonbe/PWD-Automated-Application-System?style=plastic" alt="Last Commit">
@@ -12,7 +12,7 @@ A **PWD Automated Application System** built using **React 19**, **PHP 8.2**, an
   <img src="/documentation/images/homepage-screenshot.png" alt="Homepage Screenshot" width="600"/>
 </p>
 
-> **Version 2.0** — Production-ready with PHP/MySQL backend, 25 API endpoints, file upload system, admin review workflow, and news management.
+> **Version 2.1** — Production-ready with Vite 7 build tool, PHP/MySQL backend, 25 API endpoints, file upload system, admin review workflow, and news management.
 
 ---
 
@@ -441,8 +441,9 @@ PWD-Automated-Application-System/
 - [QR Code Feature Documentation](documentation/qrcode-feature-documentation.md) — QR generation
 - [ID Photo Feature Documentation](documentation/id-photo-feature-documentation.md) — ID photo handling
 
-#### Development Tools & Vite
-- **[Vite Complete Documentation](Post-React-Migration/documentation/VITE-COMPLETE-DOCUMENTATION.md)** — Comprehensive Vite guide
+#### Build Tool & Configuration
+- **[Vite Comprehensive Guide](documentation/vite-comprehensive-guide.md)** — Complete Vite 7 setup, configuration, troubleshooting, and advanced usage
+- **[Vite Quick Start](Post-React-Migration/documentation/vite-quick-start.md)** — 5-minute Vite setup guide
 - **[Vite Documentation Index](Post-React-Migration/documentation/VITE-DOCUMENTATION-INDEX.md)** — Quick Vite reference
 
 #### Contributing
@@ -458,7 +459,7 @@ This project is for academic purposes as part of ITWB311 "Web Development" subje
 ---
 
 <p align="center">
-  <b>PWD Automated Application System v2.0</b><br>
+  <b>PWD Automated Application System v2.1</b><br>
   De La Salle University Dasmariñas<br>
-  December 2025
+  January 2026
 </p>
